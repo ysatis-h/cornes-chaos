@@ -1038,6 +1038,24 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 .anniversaire-banner{position:fixed;z-index:80;top:12px;left:50%;width:min(520px,calc(100% - 24px));transform:translateX(-50%);overflow:hidden;padding:14px 42px 14px 16px;border:2px solid #e5ad25;border-radius:16px;background:var(--surface);color:var(--texte);box-shadow:0 14px 34px rgba(74,43,90,.25);text-align:center}.anniversaire-banner[hidden]{display:none}.anniversaire-banner strong{display:block;color:var(--violet-fonce);font:800 1.35rem/1.15 "Fredoka",sans-serif}.anniversaire-banner small{display:block;margin-top:4px;font-weight:800}.anniversaire-fermer{position:absolute;z-index:2;right:8px;top:7px;width:30px;height:30px;padding:0;border:0;border-radius:50%;background:var(--surface-2);color:var(--texte);font-size:1.25rem;cursor:pointer}.confettis{position:absolute;inset:0;pointer-events:none}.confetti{position:absolute;top:-12px;width:8px;height:15px;border-radius:2px;background:var(--confetti);animation:confetti-tombe 2.6s linear var(--retard) infinite;transform:translateX(var(--decalage)) rotate(var(--rotation))}.confetti:nth-child(3n){border-radius:50%;height:8px}.chapeau-fete{position:absolute;z-index:4;top:3px;right:4px;width:20px;height:23px;pointer-events:none;transform:rotate(14deg);filter:drop-shadow(0 1px 1px rgba(0,0,0,.28))}.chapeau-fete:before{content:"";position:absolute;left:2px;top:4px;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:18px solid #eb5b91}.chapeau-fete:after{content:"";position:absolute;left:8px;top:0;width:7px;height:7px;border-radius:50%;background:#f4c85c}.carte-mini.avec-chapeau .dragon-dessin{transform:translateY(2px)}@keyframes confetti-tombe{0%{transform:translate(var(--decalage),-18px) rotate(var(--rotation));opacity:0}12%{opacity:1}100%{transform:translate(calc(var(--decalage) + 28px),100px) rotate(calc(var(--rotation) + 420deg));opacity:0}}@media(prefers-reduced-motion:reduce){.confetti{animation:none;top:8px;opacity:.8}.anniversaire-banner{box-shadow:0 8px 22px rgba(74,43,90,.2)}}
 .identite-partie{display:flex;align-items:center;gap:10px;margin:12px 0;padding:11px 12px;border:1px solid var(--ligne);border-radius:12px;background:var(--surface-2);text-align:left}.identite-partie>span:last-child{min-width:0}.identite-partie strong,.identite-partie small{display:block}.identite-partie strong{color:var(--violet-fonce);overflow-wrap:anywhere}.identite-partie small{margin-top:2px;color:var(--texte-doux);font-size:.76rem;line-height:1.35}
 .profil-reinitialisation{margin-top:18px;padding-top:14px;border-top:1px solid var(--ligne)}
+.maintenance-banner{position:fixed;z-index:80;top:12px;left:50%;width:min(520px,calc(100% - 24px));transform:translateX(-50%);padding:12px 42px 12px 16px;border:2px solid #b478e8;border-radius:16px;background:var(--surface);color:var(--texte);box-shadow:0 14px 34px rgba(74,43,90,.25);text-align:center}
+.maintenance-banner[hidden]{display:none}
+.maintenance-banner strong{display:block;color:var(--violet-fonce);font:800 1.02rem/1.25 "Nunito Sans",sans-serif}
+.maintenance-banner small{display:block;margin-top:4px;font-weight:700;color:var(--texte-doux);line-height:1.4}
+.maintenance-ecran{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(35,18,52,.93)}
+.maintenance-ecran[hidden]{display:none}
+.maintenance-carte{max-width:440px;padding:32px 28px;border-radius:20px;background:var(--surface);text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.maintenance-icone{font-size:3rem}
+.maintenance-carte h2{margin:12px 0 8px;color:var(--violet-fonce);font:800 1.5rem/1.2 "Fredoka",sans-serif}
+.maintenance-carte p{margin:0 0 6px;color:var(--texte);line-height:1.5}
+.maintenance-heures{font-weight:800;color:var(--violet-fonce)}
+.maintenance-admin{margin:0 0 18px;padding:13px;border:2px dashed var(--violet-fonce);border-radius:13px;background:var(--surface-2);text-align:left}
+.maintenance-admin h4{margin:0 0 5px;color:var(--violet-fonce)}
+.maintenance-admin>small{display:block;margin-bottom:10px;color:var(--texte-doux);line-height:1.4}
+.maintenance-statut{margin:0 0 10px;font-weight:800;font-size:.85rem}
+.maintenance-admin .profil-champs{margin-bottom:10px}
+.maintenance-actions{display:flex;gap:8px;flex-wrap:wrap}
+.maintenance-actions .gros-bouton{margin:0}
 .bouton-reset-progression{margin:0;background:var(--surface-2);color:var(--texte-doux);border:1px solid var(--ligne);box-shadow:none;font-size:.88rem}
 .bouton-reset-progression:hover{color:var(--violet-fonce);background:color-mix(in srgb,var(--violet) 10%,var(--surface))}
 .actions-confirmation{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}.actions-confirmation .gros-bouton{margin:0}
@@ -4105,6 +4123,20 @@ function erreurReseau(code, repliFr, repliEn) {
     <button id="anniversaire-fermer" class="anniversaire-fermer" type="button" aria-label="Fermer" data-aria-fr="Fermer" data-aria-en="Close">×</button>
   </div>
 
+  <div id="maintenance-banner" class="maintenance-banner" role="status" aria-live="polite" hidden>
+    <strong id="maintenance-banner-titre"></strong>
+    <small id="maintenance-banner-detail"></small>
+    <button id="maintenance-banner-fermer" class="anniversaire-fermer" type="button" aria-label="Fermer" data-aria-fr="Fermer" data-aria-en="Close">×</button>
+  </div>
+  <div id="maintenance-ecran" class="maintenance-ecran" hidden>
+    <div class="maintenance-carte">
+      <div class="maintenance-icone" aria-hidden="true">🔧</div>
+      <h2 id="maintenance-ecran-titre"></h2>
+      <p id="maintenance-ecran-message"></p>
+      <p class="maintenance-heures" id="maintenance-ecran-heures"></p>
+    </div>
+  </div>
+
   <!-- Fenêtre modale générique (ciblage, riposte, choix...) -->
   <div id="modal" class="modal-cachee"><div id="modal-contenu" class="modal-contenu"></div></div>
   <!-- Petit message temporaire -->
@@ -5682,6 +5714,53 @@ function ouvrirFicheDragondex(def,connu,retour){
   ouvrirModal('<div class="dragondex-detail"><h3>'+echapper(nom)+'</h3>'+saison+'<div class="dragondex-detail-visuel '+(connu?'':'inconnu')+'" style="'+styleIllustrationDragondex(def)+'">'+illustrationDragonHTML(def)+'</div><p>'+echapper(ambiance)+'</p><div class="dragondex-infos"><div class="dragondex-info"><strong>'+L("Type","Type")+'</strong><span>'+echapper(type)+'</span></div><div class="dragondex-info"><strong>'+L("Couleur du dragon","Dragon color")+'</strong><span>'+echapper(couleur)+'</span></div></div>'+(connu?'<div class="dragondex-effet"><strong>'+L("Pouvoir en jeu","In-game power")+'</strong><br>'+echapper(texteCarte(def))+'</div>':'')+(connu&&def.saison?'<p class="message-ok">'+L("Plateau "+nomSaison(def.saison)+" débloqué pour ton compte.",nomSaison(def.saison)+" Board unlocked for your account.")+'</p>':'')+'<button id="dragondex-retour" class="gros-bouton bouton-secondaire">'+L("Retour au Dragondex","Back to Dragondex")+'</button></div>');
   $('dragondex-retour').addEventListener('click',retour);
 }
+/* ===== Maintenance planifiée — interrupteur réservé à Ysatis ===== */
+const ADMIN_UID = "mOmSIuHAcchkqx0I3icupMiBvSR2";
+function estAdmin(){ try{ return typeof Compte!=="undefined" && Compte.uid && Compte.uid()===ADMIN_UID; }catch(e){ return false; } }
+function formaterHeureMaintenance(ts){
+  try{ return new Date(Number(ts)).toLocaleString(enAnglais()?"en-CA":"fr-CA",{dateStyle:"medium",timeStyle:"short"}); }
+  catch(e){ return ""; }
+}
+function versDatetimeLocal(ts){
+  const d=new Date(Number(ts)), p=(n)=>String(n).padStart(2,"0");
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes());
+}
+const Maintenance = {
+  _donnees: null, _banniereFermee: false,
+  init(){
+    const fermer=$("maintenance-banner-fermer");
+    if(fermer) fermer.addEventListener("click",()=>this.fermerBanniere());
+    if(!Compte.disponible || !Compte.db) return;
+    try{
+      Compte.db.ref("maintenance").on("value",(snap)=>{
+        this._donnees = snap.val() || null;
+        this._banniereFermee = false;
+        this.evaluer();
+      });
+    }catch(e){ /* lecture impossible : on ignore silencieusement */ }
+  },
+  evaluer(){
+    const d=this._donnees, banniere=$("maintenance-banner"), ecran=$("maintenance-ecran");
+    if(!banniere||!ecran) return;
+    const maintenant=Date.now();
+    if(!d || !d.active){ banniere.hidden=true; ecran.hidden=true; return; }
+    const debut=Number(d.debut)||0, fin=Number(d.fin)||0;
+    if(debut && fin && maintenant>=debut && maintenant<=fin){
+      $("maintenance-ecran-titre").textContent=L("Maintenance en cours","Maintenance in progress");
+      $("maintenance-ecran-message").textContent=d.message||L("Le jeu est en maintenance. Merci de ta patience !","The game is under maintenance. Thanks for your patience!");
+      $("maintenance-ecran-heures").textContent=L("Fin prévue : ","Estimated end: ")+formaterHeureMaintenance(fin);
+      ecran.hidden=false; banniere.hidden=true;
+    } else if(debut && fin && maintenant<debut){
+      ecran.hidden=true;
+      $("maintenance-banner-titre").textContent=L("🔧 Maintenance prévue","🔧 Scheduled maintenance");
+      $("maintenance-banner-detail").textContent=enAnglais()
+        ? "Scheduled maintenance"+(d.message?": "+d.message:"")+" — from "+formaterHeureMaintenance(debut)+" to "+formaterHeureMaintenance(fin)
+        : "Maintenance prévue"+(d.message?" : "+d.message:"")+" — du "+formaterHeureMaintenance(debut)+" au "+formaterHeureMaintenance(fin);
+      banniere.hidden=this._banniereFermee;
+    } else { banniere.hidden=true; ecran.hidden=true; }
+  },
+  fermerBanniere(){ this._banniereFermee=true; const b=$("maintenance-banner"); if(b) b.hidden=true; }
+};
 function rendreProfilDresseur(profil){
   const stats=profil.stats||{}, parties=stats.games||0, victoires=stats.wins||0, taux=parties?Math.round(victoires/parties*100):0, comptes=stats.dragonCounts||{};
   const prefere=Object.keys(comptes).sort((a,b)=>(comptes[b]||0)-(comptes[a]||0))[0], nomPrefere=prefere&&definitionParId(prefere)?nomCarte(definitionParId(prefere)):L("À découvrir","To be discovered");
@@ -5691,13 +5770,43 @@ function rendreProfilDresseur(profil){
   const detailsDate=detailsAnniversaire(dateAnniversaire)||{};
   const anniversaireVerrouille=Boolean(detailsDate.mois&&detailsDate.jour);
   const attributVerrou=anniversaireVerrouille?' disabled aria-disabled="true"':'';
-  ouvrirModal('<div data-profil-dragondex><h3>'+G(profil,"Profil de Dresseur","Profil de Dresseuse","Profil draconique","Trainer Profile")+'</h3><div class="profil-pseudo"><label for="profil-pseudo">'+G(profil,"Nom de Dresseur","Nom de Dresseuse","Nom de jeu","Trainer name")+'</label><small>'+L("Utilisé automatiquement dans toutes tes parties et visible par les autres Dresseurs. 20 caractères maximum.","Used automatically in all your games and visible to other Trainers. Up to 20 characters.")+'</small><input id="profil-pseudo" maxlength="20" autocomplete="off" value="'+echapper(nomPublic)+'"><button id="profil-enregistrer-pseudo" type="button" class="gros-bouton bouton-secondaire">'+G(profil,"Changer mon nom de Dresseur","Changer mon nom de Dresseuse","Changer mon nom de jeu","Change my Trainer name")+'</button></div><div class="profil-personnalisation"><h4>'+L("Personnalisation","Personalization")+'</h4><small>'+L("Ton genre adapte les textes français du jeu. Ta date d’anniversaire reste dans ton profil.","Your gender personalizes French game text. Your birthday stays in your profile.")+'</small><div class="profil-champs"><div class="profil-champ"><label for="profil-genre">'+G(profil,"Genre du Dresseur","Genre de la Dresseuse","Genre du profil","Trainer gender")+'</label><select id="profil-genre" required><option value="">'+L("Choisir…","Choose…")+'</option><option value="feminin" '+(genreChoisi==="feminin"?"selected":"")+'>'+L("Féminin","Female")+'</option><option value="masculin" '+(genreChoisi==="masculin"?"selected":"")+'>'+L("Masculin","Male")+'</option><option value="autre" '+(genreChoisi==="autre"?"selected":"")+'>'+L("Autre","Other")+'</option></select></div><div class="profil-champ"><label for="profil-anniversaire-jour">'+L("Date d’anniversaire","Birthday")+'</label><div class="profil-anniversaire-champs"><input id="profil-anniversaire-jour" type="number" min="1" max="31" inputmode="numeric" aria-label="'+L("Jour","Day")+'" placeholder="'+L("Jour","Day")+'" value="'+(detailsDate.jour||"")+'"'+attributVerrou+'><select id="profil-anniversaire-mois" aria-label="'+L("Mois","Month")+'"'+attributVerrou+'>'+optionsMoisAnniversaire(detailsDate.mois)+'</select></div><small class="profil-anniversaire-note">'+(anniversaireVerrouille?L("Jour et mois verrouillés. Pour les faire corriger, utilise « Signaler un bug ».","Day and month are locked. To have them corrected, use “Report a bug”."):L("Vérifie bien le jour et le mois : une confirmation sera demandée avant de les verrouiller.","Check the day and month carefully: you’ll be asked to confirm before they are locked."))+'</small></div></div><div id="profil-anniversaire-confirmation" class="profil-anniversaire-confirmation" hidden><p>'+L("Confirmer ton anniversaire : ","Confirm your birthday: ")+'<strong id="profil-anniversaire-resume"></strong>?</p><div class="actions-confirmation"><button id="profil-anniversaire-annuler" type="button" class="gros-bouton bouton-secondaire">'+L("Vérifier","Check again")+'</button><button id="profil-anniversaire-confirmer" type="button" class="gros-bouton bouton-primaire">'+L("Oui, verrouiller","Yes, lock it")+'</button></div></div><button id="profil-enregistrer-personnalisation" type="button" class="gros-bouton bouton-secondaire">'+L("Enregistrer mon profil","Save my profile")+'</button></div><div class="profil-grille"><div class="stat-profil"><strong>'+parties+'</strong><span>'+L("Parties jouées","Games played")+'</span></div><div class="stat-profil"><strong>'+taux+' %</strong><span>'+L("Taux de victoire","Win rate")+'</span></div><div class="stat-profil"><strong>'+(stats.currentStreak||0)+'</strong><span>'+L("Série actuelle","Current streak")+'</span></div><div class="stat-profil"><strong>'+(stats.bestStreak||0)+'</strong><span>'+L("Meilleure série","Best streak")+'</span></div><div class="stat-profil"><strong>'+(stats.teamWins||0)+'/'+(stats.teamGames||0)+'</strong><span>'+L("Victoires 2v2","2v2 wins")+'</span></div><div class="stat-profil"><strong>'+echapper(nomPrefere)+'</strong><span>'+L("Dragon porte-bonheur","Lucky dragon")+'</span></div></div><div class="dragondex-entete"><h3>'+L("Dragondex","Dragondex")+'</h3><span class="dragondex-compteur">'+compteurDragondex(trouves)+'/'+total+'</span></div><p class="dragondex-regle">'+L("Joue une carte dragon en partie — solo, en ligne ou dans le tutoriel — pour l’ajouter à ton Dragondex.","Play a dragon card in a solo, online, or tutorial game to add it to your Dragondex.")+'</p>'+filtresDragondexHTML()+'<div class="dragondex"></div><div class="profil-reinitialisation"><button id="profil-reinitialiser" type="button" class="gros-bouton bouton-reset-progression">'+L("Réinitialiser ma progression","Reset my progress")+'</button></div><button id="profil-fermer" class="gros-bouton bouton-primaire">'+L("Retour au jeu","Back to game")+'</button></div>');
+  const sectionMaintenance=estAdmin()?'<div class="maintenance-admin"><h4>'+L("🔧 Maintenance du jeu","🔧 Game maintenance")+'</h4><small>'+L("Réservé à toi : planifie une maintenance pour prévenir tes joueurs à l’avance. Seule toi peux activer cet interrupteur.","Only for you: schedule maintenance to warn your players in advance. Only you can flip this switch.")+'</small><p class="maintenance-statut" id="maintenance-statut">'+L("Chargement…","Loading…")+'</p><div class="profil-champs"><div class="profil-champ"><label for="maintenance-message">'+L("Message","Message")+'</label><input id="maintenance-message" maxlength="120" autocomplete="off" placeholder="'+L("Ex. Mise à jour des dragons","E.g. Dragon update")+'"></div><div class="profil-champ"><label for="maintenance-debut">'+L("Début","Start")+'</label><input id="maintenance-debut" type="datetime-local"></div><div class="profil-champ"><label for="maintenance-fin">'+L("Fin","End")+'</label><input id="maintenance-fin" type="datetime-local"></div></div><div class="maintenance-actions"><button id="maintenance-activer" type="button" class="gros-bouton bouton-primaire">'+L("Activer la maintenance","Enable maintenance")+'</button><button id="maintenance-desactiver" type="button" class="gros-bouton bouton-secondaire">'+L("Désactiver","Disable")+'</button></div></div>':'';
+  ouvrirModal('<div data-profil-dragondex><h3>'+G(profil,"Profil de Dresseur","Profil de Dresseuse","Profil draconique","Trainer Profile")+'</h3><div class="profil-pseudo"><label for="profil-pseudo">'+G(profil,"Nom de Dresseur","Nom de Dresseuse","Nom de jeu","Trainer name")+'</label><small>'+L("Utilisé automatiquement dans toutes tes parties et visible par les autres Dresseurs. 20 caractères maximum.","Used automatically in all your games and visible to other Trainers. Up to 20 characters.")+'</small><input id="profil-pseudo" maxlength="20" autocomplete="off" value="'+echapper(nomPublic)+'"><button id="profil-enregistrer-pseudo" type="button" class="gros-bouton bouton-secondaire">'+G(profil,"Changer mon nom de Dresseur","Changer mon nom de Dresseuse","Changer mon nom de jeu","Change my Trainer name")+'</button></div><div class="profil-personnalisation"><h4>'+L("Personnalisation","Personalization")+'</h4><small>'+L("Ton genre adapte les textes français du jeu. Ta date d’anniversaire reste dans ton profil.","Your gender personalizes French game text. Your birthday stays in your profile.")+'</small><div class="profil-champs"><div class="profil-champ"><label for="profil-genre">'+G(profil,"Genre du Dresseur","Genre de la Dresseuse","Genre du profil","Trainer gender")+'</label><select id="profil-genre" required><option value="">'+L("Choisir…","Choose…")+'</option><option value="feminin" '+(genreChoisi==="feminin"?"selected":"")+'>'+L("Féminin","Female")+'</option><option value="masculin" '+(genreChoisi==="masculin"?"selected":"")+'>'+L("Masculin","Male")+'</option><option value="autre" '+(genreChoisi==="autre"?"selected":"")+'>'+L("Autre","Other")+'</option></select></div><div class="profil-champ"><label for="profil-anniversaire-jour">'+L("Date d’anniversaire","Birthday")+'</label><div class="profil-anniversaire-champs"><input id="profil-anniversaire-jour" type="number" min="1" max="31" inputmode="numeric" aria-label="'+L("Jour","Day")+'" placeholder="'+L("Jour","Day")+'" value="'+(detailsDate.jour||"")+'"'+attributVerrou+'><select id="profil-anniversaire-mois" aria-label="'+L("Mois","Month")+'"'+attributVerrou+'>'+optionsMoisAnniversaire(detailsDate.mois)+'</select></div><small class="profil-anniversaire-note">'+(anniversaireVerrouille?L("Jour et mois verrouillés. Pour les faire corriger, utilise « Signaler un bug ».","Day and month are locked. To have them corrected, use “Report a bug”."):L("Vérifie bien le jour et le mois : une confirmation sera demandée avant de les verrouiller.","Check the day and month carefully: you’ll be asked to confirm before they are locked."))+'</small></div></div><div id="profil-anniversaire-confirmation" class="profil-anniversaire-confirmation" hidden><p>'+L("Confirmer ton anniversaire : ","Confirm your birthday: ")+'<strong id="profil-anniversaire-resume"></strong>?</p><div class="actions-confirmation"><button id="profil-anniversaire-annuler" type="button" class="gros-bouton bouton-secondaire">'+L("Vérifier","Check again")+'</button><button id="profil-anniversaire-confirmer" type="button" class="gros-bouton bouton-primaire">'+L("Oui, verrouiller","Yes, lock it")+'</button></div></div><button id="profil-enregistrer-personnalisation" type="button" class="gros-bouton bouton-secondaire">'+L("Enregistrer mon profil","Save my profile")+'</button></div><div class="profil-grille"><div class="stat-profil"><strong>'+parties+'</strong><span>'+L("Parties jouées","Games played")+'</span></div><div class="stat-profil"><strong>'+taux+' %</strong><span>'+L("Taux de victoire","Win rate")+'</span></div><div class="stat-profil"><strong>'+(stats.currentStreak||0)+'</strong><span>'+L("Série actuelle","Current streak")+'</span></div><div class="stat-profil"><strong>'+(stats.bestStreak||0)+'</strong><span>'+L("Meilleure série","Best streak")+'</span></div><div class="stat-profil"><strong>'+(stats.teamWins||0)+'/'+(stats.teamGames||0)+'</strong><span>'+L("Victoires 2v2","2v2 wins")+'</span></div><div class="stat-profil"><strong>'+echapper(nomPrefere)+'</strong><span>'+L("Dragon porte-bonheur","Lucky dragon")+'</span></div></div><div class="dragondex-entete"><h3>'+L("Dragondex","Dragondex")+'</h3><span class="dragondex-compteur">'+compteurDragondex(trouves)+'/'+total+'</span></div><p class="dragondex-regle">'+L("Joue une carte dragon en partie — solo, en ligne ou dans le tutoriel — pour l’ajouter à ton Dragondex.","Play a dragon card in a solo, online, or tutorial game to add it to your Dragondex.")+'</p>'+filtresDragondexHTML()+'<div class="dragondex"></div><div class="profil-reinitialisation"><button id="profil-reinitialiser" type="button" class="gros-bouton bouton-reset-progression">'+L("Réinitialiser ma progression","Reset my progress")+'</button></div>'+sectionMaintenance+'<button id="profil-fermer" class="gros-bouton bouton-primaire">'+L("Retour au jeu","Back to game")+'</button></div>');
   const conteneur=$('modal-contenu').querySelector('[data-profil-dragondex]'); conteneur._profilSource=profil; brancherFiltresDragondex(conteneur,trouves);
   brancherValidationPseudo($('profil-pseudo'));
   $('profil-enregistrer-pseudo').addEventListener('click',async()=>{const champ=$('profil-pseudo'),pseudo=lirePseudoValide(champ);if(!pseudo)return;const bouton=$('profil-enregistrer-pseudo');bouton.disabled=true;bouton.setAttribute('aria-busy','true');try{await Compte.enregistrerPseudoPublic(pseudo);profil.public=profil.public||{};profil.public.trainerName=pseudo;profil.public.displayName=pseudo;toast(G(profil,"Ton nom de Dresseur a bien été mis à jour !","Ton nom de Dresseuse a bien été mis à jour !","Ton nom de jeu a bien été mis à jour !","Your Trainer name has been updated!"));}catch(e){toast(e&&e.message==="pseudo-deja-pris"?L("Ce pseudo est déjà pris.","This username is already taken."):G(profil,"Ton nom de Dresseur n’a pas pu être modifié pour le moment.","Ton nom de Dresseuse n’a pas pu être modifié pour le moment.","Ton nom de jeu n’a pas pu être modifié pour le moment.","Your Trainer name could not be changed right now."),4200);bouton.disabled=false;bouton.removeAttribute('aria-busy');}});
   const enregistrerPersonnalisation=async(genre,date,bouton)=>{bouton.disabled=true;bouton.setAttribute('aria-busy','true');try{const resultat=await Compte.enregistrerPersonnalisation(genre,date);profil.profile=profil.profile||{};profil.public=profil.public||{};profil.profile.genreDresseur=profil.public.genreDresseur=genre;profil.profile.dateAnniversaire=resultat.dateAnniversaire;toast(L("Ton profil a bien été mis à jour !","Your profile has been updated!"));rendreProfilDresseur(profil);}catch(e){toast(e&&e.message==="anniversaire-verrouille"?L("Le jour et le mois d’anniversaire sont déjà verrouillés pour ce compte. Utilise « Signaler un bug » pour demander une correction.","The birthday day and month are already locked for this account. Use “Report a bug” to request a correction."):L("Ton profil n’a pas pu être modifié pour le moment.","Your profile could not be changed right now."),4200);bouton.disabled=false;bouton.removeAttribute('aria-busy');}};
   $('profil-enregistrer-personnalisation').addEventListener('click',()=>{const genre=$('profil-genre').value,date=composerDateAnniversaire($('profil-anniversaire-jour').value,$('profil-anniversaire-mois').value);if(!genreDresseurValide(genre)){toast(L("Choisis un genre pour ton profil.","Choose the Trainer gender."));$('profil-genre').focus();return;}if(!date){toast(L("Choisis un jour et un mois valides.","Choose a valid day and month."));$('profil-anniversaire-jour').focus();return;}const bouton=$('profil-enregistrer-personnalisation');if(anniversaireVerrouille){enregistrerPersonnalisation(genre,date,bouton);return;}const confirmation=$('profil-anniversaire-confirmation');$('profil-anniversaire-resume').textContent=anniversaireLisible(date);confirmation.hidden=false;bouton.hidden=true;$('profil-anniversaire-jour').disabled=true;$('profil-anniversaire-mois').disabled=true;$('profil-anniversaire-annuler').onclick=()=>{confirmation.hidden=true;bouton.hidden=false;$('profil-anniversaire-jour').disabled=false;$('profil-anniversaire-mois').disabled=false;$('profil-anniversaire-jour').focus();};$('profil-anniversaire-confirmer').onclick=()=>enregistrerPersonnalisation(genre,date,$('profil-anniversaire-confirmer'));});
   $('profil-reinitialiser').addEventListener('click',()=>ouvrirConfirmationReinitialisation(profil));
+  if(estAdmin() && Compte.db){
+    const refMaintenance=Compte.db.ref("maintenance");
+    const majStatutMaintenance=(d)=>{
+      const el=$("maintenance-statut"); if(!el) return;
+      if(d&&d.active){ el.textContent=L("✅ Maintenance ACTIVE","✅ Maintenance ACTIVE")+((d.debut&&d.fin)?" — "+L("du ","from ")+formaterHeureMaintenance(d.debut)+" "+L("au ","to ")+formaterHeureMaintenance(d.fin):""); }
+      else el.textContent=L("Aucune maintenance planifiée.","No maintenance scheduled.");
+    };
+    refMaintenance.once("value").then((snap)=>{
+      const d=snap.val()||null; majStatutMaintenance(d);
+      if(d){ if(d.message) $("maintenance-message").value=d.message; if(d.debut) $("maintenance-debut").value=versDatetimeLocal(d.debut); if(d.fin) $("maintenance-fin").value=versDatetimeLocal(d.fin); }
+    }).catch(()=>{});
+    $("maintenance-activer").addEventListener("click",async()=>{
+      const msg=$("maintenance-message").value.trim();
+      const debut=new Date($("maintenance-debut").value).getTime(), fin=new Date($("maintenance-fin").value).getTime();
+      if(!msg){ toast(L("Écris un message pour tes joueurs.","Write a message for your players.")); $("maintenance-message").focus(); return; }
+      if(!debut||!fin||fin<=debut){ toast(L("Choisis un début et une fin valides (la fin après le début).","Pick a valid start and end (end after start).")); return; }
+      if(fin<=Date.now()){ toast(L("La fin doit être dans le futur.","The end must be in the future.")); return; }
+      const bouton=$("maintenance-activer"); bouton.disabled=true;
+      try{ await refMaintenance.set({active:true,message:msg,debut:debut,fin:fin}); toast(L("Maintenance planifiée ✅","Maintenance scheduled ✅")); majStatutMaintenance({active:true,message:msg,debut:debut,fin:fin}); }
+      catch(e){ toast(L("Impossible d’activer la maintenance pour le moment.","Could not enable maintenance right now."),4200); }
+      bouton.disabled=false;
+    });
+    $("maintenance-desactiver").addEventListener("click",async()=>{
+      const bouton=$("maintenance-desactiver"); bouton.disabled=true;
+      try{ await refMaintenance.set({active:false}); toast(L("Maintenance désactivée.","Maintenance disabled.")); majStatutMaintenance(null); }
+      catch(e){ toast(L("Impossible de désactiver pour le moment.","Could not disable right now."),4200); }
+      bouton.disabled=false;
+    });
+  }
   $('profil-fermer').addEventListener('click',fermerModal);
 }
 function ouvrirConfirmationReinitialisation(profil){
@@ -6120,7 +6229,7 @@ function initAccueil() {
   });
   $("btn-deconnexion").addEventListener("click",async()=>{await Compte.deconnexion();toast(L("Compte déconnecté.","Signed out."));});
   $("btn-dragondex-invite").addEventListener("click",ouvrirApercuDragondex);
-  $("btn-profil").addEventListener("click",ouvrirProfilDresseur); $("btn-succes").addEventListener("click",ouvrirSucces); $("btn-classement").addEventListener("click",ouvrirClassement); $("btn-amis").addEventListener("click",ouvrirAmis); $("btn-equipe").addEventListener("click",ouvrirModeEquipe); Compte.init();
+  $("btn-profil").addEventListener("click",ouvrirProfilDresseur); $("btn-succes").addEventListener("click",ouvrirSucces); $("btn-classement").addEventListener("click",ouvrirClassement); $("btn-amis").addEventListener("click",ouvrirAmis); $("btn-equipe").addEventListener("click",ouvrirModeEquipe); Compte.init(); Maintenance.init();
   $("btn-tutoriel").addEventListener("click", ouvrirTutoriel);
   $("btn-defi").addEventListener("click", ouvrirDefiDuJour);
   if (!enLigneOK) {
