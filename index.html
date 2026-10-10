@@ -5734,17 +5734,27 @@ const Maintenance = {
     log("Maintenance.init() appele");
     const fermer=$("maintenance-banner-fermer");
     if(fermer) fermer.addEventListener("click",()=>this.fermerBanniere());
-    log("Compte.disponible="+Compte.disponible+" db="+(Compte.db?"ok":"null"));
-    if(!Compte.disponible || !Compte.db){ log("ABANDON : Firebase indisponible"); return; }
+    /* Initialisation Firebase indépendante du système de comptes : les
+       invités doivent eux aussi voir les avis de maintenance. */
+    let db=null;
     try{
-      log("attache listener /maintenance");
-      Compte.db.ref("maintenance").on("value",(snap)=>{
+      if(typeof FIREBASE_CONFIG==="undefined"||FIREBASE_CONFIG===null||typeof window.firebase==="undefined"){
+        log("ABANDON : config ou SDK Firebase manquant"); return;
+      }
+      if(!window.firebase.apps||window.firebase.apps.length===0){
+        window.firebase.initializeApp(FIREBASE_CONFIG);
+      }
+      db=window.firebase.database();
+    }catch(e){ log("EXCEPTION init Firebase: "+(e&&e.message)); return; }
+    try{
+      log("db ok, attache listener /maintenance");
+      db.ref("maintenance").on("value",(snap)=>{
         log("snapshot recu: "+JSON.stringify(snap.val()));
         this._donnees = snap.val() || null;
         this._banniereFermee = false;
         this.evaluer();
       },(err)=>{ log("ERREUR listener: "+(err&&err.message)); });
-    }catch(e){ log("EXCEPTION init: "+(e&&e.message)); }
+    }catch(e){ log("EXCEPTION listener: "+(e&&e.message)); }
   },
   evaluer(){
     const d=this._donnees, banniere=$("maintenance-banner"), ecran=$("maintenance-ecran");
