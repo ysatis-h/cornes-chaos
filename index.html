@@ -1044,6 +1044,7 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 .bandeau-defilant span{display:inline-block;font-weight:800;font-size:.85rem;animation:bandeau-defile 22s linear infinite}
 @keyframes bandeau-defile{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
 .bandeau-fermer{flex:none;margin-right:8px;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:1.1rem;line-height:1;width:1.7em;height:1.7em;border-radius:999px;cursor:pointer}
+body.avec-bandeau{padding-top:38px}
 .maintenance-ecran{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(35,18,52,.93)}
 .maintenance-ecran[hidden]{display:none}
 .maintenance-carte{max-width:440px;padding:32px 28px;border-radius:20px;background:var(--surface);text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4)}
@@ -5762,22 +5763,23 @@ const Maintenance = {
     if(this._log) this._log("evaluer: donnees="+JSON.stringify(d)+" maintenant="+Date.now());
     if(!banniere||!ecran) return;
     const maintenant=Date.now();
-    if(!d || !d.active){ banniere.hidden=true; ecran.hidden=true; return; }
+    if(!d || !d.active){ banniere.hidden=true; ecran.hidden=true; document.body.classList.remove("avec-bandeau"); return; }
     const debut=Number(d.debut)||0, fin=Number(d.fin)||0;
     if(debut && fin && maintenant>=debut && maintenant<=fin){
       $("maintenance-ecran-titre").textContent=L("Maintenance en cours","Maintenance in progress");
       $("maintenance-ecran-message").textContent=d.message||L("Le jeu est en maintenance. Merci de ta patience !","The game is under maintenance. Thanks for your patience!");
       $("maintenance-ecran-heures").textContent=L("Fin prévue : ","Estimated end: ")+formaterHeureMaintenance(fin);
-      ecran.hidden=false; banniere.hidden=true;
+      ecran.hidden=false; banniere.hidden=true; document.body.classList.remove("avec-bandeau");
     } else if(debut && fin && maintenant<debut){
       ecran.hidden=true;
       $("maintenance-banner-texte").textContent="🔧 "+(enAnglais()
         ? "Scheduled maintenance"+(d.message?": "+d.message:"")+" — from "+formaterHeureMaintenance(debut)+" to "+formaterHeureMaintenance(fin)
         : "Maintenance prévue"+(d.message?" : "+d.message:"")+" — du "+formaterHeureMaintenance(debut)+" au "+formaterHeureMaintenance(fin));
       banniere.hidden=this._banniereFermee;
-    } else { banniere.hidden=true; ecran.hidden=true; }
+      document.body.classList.toggle("avec-bandeau",!this._banniereFermee);
+    } else { banniere.hidden=true; ecran.hidden=true; document.body.classList.remove("avec-bandeau"); }
   },
-  fermerBanniere(){ this._banniereFermee=true; const b=$("maintenance-banner"); if(b) b.hidden=true; }
+  fermerBanniere(){ this._banniereFermee=true; const b=$("maintenance-banner"); if(b) b.hidden=true; document.body.classList.remove("avec-bandeau"); }
 };
 function rendreProfilDresseur(profil){
   const stats=profil.stats||{}, parties=stats.games||0, victoires=stats.wins||0, taux=parties?Math.round(victoires/parties*100):0, comptes=stats.dragonCounts||{};
