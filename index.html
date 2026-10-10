@@ -5728,19 +5728,27 @@ function versDatetimeLocal(ts){
 const Maintenance = {
   _donnees: null, _banniereFermee: false,
   init(){
+    const dbg=new URLSearchParams(location.search).has("debug-maintenance");
+    const log=(m)=>{ if(!dbg) return; let el=document.getElementById("maintenance-debug"); if(!el){ el=document.createElement("div"); el.id="maintenance-debug"; el.style.cssText="position:fixed;z-index:999;bottom:0;left:0;right:0;max-height:45vh;overflow:auto;background:#111;color:#0f0;font:12px/1.4 monospace;padding:10px;white-space:pre-wrap;"; document.body.appendChild(el); } el.textContent+="["+new Date().toLocaleTimeString()+"] "+m+"\n"; };
+    this._log=log;
+    log("Maintenance.init() appele");
     const fermer=$("maintenance-banner-fermer");
     if(fermer) fermer.addEventListener("click",()=>this.fermerBanniere());
-    if(!Compte.disponible || !Compte.db) return;
+    log("Compte.disponible="+Compte.disponible+" db="+(Compte.db?"ok":"null"));
+    if(!Compte.disponible || !Compte.db){ log("ABANDON : Firebase indisponible"); return; }
     try{
+      log("attache listener /maintenance");
       Compte.db.ref("maintenance").on("value",(snap)=>{
+        log("snapshot recu: "+JSON.stringify(snap.val()));
         this._donnees = snap.val() || null;
         this._banniereFermee = false;
         this.evaluer();
-      });
-    }catch(e){ /* lecture impossible : on ignore silencieusement */ }
+      },(err)=>{ log("ERREUR listener: "+(err&&err.message)); });
+    }catch(e){ log("EXCEPTION init: "+(e&&e.message)); }
   },
   evaluer(){
     const d=this._donnees, banniere=$("maintenance-banner"), ecran=$("maintenance-ecran");
+    if(this._log) this._log("evaluer: donnees="+JSON.stringify(d)+" maintenant="+Date.now());
     if(!banniere||!ecran) return;
     const maintenant=Date.now();
     if(!d || !d.active){ banniere.hidden=true; ecran.hidden=true; return; }
