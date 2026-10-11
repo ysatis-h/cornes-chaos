@@ -8173,7 +8173,7 @@ function rendreArriveeVolee() {
   UI._arriveeVoleeTimer = null;
   const arrivee = UI.etat && UI.etat.arriveeVolee;
   if (!arrivee) return;
-  const restant = Math.min(3000, Number(arrivee.id || 0) + 3000 - Date.now());
+  const restant = Math.min(5000, Number(arrivee.id || 0) + 5000 - Date.now());
   if (restant <= 0) return;
 
   if (arrivee.parIdx === UI.monIdx && UI._arriveeVoleeVue !== arrivee.id) {
