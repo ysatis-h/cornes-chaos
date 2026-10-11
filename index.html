@@ -1391,8 +1391,8 @@ const DEFINITIONS_CARTES = [
   },
   {
     id: "appel-bebes", nom: "Appel des Dragonneaux", type: "magie", emoji: "🥚",
-    texte: "Cherche un Bébé Dragon dans la pioche et mets-le dans ta main. Mélange ensuite la pioche.",
-    effet: { kind: "chercher-bebe", destination: "main" }, exemplaires: 2,
+    texte: "Vole un Bébé Dragon du repaire d'un adversaire et mets-le dans ta main.",
+    effet: { kind: "voler-bebe-main", cible: "bebe-adverse" }, exemplaires: 2,
   },
 
   // --------------------------- AMÉLIORATIONS (x6) -------------------------
@@ -1472,7 +1472,7 @@ const CARTES_EN = {
   "echange-royal": { nom: "Pact of Two Lairs", texte: "Trade one of your dragons for an opponent’s dragon." },
   "potion-energie": { nom: "Life Elixir", texte: "Take another turn right after this one. This Elixir does not use the card play from your current turn." },
   "flamme-purificatrice": { nom: "Purifying Flame", texte: "Destroy a sabotage in play." },
-  "appel-bebes": { nom: "Call of the Hatchlings", texte: "Find a Baby Dragon in the deck and put it in your hand. Then shuffle the deck." },
+  "appel-bebes": { nom: "Call of the Hatchlings", texte: "Steal a Baby Dragon from an opponent's lair and put it in your hand." },
   "arc-en-ciel-protecteur": { nom: "Prismatic Aegis", texte: "Your dragons cannot be destroyed during your next 2 turns." },
   "fer-a-cheval": { nom: "Lucky Treasure", texte: "Draw 1 extra card at the start of each of your turns." },
   "clochette-magique": { nom: "Lair Bell", texte: "When an opponent steals or destroys one of your dragons: draw 2 cards." },
@@ -2391,6 +2391,10 @@ const MESSAGES_JOURNAL = {
     fr: (p) => "❄️ " + p.nom + " gèle « " + nomCarteJournal(p.defId) + " » dans la main de " + p.cible + " pour 2 tours.",
     en: (p) => p.nom + " freezes a card in " + p.cible + " hand for 2 turns.",
   },
+  steal_baby: {
+    fr: (p) => "🥚 " + p.nom + " vole un Bébé Dragon du repaire de " + p.cible + ".",
+    en: (p) => "🥚 " + p.nom + " steals a Baby Dragon from " + p.cible + " lair.",
+  },
   baby_hand: {
     fr: (p) => "🥚 " + p.nom + " trouve un Bébé Dragon et le prend en main.",
     en: (p) => "🥚 " + p.nom + " finds a Baby Dragon and takes it in hand.",
@@ -2817,13 +2821,21 @@ function peutSaboter(etat, idxCible) {
 /* ------------------------- Jouer une carte -------------------------- */
 
 /* La carte peut-elle être jouée maintenant (sans tenir compte des cibles) ? */
+function bebeAdverseDisponible(etat, idxJoueur) {
+  for (let i = 0; i < etat.joueurs.length; i++) {
+    if (i === idxJoueur || (etat.equipes2v2 && etat.joueurs[i].equipe === etat.joueurs[idxJoueur].equipe)) continue;
+    if (etat.joueurs[i].ecurie.some((c) => defCarte(c).id === "bebe-licorne")) return true;
+  }
+  return false;
+}
+
 function peutJouer(etat, idxJoueur, instance) {
   const def = defCarte(instance);
   if (etat.phase !== "jeu" || etat.tour !== idxJoueur || etat.carteJouee) return false;
   if (Number.isInteger(instance.toursGeles) && instance.toursGeles > 0) return false; // carte gelée
   if (def.type === "riposte") return false; // seulement en réponse
   // L'Appel reste en main tant qu'il n'y a aucun Dragonneau à aller chercher.
-  if (def.id === "appel-bebes" && !etat.pioche.some((c) => c.defId === "bebe-licorne")) return false;
+  if (def.id === "appel-bebes" && !bebeAdverseDisponible(etat, idxJoueur)) return false;
   return true;
 }
 
@@ -2831,7 +2843,7 @@ function raisonCarteNonJouable(etat, idxJoueur, instance) {
   const def = defCarte(instance);
   if (Number.isInteger(instance.toursGeles) && instance.toursGeles > 0) return L("Cette carte est gelée pour encore " + instance.toursGeles + " tour" + (instance.toursGeles > 1 ? "s" : "") + ".", "This card is frozen for " + instance.toursGeles + " more turn" + (instance.toursGeles > 1 ? "s" : "") + ".");
   if (def.type === "riposte") return L("Cette carte se joue seulement en réponse à une carte adverse.", "This card can only be played in response to an opponent’s card.");
-  if (def.id === "appel-bebes" && !etat.pioche.some((c) => c.defId === "bebe-licorne")) return L("Aucun Bébé Dragon ne reste dans la pioche. Cette carte demeure dans ta main.", "No Baby Dragons remain in the deck. This card stays in your hand.");
+  if (def.id === "appel-bebes" && !bebeAdverseDisponible(etat, idxJoueur)) return L("Aucun adversaire n'a de Bébé Dragon dans son repaire. Cette carte demeure dans ta main.", "No opponent has a Baby Dragon in their lair. This card stays in your hand.");
   if (cibleRequise(def) && nbCiblesValides(etat, idxJoueur, def) === 0) return L("Aucune cible valide pour cette carte. Elle demeure dans ta main.", "No valid target for this card. It stays in your hand.");
   if (etat.carteJouee && etat.tour === idxJoueur) return L("Tu as déjà joué ta carte pour ce tour.", "You have already played your card this turn.");
   if (etat.tour !== idxJoueur) return L("Tu pourras la jouer à ton tour.", "You can play it on your turn.");
@@ -2841,7 +2853,7 @@ function raisonCarteNonJouable(etat, idxJoueur, instance) {
 /* La carte a-t-elle besoin d'une cible choisie par le joueur ? */
 function cibleRequise(def) {
   const c = def.effet && def.effet.cible;
-  return ["licorne-adverse", "licorne-adverse-non-magique", "echange", "adversaire", "bonus-en-jeu", "main-adverse", "sabotage-en-jeu"].includes(c);
+  return ["licorne-adverse", "licorne-adverse-non-magique", "echange", "adversaire", "bonus-en-jeu", "main-adverse", "sabotage-en-jeu", "bebe-adverse"].includes(c);
 }
 
 /* Liste les cibles valides pour une carte. */
@@ -2886,6 +2898,14 @@ function ciblesValides(etat, idxJoueur, def) {
       for (const inst of etat.joueurs[i].main) {
         const d = defCarte(inst);
         if (!estLicorne(d.type)) continue;
+        resultat.options.push({ joueur: i, uid: inst.uid, nom: d.nom, emoji: d.emoji, couleur: couleurDragonDe(inst) });
+      }
+    }
+  } else if (cible === "bebe-adverse") {
+    for (const i of adversaires) {
+      for (const inst of etat.joueurs[i].ecurie) {
+        const d = defCarte(inst);
+        if (d.id !== "bebe-licorne") continue;
         resultat.options.push({ joueur: i, uid: inst.uid, nom: d.nom, emoji: d.emoji, couleur: couleurDragonDe(inst) });
       }
     }
@@ -2967,7 +2987,7 @@ function jouerCarte(etat, idxJoueur, uidCarte, cibles) {
   const def = defCarte(candidate);
   // Double garde contre une pioche qui aurait changé entre l'ouverture du zoom
   // et le clic : la carte n'est retirée de la main que si son effet est possible.
-  if (def.id === "appel-bebes" && !etat.pioche.some((c) => c.defId === "bebe-licorne")) return false;
+  if (def.id === "appel-bebes" && !bebeAdverseDisponible(etat, idxJoueur)) return false;
   const instance = joueur.main.splice(pos, 1)[0];
   etat.carteJouee = true; // une seule carte jouée par tour
   etat.derniereCarteContree = false;
@@ -3356,6 +3376,20 @@ function appliquerEffet(etat, parIdx, def, cibles) {
       traiterEntreeDragon(etat, parIdx, inst);
       activerPouvoirDragonVole(etat, parIdx, inst);
       represailes(etat, t.joueur, parIdx);
+      break;
+    }
+
+    case "voler-bebe-main": {
+      const t = cibles;
+      if (!t) break;
+      const victime = etat.joueurs[t.joueur];
+      const pos = victime.ecurie.findIndex((c) => c.uid === t.uid);
+      if (pos < 0) break;
+      const bebe = victime.ecurie[pos];
+      if (defCarte(bebe).id !== "bebe-licorne") break;
+      victime.ecurie.splice(pos, 1);
+      joueur.main.push(bebe);
+      journal(etat, "steal_baby", { nom: joueur.nom, cible: victime.nom });
       break;
     }
 
