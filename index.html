@@ -708,7 +708,7 @@ body{min-width:0}
 
 /* Compte à rebours commun à toutes les personnes : lisible sans dominer le tour. */
 .bandeau-tour{position:relative;padding-right:78px;min-height:52px;display:flex;align-items:center;justify-content:center}
-.bandeau-tour>span:not(.compte-tour){flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bandeau-tour>span:not(.compte-tour){flex:1 1 auto;min-width:0}
 .compte-tour{position:absolute;right:11px;top:50%;transform:translateY(-50%);min-width:58px;padding:5px 7px;border-radius:9px;background:rgba(255,255,255,.14);font:800 .84rem/1 "Nunito Sans",sans-serif;font-variant-numeric:tabular-nums}
 .compte-tour.urgent{background:#c63f70;color:#fff;animation:compte-urgent .7s ease-in-out infinite alternate}
 @keyframes compte-urgent{to{transform:translateY(-50%) scale(1.06)}}
@@ -8301,6 +8301,21 @@ function rendreBandeau() {
   }
   $("bandeau-tour").innerHTML = avatarHTML(joueurAffiche.couleurAvatar) + "<span>" + echapper(texte) + "</span>" +
     (UI.tutoriel ? "" : '<span id="compte-tour" class="compte-tour" aria-live="off">' + (etat.modeEclair ? "0:30" : "2:00") + "</span>");
+  ajusterTailleBandeau();
+}
+
+/* Si le texte du bandeau depasse, on reduit la taille de police au lieu de couper. */
+function ajusterTailleBandeau() {
+  const bandeau = $("bandeau-tour");
+  if (!bandeau) return;
+  const texteEl = bandeau.querySelector("span:not(.compte-tour)");
+  if (!texteEl) return;
+  texteEl.style.fontSize = "";
+  let taille = 18;
+  while (taille > 11 && texteEl.scrollWidth > texteEl.clientWidth) {
+    taille -= 1;
+    texteEl.style.fontSize = taille + "px";
+  }
 }
 
 function rendreScoresPartie() {
