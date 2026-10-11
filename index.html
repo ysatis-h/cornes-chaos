@@ -1391,8 +1391,8 @@ const DEFINITIONS_CARTES = [
   },
   {
     id: "appel-bebes", nom: "Appel des Dragonneaux", type: "magie", emoji: "🥚",
-    texte: "Cherche un Bébé Dragon dans la pioche et mets-le dans ton repaire. Mélange ensuite la pioche.",
-    effet: { kind: "chercher-bebe" }, exemplaires: 2,
+    texte: "Cherche un Bébé Dragon dans la pioche et mets-le dans ta main. Mélange ensuite la pioche.",
+    effet: { kind: "chercher-bebe", destination: "main" }, exemplaires: 2,
   },
 
   // --------------------------- AMÉLIORATIONS (x6) -------------------------
@@ -1472,7 +1472,7 @@ const CARTES_EN = {
   "echange-royal": { nom: "Pact of Two Lairs", texte: "Trade one of your dragons for an opponent’s dragon." },
   "potion-energie": { nom: "Life Elixir", texte: "Take another turn right after this one. This Elixir does not use the card play from your current turn." },
   "flamme-purificatrice": { nom: "Purifying Flame", texte: "Destroy a sabotage in play." },
-  "appel-bebes": { nom: "Call of the Hatchlings", texte: "Find a Baby Dragon in the deck and place it in your lair. Then shuffle the deck." },
+  "appel-bebes": { nom: "Call of the Hatchlings", texte: "Find a Baby Dragon in the deck and put it in your hand. Then shuffle the deck." },
   "arc-en-ciel-protecteur": { nom: "Prismatic Aegis", texte: "Your dragons cannot be destroyed during your next 2 turns." },
   "fer-a-cheval": { nom: "Lucky Treasure", texte: "Draw 1 extra card at the start of each of your turns." },
   "clochette-magique": { nom: "Lair Bell", texte: "When an opponent steals or destroys one of your dragons: draw 2 cards." },
@@ -2390,6 +2390,10 @@ const MESSAGES_JOURNAL = {
   freeze: {
     fr: (p) => "❄️ " + p.nom + " gèle « " + nomCarteJournal(p.defId) + " » dans la main de " + p.cible + " pour 2 tours.",
     en: (p) => p.nom + " freezes a card in " + p.cible + " hand for 2 turns.",
+  },
+  baby_hand: {
+    fr: (p) => "🥚 " + p.nom + " trouve un Bébé Dragon et le prend en main.",
+    en: (p) => "🥚 " + p.nom + " finds a Baby Dragon and takes it in hand.",
   },
   aegis_fade: {
     fr: (p) => "💨 L’Égide Prismatique de " + p.nom + " se dissipe après tes " + p.nb + " tours.",
@@ -3419,7 +3423,10 @@ function appliquerEffet(etat, parIdx, def, cibles) {
       if (pos >= 0) {
         const bebe = etat.pioche.splice(pos, 1)[0];
         etat.pioche = melanger(etat.pioche);
-        if (entrerEcurie(etat, parIdx, bebe)) {
+        if (effet.destination === "main") {
+          joueur.main.push(bebe);
+          journal(etat, "baby_hand", { nom: joueur.nom });
+        } else if (entrerEcurie(etat, parIdx, bebe)) {
           journal(etat, "baby_enters", { nom: joueur.nom });
           traiterEntreeDragon(etat, parIdx, bebe);
         }
