@@ -1356,8 +1356,8 @@ const DEFINITIONS_CARTES = [
   // ------------------------ MAGIE DRACONIQUE (x23) ------------------------
   {
     id: "pluie-etoiles", nom: "Pluie d'Écailles", type: "magie", emoji: "✨",
-    texte: "Pioche 3 cartes dans le sillage d'un dragon céleste.",
-    effet: { kind: "piocher", n: 3 }, exemplaires: 3,
+    texte: "Défausse 1 carte, puis pioche 2 cartes.",
+    effet: { kind: "defausser-puis-piocher", defausser: 1, piocher: 2 }, exemplaires: 3,
   },
   {
     id: "tornade-paillettes", nom: "Tornade de Flammes", type: "magie", emoji: "🔥",
@@ -1465,7 +1465,7 @@ const CARTES_EN = {
   "dragon-solaire": { nom: "Solar Dragon", texte: "When it enters your lair: protect your territory until your next turn." },
   "dragon-brumes": { nom: "Mist Dragon", texte: "When it enters your lair: each opponent discards 1 random card." },
   "dragon-dore": { nom: "Golden Dragon", texte: "Ultra rare: as soon as it reaches your hand, it is added to your Dragondex." },
-  "pluie-etoiles": { nom: "Scale Shower", texte: "Draw 3 cards in the wake of a celestial dragon." },
+  "pluie-etoiles": { nom: "Scale Shower", texte: "Discard 1 card, then draw 2 cards." },
   "tornade-paillettes": { nom: "Flame Tornado", texte: "Destroy an opponent’s dragon." },
   "lasso-magique": { nom: "Thieving Claw", texte: "Steal an opponent’s dragon." },
   "grand-menage": { nom: "Great Dragon’s Breath", texte: "Each opponent chooses 2 cards from their hand and discards them. You are not affected." },
@@ -2391,6 +2391,10 @@ const MESSAGES_JOURNAL = {
     fr: (p) => "❄️ " + p.nom + " gèle « " + nomCarteJournal(p.defId) + " » dans la main de " + p.cible + " pour 2 tours.",
     en: (p) => p.nom + " freezes a card in " + p.cible + " hand for 2 turns.",
   },
+  pluie_defausse: {
+    fr: (p) => "✨ " + p.nom + " laisse une carte partir sous la pluie.",
+    en: (p) => "✨ " + p.nom + " lets a card go in the rain.",
+  },
   steal_baby: {
     fr: (p) => "🥚 " + p.nom + " vole un Bébé Dragon du repaire de " + p.cible + ".",
     en: (p) => "🥚 " + p.nom + " steals a Baby Dragon from " + p.cible + " lair.",
@@ -2610,6 +2614,36 @@ function commencerChoixSouffle(etat, parIdx, n) {
     cartes: [],
   };
   etat.phase = "choix";
+}
+
+function commencerChoixPluie(etat, parIdx, effet) {
+  const joueur = etat.joueurs[parIdx];
+  if (!joueur || joueur.main.length === 0) {
+    piocherCartes(etat, parIdx, effet.piocher || 2);
+    return;
+  }
+  etat.choix = {
+    type: "pluie-defausse",
+    parIdx: parIdx,
+    n: 1,
+    piocher: effet.piocher || 2,
+  };
+  etat.phase = "choix";
+}
+
+function choisirDefaussePluie(etat, idxJoueur, uidsChoisis) {
+  const choix = etat && etat.choix;
+  if (!choix || choix.type !== "pluie-defausse" || choix.parIdx !== idxJoueur) return false;
+  const joueur = etat.joueurs[idxJoueur];
+  const uids = Array.from(new Set(enTableau(uidsChoisis).map((uid) => String(uid))));
+  if (uids.length !== 1 || !joueur.main.some((carte) => carte.uid === uids[0])) return false;
+  const pos = joueur.main.findIndex((carte) => carte.uid === uids[0]);
+  if (pos >= 0) etat.defausse.push(joueur.main.splice(pos, 1)[0]);
+  journal(etat, "pluie_defausse", { nom: joueur.nom });
+  piocherCartes(etat, idxJoueur, choix.piocher || 2);
+  etat.choix = null;
+  etat.phase = "jeu";
+  return true;
 }
 
 function choisirDefausseSouffle(etat, idxJoueur, uidsChoisis) {
@@ -3336,6 +3370,10 @@ function appliquerEffet(etat, parIdx, def, cibles) {
 
     case "defausser-adversaires-choix":
       commencerChoixSouffle(etat, parIdx, effet.n);
+      break;
+
+    case "defausser-puis-piocher":
+      commencerChoixPluie(etat, parIdx, effet);
       break;
 
     case "detruire": {
@@ -7724,6 +7762,15 @@ function planifierBot() {
       const cartesADefausser = bot.main.slice().sort((a, b) => valeurStrategiqueCarte(a) - valeurStrategiqueCarte(b)).slice(0, nb);
       choisirDefausseSouffle(etat, idxBot, cartesADefausser.map((carte) => carte.uid));
       await apresActionAutomatique();
+    } else if (etat.phase === "choix" && etat.choix && etat.choix.type === "pluie-defausse") {
+      const pire = bot.main.slice().sort((a, b) => valeurStrategiqueCarte(a) - valeurStrategiqueCarte(b))[0];
+      if (pire && choisirDefaussePluie(etat, idxBot, [pire.uid])) {
+        terminerTourApresCarte(etat, idxBot);
+      } else {
+        etat.choix = null;
+        etat.phase = "jeu";
+      }
+      await apresActionAutomatique();
     } else if (etat.phase === "choix" && etat.choix && ["pouvoir-dragon-vole", "pouvoir-dragon-entree"].includes(etat.choix.type)) {
       const pouvoir = definitionParId(etat.choix.defId);
       const ciblePouvoir = pouvoir && choixBotPour(pouvoir, idxBot);
@@ -8215,6 +8262,8 @@ function rendreBandeau() {
         ? joueurAffiche.nom + L(" choisit les dragons à échanger...", " is choosing which dragons to trade...")
         : etat.choix.type === "grand-souffle"
           ? joueurAffiche.nom + L(" choisit ses cartes à défausser...", " is choosing cards to discard...")
+          : etat.choix.type === "pluie-defausse"
+            ? joueurAffiche.nom + L(" choisit une carte à laisser partir sous la pluie...", " is choosing a card to let go in the rain...")
           : joueurAffiche.nom + L(" choisit une carte...", " is choosing a card...");
   } else if (estMonTour()) {
     texte = L("À toi de jouer, ", "Your turn, ") + joueurTour.nom + " !";
@@ -8762,6 +8811,7 @@ function rendreModales() {
     const concerne = (UI.mode === "local" && !etat.joueurs[etat.choix.parIdx].estBot) || etat.choix.parIdx === UI.monIdx;
     if (concerne) {
       if (etat.choix.type === "grand-souffle") ouvrirModalDefausseSouffle();
+      else if (etat.choix.type === "pluie-defausse") ouvrirModalDefaussePluie();
       else if (["pouvoir-dragon-vole", "pouvoir-dragon-entree"].includes(etat.choix.type)) ouvrirModalPouvoirDragonVole();
       else ouvrirModalChoix();
     } else fermerModal();
@@ -8945,6 +8995,49 @@ function ouvrirModalDefausseSouffle() {
     if (!ok) { rendreTout(); return; }
     if (UI.mode === "online") void Net.envoyerEtat(etat);
     if (UI.mode === "local") rendreApresActionLocale(); else rendreTout();
+  });
+}
+
+function ouvrirModalDefaussePluie() {
+  const etat = UI.etat;
+  const choix = etat && etat.choix;
+  if (!choix || choix.type !== "pluie-defausse") { fermerModal(); return; }
+  const joueur = etat.joueurs[choix.parIdx];
+  const cartes = joueur.main.map((carte) =>
+    '<div class="choix-defausse-option" role="button" tabindex="0" aria-pressed="false" data-choix-uid="' + carte.uid + '">' + carteHTML(carte) + '</div>'
+  ).join("");
+  ouvrirModal(
+    '<h3>✨ ' + L("Choisis 1 carte à laisser partir", "Choose 1 card to let go") + '</h3>' +
+    '<p>' + L("La Pluie d'Écailles t'offre 2 cartes en échange.", "The Scale Shower offers you 2 cards in exchange.") + '</p>' +
+    '<div class="liste-cibles">' + cartes + '</div>' +
+    '<button id="confirmer-defausse-pluie" class="gros-bouton bouton-primaire" disabled>' + L("Défausser", "Discard") + '</button>'
+  );
+  const confirmer = $("confirmer-defausse-pluie");
+  let selectionUid = null;
+  const actualiser = () => {
+    $("modal-contenu").querySelectorAll(".choix-defausse-option").forEach((option) => {
+      const actif = selectionUid === option.dataset.choixUid;
+      option.setAttribute("aria-pressed", actif ? "true" : "false");
+      const carte = option.querySelector(".carte");
+      if (carte) carte.classList.toggle("carte-selectionnee", actif);
+    });
+    confirmer.disabled = !selectionUid;
+  };
+  $("modal-contenu").querySelectorAll(".choix-defausse-option").forEach((option) => {
+    const choisir = () => { selectionUid = option.dataset.choixUid; actualiser(); };
+    option.addEventListener("click", choisir);
+    option.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choisir(); }
+    });
+  });
+  confirmer.addEventListener("click", () => {
+    confirmer.disabled = true;
+    const parIdx = choix.parIdx;
+    const ok = choisirDefaussePluie(etat, parIdx, [selectionUid]);
+    if (!ok) { rendreTout(); return; }
+    if (UI.mode === "online") void Net.envoyerEtat(etat);
+    terminerTourApresCarte(etat, parIdx);
+    apresActionAutomatique();
   });
 }
 
