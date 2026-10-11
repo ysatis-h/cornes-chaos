@@ -2880,10 +2880,9 @@ function cibleAttaque(def, cibles, idxJoueur) {
   return Number.isInteger(idxCible) && idxCible !== idxJoueur ? idxCible : null;
 }
 
-/* Les dragons sans effet entrent directement au repaire, sauf (1) quand un bot
-   joue le dragon qui lui donnerait la victoire et (2) en balle de match : si ce
-   dragon ferait gagner la partie, les adversaires ont leur dernière chance de
-   rugir pour l'annuler. Toute autre carte à effet peut être contrée. */
+/* Les dragons sans effet entrent directement au repaire, sauf en balle de match :
+   si ce dragon ferait gagner la partie, les adversaires ont leur dernière chance
+   de rugir pour l'annuler. Toute autre carte à effet peut être contrée. */
 function carteEstContestable(def, cibles, idxJoueur) {
   if (!def) return false;
   if (def.type === "magie" || def.type === "amelioration" || def.type === "sabotage") return true;
@@ -2928,12 +2927,12 @@ function jouerCarte(etat, idxJoueur, uidCarte, cibles) {
   // jamais consommer le prochain tour du joueur qui répond.
   if (!etat.pending) etat.pending = { pile: [], tourActif: etat.tour };
   const repondants = [];
-  // Un bot laisse toujours aux humains qui ont un Rugissement la possibilité
-  // de réagir, y compris quand son dragon sans effet serait celui de la victoire.
   // Balle de match : un dragon sans effet qui ferait gagner la partie reste
   // contestable — les adversaires ont leur dernière chance de rugir.
+  // (Les dragons sans effet ne sont JAMAIS contestables autrement, même
+  // quand c'est un bot qui les joue — comme l'indiquent les instructions.)
   const dragonBalleMatch=(def.type==="bebe"||def.type==="licorne")&&!carteEstContestable(def,cibles,idxJoueur)&&valeurEcurie(etat,idxJoueur)+(def.valeur||1)>=LICORNES_POUR_GAGNER;
-  const contestable = carteEstContestable(def, cibles, idxJoueur)||joueur.estBot||dragonBalleMatch;
+  const contestable = carteEstContestable(def, cibles, idxJoueur)||dragonBalleMatch;
   const cibleRiposte = cibleAttaque(def, cibles, idxJoueur);
   if (contestable && cibleRiposte !== null) {
     // Riposte : les autres Dresseurs ne peuvent pas intervenir dans une attaque
