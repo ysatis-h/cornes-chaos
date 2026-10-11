@@ -613,13 +613,14 @@ body{min-width:0}
 .chaos-scene:before{content:"\1F525 \1F525 \1F525";position:absolute;z-index:1;font-size:clamp(140px,32vw,260px);letter-spacing:-.1em;white-space:nowrap;left:50%;top:48%;filter:hue-rotate(175deg) saturate(1.6) drop-shadow(0 0 25px rgba(59,130,246,.55));opacity:.85;animation:flammes-bleues 2.4s ease-in-out infinite;transform:translate(-50%,-50%)}
 .chaos-scene:after{content:"ROOARRR";position:absolute;right:1%;top:12%;padding:8px 12px;background:var(--accueil-acide);color:var(--accueil-encre);font:800 1rem/1 "Fredoka",sans-serif;transform:rotate(9deg);box-shadow:4px 4px 0 var(--accueil-corail)}
 .chaos-embleme:before{content:"\1F525 \1F525";position:absolute;z-index:-1;left:50%;top:-38%;font-size:clamp(28px,7vw,52px);letter-spacing:.6em;white-space:nowrap;filter:hue-rotate(175deg) saturate(1.8) drop-shadow(0 0 12px rgba(59,130,246,.6));opacity:.75;animation:flammettes 1.8s ease-in-out infinite;transform:translateX(-50%)}
-.chaos-eventail{position:absolute;z-index:2;left:50%;bottom:2%;transform:translateX(-50%);width:200px;height:70px}
-.chaos-eventail span{position:absolute;left:50%;bottom:0;width:64px;height:92px;margin-left:-32px;border-radius:8px;border:1px solid hsla(270,55%,45%,.26);background:radial-gradient(circle at 26% 28%,hsla(270,88%,94%,.94) 0 16%,transparent 17%),linear-gradient(135deg,hsl(270 70% 89%),hsl(325 74% 78%));box-shadow:0 3px 6px rgba(0,0,0,.15);transform-origin:50% 120%}
-.chaos-eventail span:nth-child(1){transform:rotate(-38deg)}
-.chaos-eventail span:nth-child(2){transform:rotate(-19deg)}
+.chaos-eventail{position:absolute;z-index:2;left:50%;bottom:1%;transform:translateX(-50%);width:240px;height:60px}
+.chaos-eventail span{position:absolute;left:50%;bottom:0;width:72px;height:44px;margin-left:-36px;border-radius:8px;border:1px solid hsla(270,55%,45%,.26);background:radial-gradient(circle at 26% 28%,hsla(270,88%,94%,.94) 0 16%,transparent 17%),linear-gradient(135deg,hsl(270 70% 89%),hsl(325 74% 78%));box-shadow:0 3px 6px rgba(0,0,0,.15);transform-origin:50% 200%}
+.chaos-eventail span:after{content:"C&C";position:absolute;left:6px;right:6px;top:50%;transform:translateY(-50%);padding:2px 0;border-radius:4px;background:rgba(255,255,255,.84);color:#59439f;font:800 8px/1 "Fredoka",sans-serif;letter-spacing:.12em;text-align:center}
+.chaos-eventail span:nth-child(1){transform:rotate(-48deg)}
+.chaos-eventail span:nth-child(2){transform:rotate(-24deg)}
 .chaos-eventail span:nth-child(3){transform:rotate(0deg)}
-.chaos-eventail span:nth-child(4){transform:rotate(19deg)}
-.chaos-eventail span:nth-child(5){transform:rotate(38deg)}
+.chaos-eventail span:nth-child(4){transform:rotate(24deg)}
+.chaos-eventail span:nth-child(5){transform:rotate(48deg)}
 .chaos-embleme{position:relative;z-index:3;width:min(100%,360px);height:auto;filter:drop-shadow(0 15px 18px rgba(0,0,0,.32));animation:embleme-chaos 4.5s ease-in-out infinite}
 .chaos-carte{position:absolute;z-index:2;width:146px;height:206px;filter:drop-shadow(7px 9px 0 rgba(0,0,0,.3))}
 .chaos-carte>.carte{width:100%;height:100%;min-height:0;padding:9px 8px 28px;border-radius:15px;text-align:center;align-items:center;cursor:default;overflow:hidden;box-shadow:none}
