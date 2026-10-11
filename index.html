@@ -7,7 +7,7 @@
   <meta name="application-name" content="Cornes &amp; Chaos">
   <meta property="og:title" content="Cornes &amp; Chaos">
   <meta name="twitter:title" content="Cornes &amp; Chaos">
-  <meta name="description" content="Cornes & Chaos, jeu de 75 cartes draconique en français ou en anglais pour 1 à 4 Dresseurs, avec bots, en local ou en ligne.">
+  <meta name="description" content="Cornes & Chaos, jeu de 72 cartes draconique en français ou en anglais pour 1 à 4 Dresseurs, avec bots, en local ou en ligne.">
   <meta name="theme-color" content="#c084fc">
   <meta name="color-scheme" content="light dark">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1281,7 +1281,7 @@ const DEFINITIONS_CARTES = [
   {
     id: "licorne-classique", nom: "Dragon des Braises", type: "licorne", emoji: "🔥", couleur: "rouge",
     texte: "Fier, flamboyant et toujours prêt à défendre son trésor.",
-    effet: { kind: "aucun" }, exemplaires: 11,
+    effet: { kind: "aucun" }, exemplaires: 8,
   },
 
   // -------------------------- DRAGONS MYTHIQUES (x10) ---------------------
@@ -7486,6 +7486,8 @@ function scoreActionBot(option, idxBot) {
   if (def.effet && def.effet.kind === "proteger") {
     const dragons = valeurEcurie(UI.etat, idxBot);
     score += UI.etat.difficulteBot === "expert" ? 9 + dragons * 1.6 : 3;
+    // Expert en fin de partie : sécurise la victoire en priorité.
+    if (UI.etat.difficulteBot === "expert" && dragons >= 6) score += 10;
   }
   score += Math.random() * profil.aleaScore;
   return score;
@@ -7586,7 +7588,11 @@ function planifierBot() {
     } else if (etat.phase === "reponse") {
       const rugissements = bot.main.filter((c) => defCarte(c).type === "riposte");
       const menace = menaceCadrePourBot(etat, idxBot);
-      const chanceRiposte = menace >= 9 ? profil.riposteDanger : menace >= 6 ? profil.riposteModeree : profil.riposteFaible;
+      let chanceRiposte = menace >= 9 ? profil.riposteDanger : menace >= 6 ? profil.riposteModeree : profil.riposteFaible;
+      // Expert en fin de partie : protège ses dragons à tout prix quand la victoire est proche.
+      if (etat.difficulteBot === "expert" && menace >= 6 && valeurEcurie(etat, idxBot) >= 6) {
+        chanceRiposte = Math.max(chanceRiposte, 0.99);
+      }
       const riposte = rugissements.length && Math.random() < chanceRiposte ? rugissements[Math.floor(Math.random() * rugissements.length)] : null;
       repondre(etat, idxBot, riposte ? riposte.uid : null);
       await apresActionAutomatique();
