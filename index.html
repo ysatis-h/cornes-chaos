@@ -7648,6 +7648,13 @@ function choixBotPour(def, idxBot) {
     return { valide: true, cibles: { mienne: mienne.uid, adverse } };
   }
   if (!disponibles.options.length) return { valide: false };
+  /* Flamme Purificatrice : le bot nettoie SES propres sabotages d'abord (pas ceux des adversaires !) */
+  if (def.effet && def.effet.kind === "detruire-sabotage") {
+    const etat = UI.etat;
+    const mesSabotages = disponibles.options.filter((o) => o.joueur === idxBot || (etat.equipes2v2 && etat.joueurs[o.joueur].equipe === etat.joueurs[idxBot].equipe));
+    const cibles = mesSabotages.length ? mesSabotages : disponibles.options;
+    return { valide: true, cibles: choisirOptionBot(cibles, profil.meilleureCible) };
+  }
   const optionsTriees = disponibles.options.slice().sort((a, b) => {
     if (Number.isInteger(a.joueur) && Number.isInteger(b.joueur)) {
       const scoreA = valeurEcurie(UI.etat, a.joueur) + (a.uid ? 0.1 : 0);
