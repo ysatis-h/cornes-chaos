@@ -1390,7 +1390,7 @@ const DEFINITIONS_CARTES = [
   // --------------------------- AMÉLIORATIONS (x6) -------------------------
   {
     id: "arc-en-ciel-protecteur", nom: "Égide Prismatique", type: "amelioration", emoji: "💎",
-    texte: "Tes dragons ne peuvent pas être détruits pendant les 2 prochains tours adverses — 3 tours dans une partie à 4.",
+    texte: "Tes dragons ne peuvent pas être détruits pendant tes 2 prochains tours.",
     effet: { kind: "passif", passif: "indestructibles" }, exemplaires: 2,
   },
   {
@@ -1464,7 +1464,7 @@ const CARTES_EN = {
   "potion-energie": { nom: "Life Elixir", texte: "Take another turn right after this one. This Elixir does not use the card play from your current turn." },
   "bouclier-scintillant": { nom: "Scale Shield", texte: "Your lair is protected until your next turn." },
   "appel-bebes": { nom: "Call of the Hatchlings", texte: "Find a Baby Dragon in the deck and place it in your lair. Then shuffle the deck." },
-  "arc-en-ciel-protecteur": { nom: "Prismatic Aegis", texte: "Your dragons cannot be destroyed during the opponents’ next 2 turns — 3 turns in a 4-player game." },
+  "arc-en-ciel-protecteur": { nom: "Prismatic Aegis", texte: "Your dragons cannot be destroyed during your next 2 turns." },
   "fer-a-cheval": { nom: "Lucky Treasure", texte: "Draw 1 extra card at the start of each of your turns." },
   "clochette-magique": { nom: "Lair Bell", texte: "When an opponent steals or destroys one of your dragons: draw 2 cards." },
   "nuage-grognon": { nom: "Ash Cloud", texte: "The next Dragon Magic card played by the target is cancelled. The Cloud then fades." },
@@ -1933,7 +1933,7 @@ function instanceCarteSure(carte) {
     uid: String(carte.uid || uidCourt()).replace(/[^a-z0-9_-]/gi, "").slice(0, 32) || uidCourt(),
     defId,
     ...(defId === "bebe-licorne" && COULEURS_AVATAR.includes(carte.couleurDragon) ? { couleurDragon: carte.couleurDragon } : {}),
-    ...(Number.isInteger(carte.toursRestants) ? { toursRestants: Math.max(0, Math.min(3, carte.toursRestants)) } : {}),
+    ...(Number.isInteger(carte.toursRestants) ? { toursRestants: Math.max(0, Math.min(2, carte.toursRestants)) } : {}),
     ...(defId === "miroir-fele" && Number.isInteger(carte.fissures) ? { fissures: Math.max(0, Math.min(3, carte.fissures)) } : {}),
   };
 }
@@ -1976,7 +1976,7 @@ function normaliserEtat(etat) {
     joueur.ecurie = zoneCartesSure(joueur.ecurie, taillePaquetMaximum());
     joueur.ameliorations = zoneCartesSure(joueur.ameliorations, taillePaquetMaximum());
     joueur.ameliorations.forEach((carte) => {
-      if (carte.defId === "arc-en-ciel-protecteur" && !Number.isInteger(carte.toursRestants)) carte.toursRestants = etat.joueurs.length === 4 ? 3 : 2;
+      if (carte.defId === "arc-en-ciel-protecteur" && !Number.isInteger(carte.toursRestants)) carte.toursRestants = 2;
     });
     joueur.sabotages = zoneCartesSure(joueur.sabotages, taillePaquetMaximum());
     joueur.protege = Boolean(joueur.protege);
@@ -2361,12 +2361,12 @@ const MESSAGES_JOURNAL = {
     en: (p) => "▶️ " + p.nom + "’s turn: draws 1 card.",
   },
   aegis_one: {
-    fr: (p) => "💎 L’Égide Prismatique de " + p.nom + " résistera encore à " + p.nb + " tour" + (p.nb > 1 ? "s" : "") + " adverse" + (p.nb > 1 ? "s" : "") + ".",
-    en: (p) => "💎 " + p.nom + "’s Prismatic Aegis lasts for " + p.nb + " more opponent turn" + (p.nb > 1 ? "s" : "") + ".",
+    fr: (p) => "💎 L’Égide Prismatique de " + p.nom + " résistera encore à " + p.nb + " tour" + (p.nb > 1 ? "s" : "") + ".",
+    en: (p) => "💎 " + p.nom + "’s Prismatic Aegis lasts for " + p.nb + " more turn" + (p.nb > 1 ? "s" : "") + ".",
   },
   aegis_fade: {
-    fr: (p) => "💨 L’Égide Prismatique de " + p.nom + " se dissipe après " + p.nb + " tours adverses.",
-    en: (p) => "💨 " + p.nom + "’s Prismatic Aegis fades after " + p.nb + " opponent turns.",
+    fr: (p) => "💨 L’Égide Prismatique de " + p.nom + " se dissipe après tes " + p.nb + " tours.",
+    en: (p) => "💨 " + p.nom + "’s Prismatic Aegis fades after your " + p.nb + " turns.",
   },
   ash_fade: {
     fr: (p) => "🌫️ Le Nuage de Cendres se dissipe au-dessus de " + p.nom + ".",
@@ -2415,8 +2415,8 @@ const MESSAGES_JOURNAL = {
     en: (p) => ((definitionParId(p.defId) || {}).emoji || "✦") + " " + p.nom + " welcomes “" + nomCarteJournal(p.defId) + "” into their lair.",
   },
   equip_aegis: {
-    fr: (p) => ((definitionParId(p.defId) || {}).emoji || "✨") + " " + p.nom + " s’équipe de « " + nomCarteJournal(p.defId) + " » pour les " + p.nb + " prochains tours adverses.",
-    en: (p) => ((definitionParId(p.defId) || {}).emoji || "✨") + " " + p.nom + " equips “" + nomCarteJournal(p.defId) + "” for the opponents’ next " + p.nb + " turns.",
+    fr: (p) => ((definitionParId(p.defId) || {}).emoji || "✨") + " " + p.nom + " s’équipe de « " + nomCarteJournal(p.defId) + " » pour tes " + p.nb + " prochains tours.",
+    en: (p) => ((definitionParId(p.defId) || {}).emoji || "✨") + " " + p.nom + " equips “" + nomCarteJournal(p.defId) + "” for your next " + p.nb + " turns.",
   },
   equip: {
     fr: (p) => ((definitionParId(p.defId) || {}).emoji || "✨") + " " + p.nom + " s’équipe de « " + nomCarteJournal(p.defId) + " ».",
@@ -2662,32 +2662,32 @@ function debutTour(etat) {
   bloquerTransitionPourEffets(etat,"ouvrir-tour");
 }
 
-function faireExpirerEgidesApresTourAdverse(etat, idxActif) {
-  etat.joueurs.forEach((joueur, idxJoueur) => {
-    if (idxJoueur === idxActif) return;
-    const conservees = [];
-    joueur.ameliorations.forEach((carte) => {
-      if (carte.defId !== "arc-en-ciel-protecteur") {
-        conservees.push(carte);
-        return;
-      }
-      const duree = etat.joueurs.length === 4 ? 3 : 2;
-      carte.toursRestants = Math.max(0, (Number.isInteger(carte.toursRestants) ? carte.toursRestants : duree) - 1);
-      if (carte.toursRestants > 0) {
-        conservees.push(carte);
-        journal(etat, "aegis_one", { nom: joueur.nom, nb: carte.toursRestants });
-      } else {
-        etat.defausse.push(carte);
-        journal(etat, "aegis_fade", { nom: joueur.nom, nb: duree });
-      }
-    });
-    joueur.ameliorations = conservees;
+function faireExpirerEgideApresTour(etat, idxActif) {
+  // L'Egide protege pendant 2 des tours de son proprietaire, peu importe
+  // le nombre de Dresseurs : chaque tour termine consomme une charge.
+  const joueur = etat.joueurs[idxActif];
+  const conservees = [];
+  joueur.ameliorations.forEach((carte) => {
+    if (carte.defId !== "arc-en-ciel-protecteur") {
+      conservees.push(carte);
+      return;
+    }
+    const duree = 2;
+    carte.toursRestants = Math.max(0, (Number.isInteger(carte.toursRestants) ? carte.toursRestants : duree) - 1);
+    if (carte.toursRestants > 0) {
+      conservees.push(carte);
+      journal(etat, "aegis_one", { nom: joueur.nom, nb: carte.toursRestants });
+    } else {
+      etat.defausse.push(carte);
+      journal(etat, "aegis_fade", { nom: joueur.nom, nb: duree });
+    }
   });
+  joueur.ameliorations = conservees;
 }
 
 function appliquerFinTour(etat) {
-  // Chaque tour terminé par un adversaire consomme une charge d’Égide.
-  faireExpirerEgidesApresTourAdverse(etat, etat.tour);
+  // Chaque tour terminé consomme une charge de l’Égide du joueur actif.
+  faireExpirerEgideApresTour(etat, etat.tour);
   if (etat.tourBonus === etat.tour) {
     etat.tourBonus = null;
     debutTour(etat);
@@ -3166,7 +3166,7 @@ function appliquerCarte(etat, cadre) {
 
   // ...puis les autres types de cartes.
   if (def.type === "amelioration") {
-    const dureeEgide = etat.joueurs.length === 4 ? 3 : 2;
+    const dureeEgide = 2;
     if (def.id === "arc-en-ciel-protecteur") carte.toursRestants = dureeEgide;
     joueur.ameliorations.push(carte);
     if (def.id === "arc-en-ciel-protecteur") ajouterEffetVisuel(etat, def.id, parIdx);
@@ -5691,7 +5691,7 @@ function carteHTML(instance, options) {
   const motif = "motif-" + (hachageVisuel(instance.defId) % 6);
   if (options.mini) {
     const duree = def.id === "arc-en-ciel-protecteur" && Number.isInteger(instance.toursRestants)
-      ? '<span class="mini-duree" title="' + L("Tours adverses de protection restants", "Opponent turns of protection remaining") + '">' + instance.toursRestants + ' ' + L(instance.toursRestants > 1 ? "tours" : "tour", instance.toursRestants > 1 ? "turns" : "turn") + '</span>'
+      ? '<span class="mini-duree" title="' + L("Tours de protection restants", "Turns of protection remaining") + '">' + instance.toursRestants + ' ' + L(instance.toursRestants > 1 ? "tours" : "tour", instance.toursRestants > 1 ? "turns" : "turn") + '</span>'
       : "";
     const miniInteractif = options.interactive
       ? ' data-uid="' + instance.uid + '" role="button" tabindex="0" aria-label="' + L("Lire l’effet de ", "Read the effect of ") + nomAffiche + '"'
@@ -8400,8 +8400,8 @@ function traduireJournal(message) {
     [/🥚 (.+) accueille un Bébé Dragon !/, "🥚 $1 welcomes a Baby Dragon!"],
     [/📚 (.+) choisit une carte parmi 3\./, "📚 $1 chooses 1 of 3 cards."],
     [/🔔 La Cloche du Repaire de (.+) tinte : \+2 cartes !/, "🔔 $1’s Lair Bell rings: +2 cards!"],
-    [/💎 L’Égide Prismatique de (.+) résistera encore à 1 tour adverse\./, "💎 $1’s Prismatic Aegis lasts for 1 more opponent turn."],
-    [/💨 L’Égide Prismatique de (.+) se dissipe après 2 tours adverses\./, "💨 $1’s Prismatic Aegis fades after 2 opponent turns."],
+    [/💎 L’Égide Prismatique de (.+) résistera encore à 1 tour\./, "💎 $1’s Prismatic Aegis lasts for 1 more turn."],
+    [/💨 L’Égide Prismatique de (.+) se dissipe après tes 2 tours\./, "💨 $1’s Prismatic Aegis fades after your 2 turns."],
     [/🌫️ Le Nuage de Cendres se dissipe au-dessus de (.+)\./, "🌫️ The Ash Cloud above $1 fades."],
     [/🥚 Plus aucun Bébé Dragon dans la pioche\.\.\./, "🥚 No Baby Dragons remain in the deck..."],
     [/🥷 (.+) détruit « (.+) » !/, "🥷 $1 destroys “$2”!"],
