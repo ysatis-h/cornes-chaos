@@ -5515,18 +5515,13 @@ function ouvrirInstructions() {
   const contenu = enAnglais()
     ? '<h3>How to play</h3>' +
       '<div class="instructions-jeu">' +
-        '<h4>Who can play?</h4>' +
-        '<p>The game is accessible to all Trainers who can read.</p>' +
-        '<p><strong>Duration:</strong> 10 to 15 minutes, depending on the number of Trainers.</p>' +
-        '<p class="objectif">The first Trainer to gather 8 dragons in their lair wins.</p>' +
+        '<p class="objectif">First to gather 8 dragons in their lair wins. Games last 10-15 min.</p>' +
         '<h4>Getting started</h4>' +
-        '<p>Each Trainer starts with a Baby Dragon in their lair and 7 cards in hand. Everyone rolls a die; lowest goes first, then play continues from the next-lowest roll.</p>' +
+        '<p>Each Trainer starts with a Baby Dragon and 7 cards. Lowest die roll goes first.</p>' +
         '<h4>On your turn</h4>' +
         '<ul>' +
-          '<li>You automatically draw 1 card if you have fewer than 7 cards.</li>' +
-          '<li>Trainers have 2 minutes to play, or 30 seconds in Lightning Mode. At 0:00, play automatically passes to the next Trainer.</li>' +
-          '<li>You may play no more than 1 card, or pass your turn.</li>' +
-          '<li>Card effects may take your hand above 7 cards.</li>' +
+          '<li>Draw 1 card if you have fewer than 7. Play 1 card max, or pass.</li>' +
+          '<li>2 minutes per turn (30 sec in Lightning Mode).</li>' +
         '</ul>' +
         '<h4>Card types</h4>' +
         '<ul>' +
@@ -5535,19 +5530,18 @@ function ouvrirInstructions() {
           '<li>Upgrades stay in your lair; Sabotages are placed on another Trainer’s territory.</li>' +
         '</ul>' +
         '<h4>Roars</h4>' +
-        '<p>If an attack targets a Trainer, only that Trainer may answer. Dragons without an effect enter the lair directly (no Roar possible) — except at Match point: if that dragon would win the game, opponents may roar to cancel it; for a non-attack effect, opponents answer in turn. Only one Roar may be played against a card: it cancels that card and ends the counter immediately.</p>' +
-        '<p><strong>Pack Roar</strong> is Magic played on your turn. Until the start of your next turn, your cards cannot be cancelled by a Roar.</p>' +
-        '<h4>Weather and color combos</h4>' +
-        '<ul><li>Each game begins with random Lair Weather. Each Trainer draws 1 card when their first dragon of the favored color enters their lair during a turn.</li><li>If 2 dragons of the same color enter your lair during one turn—even through an effect—you draw 1 card. Each color can trigger this combo once per turn.</li><li>At the start of each game, there is a 5% chance that the ultra-rare Golden Dragon is placed in the deck. Drawing it adds it directly to your Dragondex.</li></ul>' +
-        '<h4>' + (Compte.uid() ? 'Modes available with your account' : 'Modes available as a guest') + '</h4>' +
+        '<p>A Roar cancels the card just played (one Roar max per card). If an attack targets you, only you may roar. Effect-less dragons cannot be roared — except at Match point.</p>' +
+        '<p><strong>Pack Roar:</strong> your cards cannot be cancelled until your next turn.</p>' +
+        '<h4>Weather & combos</h4>' +
+        '<ul><li>Random Lair Weather each game: draw 1 card when your first dragon of the favored color arrives.</li><li>2 dragons of the same color in one turn = draw 1 card (once per color per turn).</li></ul>' +
+        '<h4>Modes</h4>' +
         '<ul>' +
-          '<li><strong>Tutorial with Pyros:</strong> a guided game to learn the rules.</li>' +
-          '<li><strong>Solo:</strong> face 1 to 3 bots and choose their difficulty.</li>' +
-          '<li><strong>Pass-and-play:</strong> 2 to 4 Trainers take turns on the same phone, with or without bots. The timer pauses during phone hand-offs, animations, and counter windows.</li>' +
-          '<li><strong>Online:</strong> create a room or join one with a 4-letter code.</li>' +
+          '<li><strong>Tutorial:</strong> learn with Pyros. <strong>Solo:</strong> vs 1-3 bots.</li>' +
+          '<li><strong>Pass-and-play:</strong> 2-4 Trainers, same phone.</li>' +
+          '<li><strong>Online:</strong> 4-letter room code.</li>' +
           (Compte.uid()
-            ? '<li><strong>Daily Challenge:</strong> face the bots under a different special rule each day.</li><li><strong>2v2 Team:</strong> two teams compete; the first Trainer to reach 8 dragons wins for their team.</li>'
-            : '<li><strong>With a Google account:</strong> you also unlock the Daily Challenge and 2v2 Team Mode.</li>') +
+            ? '<li><strong>Daily Challenge</strong> and <strong>2v2 Team</strong> included.</li>'
+            : '<li>Sign in with Google for Daily Challenge + 2v2.</li>') +
         '</ul>' +
         '<h4>Creation</h4>' +
         '<p><strong>Created by Ysatis H.</strong><br>© 2026 Ysatis H. — All rights reserved.</p>' +
@@ -5555,18 +5549,13 @@ function ouvrirInstructions() {
       '<button id="modal-fermer-instructions" class="gros-bouton bouton-primaire">Got it — let’s play!</button>'
     : '<h3>Instructions</h3>' +
       '<div class="instructions-jeu">' +
-        '<h4>Pour qui ?</h4>' +
-        '<p>Le jeu est accessible à tous les Dresseurs, dès qu’on sait lire.</p>' +
-        '<p><strong>Durée :</strong> 10 à 15 minutes, selon le nombre de Dresseurs.</p>' +
-        '<p class="objectif">Le premier Dresseur à réunir 8 dragons dans son repaire gagne.</p>' +
+        '<p class="objectif">Premier à réunir 8 dragons dans son repaire gagne. Parties de 10-15 min.</p>' +
         '<h4>Pour commencer</h4>' +
-        '<p>Chaque Dresseur reçoit un Bébé Dragon dans son repaire et 7 cartes en main. Chacun lance un dé : le plus petit résultat commence, puis on suit l’ordre croissant.</p>' +
+        '<p>Chaque Dresseur reçoit un Bébé Dragon et 7 cartes. Le plus petit lancer de dé commence.</p>' +
         '<h4>À ton tour</h4>' +
         '<ul>' +
-          '<li>Tu pioches automatiquement 1 carte si ta main en contient moins de 7.</li>' +
-          '<li>Les Dresseurs ont 2 minutes pour jouer, ou 30 secondes en Mode éclair. À 0:00, le jeu passe automatiquement au Dresseur suivant.</li>' +
-          '<li>Tu peux jouer au maximum 1 carte, ou passer ton tour.</li>' +
-          '<li>Les effets de cartes peuvent te faire dépasser 7 cartes en main.</li>' +
+          '<li>Pioche 1 carte si tu en as moins de 7. Joue 1 carte max, ou passe.</li>' +
+          '<li>2 minutes par tour (30 secondes en Mode éclair).</li>' +
         '</ul>' +
         '<h4>Types de cartes</h4>' +
         '<ul>' +
@@ -5575,19 +5564,18 @@ function ouvrirInstructions() {
           '<li>Les Améliorations restent dans ton repaire; les Sabotages se placent sur le territoire d’un autre Dresseur.</li>' +
         '</ul>' +
         '<h4>Rugissements</h4>' +
-        '<p>Si une attaque vise un Dresseur, seul ce Dresseur peut riposter. Les Dragons sans effet entrent directement au repaire (aucun Rugissement possible) — sauf en cas de Balle de match : si ce dragon ferait gagner la partie, les adversaires peuvent rugir pour l’annuler ; pour un effet non offensif, les adversaires répondent à tour de rôle. Un seul Rugissement peut être joué contre une carte : il l’annule et termine immédiatement la riposte.</p>' +
-        '<p><strong>Rugissement de meute</strong> est une Magie jouée pendant ton tour. Jusqu’au début de ton prochain tour, tes cartes ne peuvent pas être annulées par un Rugissement.</p>' +
-        '<h4>Météo et combos de couleurs</h4>' +
-        '<ul><li>Chaque partie commence avec une Météo du repaire aléatoire. Chaque Dresseur pioche 1 carte quand son premier dragon de la couleur favorisée entre dans son repaire pendant un tour.</li><li>Si 2 dragons de la même couleur entrent dans ton repaire pendant un même tour — même grâce à un effet — tu pioches 1 carte. Chaque couleur peut déclencher ce combo une fois par tour.</li><li>Au début de chaque partie, le Dragon Doré ultra rare a 5 % de chance d’être placé dans la pioche. Le tirer l’ajoute directement à ton Dragondex.</li></ul>' +
-        '<h4>' + (Compte.uid() ? 'Modes disponibles avec ton compte' : 'Modes disponibles en invité') + '</h4>' +
+        '<p>Un Rugissement annule la carte qui vient d’être jouée (un seul par carte). Si une attaque te vise, seul toi peux rugir. Les dragons sans effet ne peuvent pas être contrés — sauf en Balle de match.</p>' +
+        '<p><strong>Rugissement de meute :</strong> tes cartes ne peuvent pas être annulées jusqu’à ton prochain tour.</p>' +
+        '<h4>Météo et combos</h4>' +
+        '<ul><li>Météo du repaire aléatoire : pioche 1 carte quand ton premier dragon de la couleur favorisée arrive.</li><li>2 dragons de la même couleur en un tour = pioche 1 carte (une fois par couleur par tour).</li></ul>' +
+        '<h4>Modes</h4>' +
         '<ul>' +
-          '<li><strong>Tutoriel avec Pyros :</strong> une partie guidée pour apprendre les règles.</li>' +
-          '<li><strong>Solo :</strong> affronte 1 à 3 bots et choisis leur difficulté.</li>' +
-          '<li><strong>Local :</strong> 2 à 4 Dresseurs jouent à tour de rôle sur le même téléphone, avec ou sans bots. Le chrono est en pause pendant les passages de téléphone, les animations et les fenêtres de riposte.</li>' +
-          '<li><strong>En ligne :</strong> crée une salle ou rejoins-en une avec un code à 4 lettres.</li>' +
+          '<li><strong>Tutoriel :</strong> apprends avec Pyros. <strong>Solo :</strong> contre 1 à 3 bots.</li>' +
+          '<li><strong>Local :</strong> 2 à 4 Dresseurs, même téléphone.</li>' +
+          '<li><strong>En ligne :</strong> code de salle à 4 lettres.</li>' +
           (Compte.uid()
-            ? '<li><strong>Défi du jour :</strong> affronte les bots avec une règle spéciale différente chaque jour.</li><li><strong>Équipe 2v2 :</strong> deux équipes s’affrontent; le premier Dresseur qui atteint 8 dragons fait gagner son équipe.</li>'
-            : '<li><strong>Avec un compte Google :</strong> tu débloques aussi le Défi du jour et le mode Équipe 2v2.</li>') +
+            ? '<li><strong>Défi du jour</strong> et <strong>Équipe 2v2</strong> inclus.</li>'
+            : '<li>Connecte-toi avec Google pour le Défi du jour et le 2v2.</li>') +
         '</ul>' +
         '<h4>Création</h4>' +
         '<p><strong>Créé par Ysatis H.</strong><br>© 2026 Ysatis H. — Tous droits réservés.</p>' +
