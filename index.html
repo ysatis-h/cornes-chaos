@@ -6070,7 +6070,7 @@ const Maintenance = {
 };
 function rendreProfilDresseur(profil){
   const stats=profil.stats||{}, parties=stats.games||0, victoires=stats.wins||0, taux=parties?Math.round(victoires/parties*100):0, comptes=stats.dragonCounts||{};
-  const prefere=Object.keys(comptes).sort((a,b)=>(comptes[b]||0)-(comptes[a]||0))[0], nomPrefere=prefere&&definitionParId(prefere)?nomCarte(definitionParId(prefere)):L("À découvrir","To be discovered");
+  const prefere=Object.keys(comptes).filter((id)=>{const d=definitionParId(id);return d&&d.type==="magique";}).sort((a,b)=>(comptes[b]||0)-(comptes[a]||0))[0], nomPrefere=prefere&&definitionParId(prefere)?nomCarte(definitionParId(prefere)):L("À découvrir","To be discovered");
   const trouves=profil.dragondex||{}, nomPublic=profil.public&&(profil.public.trainerName||profil.public.displayName)||Compte.nomDresseur(), total=dragonsDragondex().length;
   const personnalisation=profil.profile||{}, genreChoisi=normaliserGenreDresseur(genreDresseurValide(personnalisation.genreDresseur)?personnalisation.genreDresseur:(profil.public&&genreDresseurValide(profil.public.genreDresseur)?profil.public.genreDresseur:""));
   const dateAnniversaire=dateAnniversaireValide(personnalisation.dateAnniversaire)?personnalisation.dateAnniversaire:"";
