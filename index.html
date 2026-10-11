@@ -2381,7 +2381,7 @@ const MESSAGES_JOURNAL = {
   },
   purify: {
     fr: (p) => "🔥 " + p.nom + " purifie « " + nomCarteJournal(p.defId) + " » du repaire de " + p.cible + ".",
-    en: (p) => "🔥 " + p.nom + " purifies \"" + nomCarteJournal(p.defId) + "\" from " + p.cible + "\u2019s lair.",
+    en: (p) => p.nom + " purifies a sabotage from " + p.cible + " lair.",
   },
   sacrifice_braises: {
     fr: (p) => "🔥 " + p.nom + " sacrifie un Dragon des Braises et pioche 2 cartes.",
@@ -2389,7 +2389,7 @@ const MESSAGES_JOURNAL = {
   },
   freeze: {
     fr: (p) => "❄️ " + p.nom + " gèle « " + nomCarteJournal(p.defId) + " » dans la main de " + p.cible + " pour 2 tours.",
-    en: (p) => "❄️ " + p.nom + " freezes \"" + nomCarteJournal(p.defId) + "\" in " + p.cible + "\u2019s hand for 2 turns.",
+    en: (p) => p.nom + " freezes a card in " + p.cible + " hand for 2 turns.",
   },
   aegis_fade: {
     fr: (p) => "💨 L’Égide Prismatique de " + p.nom + " se dissipe après tes " + p.nb + " tours.",
@@ -5436,7 +5436,7 @@ function ouvrirInstructions() {
         '</ul>' +
         '<h4>Card types</h4>' +
         '<ul>' +
-          '<li>Dragons join your lair; Mythic Dragons also trigger their power.</li>' +
+          '<li>Dragons join your lair and trigger their power, when they have one (Baby Dragons have none).</li>' +
           '<li>Dragon Magic cards have an immediate effect, then go to the discard pile.</li>' +
           '<li>Upgrades stay in your lair; Sabotages are placed on another Trainer’s territory.</li>' +
         '</ul>' +
@@ -5476,7 +5476,7 @@ function ouvrirInstructions() {
         '</ul>' +
         '<h4>Types de cartes</h4>' +
         '<ul>' +
-          '<li>Les Dragons rejoignent ton repaire; les Dragons Mythiques déclenchent aussi leur pouvoir.</li>' +
+          '<li>Les Dragons rejoignent ton repaire et déclenchent leur pouvoir, quand ils en ont un (les Bébés Dragons n\'en ont pas).</li>' +
           '<li>Les cartes Magie produisent un effet immédiat, puis vont à la défausse.</li>' +
           '<li>Les Améliorations restent dans ton repaire; les Sabotages se placent sur le territoire d’un autre Dresseur.</li>' +
         '</ul>' +
