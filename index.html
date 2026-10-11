@@ -7246,6 +7246,17 @@ function demarrerWatchdog() {
   UI._watchdog = setInterval(() => {
     const etat = UI.etat;
     if (!etat) return;
+    /* Anti-plantage : si le rendu est fige depuis plus de 30 s en pleine partie,
+       on force un re-rendu pour debloquer l'interface. */
+    try {
+      const maintenant = Date.now();
+      const dernierRendu = Number(UI._dernierRendu) || 0;
+      const ecranJeuVisible = !$("ecran-jeu") || !$("ecran-jeu").classList.contains("cachee");
+      if (ecranJeuVisible && (etat.phase === "jeu" || etat.phase === "reponse") && dernierRendu > 0 && maintenant - dernierRendu > 30000) {
+        UI._dernierRendu = maintenant;
+        rendreTout();
+      }
+    } catch (e) { /* le watchdog ne doit jamais planter */ }
     if (etat.phase === "jeu" && etat.joueurs[etat.tour] && etat.joueurs[etat.tour].estBot) {
       if (!peutPiloterBotsEtMinuteur() || UI._botTimer || UI._botAnnonce) return;
       const ageTour = Date.now() - (Number(etat.tourCommenceLe) || Date.now());
@@ -8020,6 +8031,7 @@ function rendreTout() {
   planifierFinAnimationNuageCendres();
   planifierFinFileEffets();
   planifierBot();
+  UI._dernierRendu = Date.now();
 }
 
 function rendreThemePlateau() {
