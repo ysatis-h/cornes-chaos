@@ -3014,7 +3014,7 @@ function aUnHennissement(joueur) {
 /* Renvoie le Dresseur visé lorsqu'une carte constitue une attaque ciblée. */
 function cibleAttaque(def, cibles, idxJoueur) {
   if (!def || !cibles) return null;
-  const effetsHostiles = ["detruire", "voler", "echanger", "detruire-bonus", "purification-doree"];
+  const effetsHostiles = ["detruire", "voler", "echanger", "detruire-bonus"];
   if (def.type !== "sabotage" && !effetsHostiles.includes(def.effet && def.effet.kind)) return null;
   const idxCible = cibles.adverse && Number.isInteger(cibles.adverse.joueur)
     ? cibles.adverse.joueur
