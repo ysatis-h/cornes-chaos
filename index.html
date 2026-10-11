@@ -5844,7 +5844,7 @@ function carteHTML(instance, options) {
   const def = defCarte(instance);
   const typeInfo = TYPES_CARTE[def.type] || { nom: def.type, classe: "" };
   const nomAffiche = nomCarte(def);
-  const texteAffiche = texteCarte(def);
+  const texteAffiche = options.texteCourt || texteCarte(def);
   const typeAffiche = nomTypeCarte(def);
   const couleurId = estLicorne(def.type) ? couleurDragonDe(instance) : null;
   const pointCouleur = couleurId ? '<span class="couleur-dragon-point" style="--couleur-dragon:'+COULEURS_DRAGON_HEX[couleurId]+'" title="'+echapper(nomCouleurDragon(couleurId))+'" aria-label="'+echapper(L("Couleur du dragon : ","Dragon color: ")+nomCouleurDragon(couleurId))+'"></span>' : "";
@@ -5889,8 +5889,8 @@ function carteHTML(instance, options) {
 function rendreCartesAccueil() {
   const rugissement = document.getElementById("carte-accueil-rugissement");
   const sabotage = document.getElementById("carte-accueil-sabotage");
-  if (rugissement) rugissement.innerHTML = carteHTML({ defId: "riposte", uid: "accueil-rugissement" });
-  if (sabotage) sabotage.innerHTML = carteHTML({ defId: "nuage-grognon", uid: "accueil-sabotage" });
+  if (rugissement) rugissement.innerHTML = carteHTML({ defId: "riposte", uid: "accueil-rugissement" }, { texteCourt: L("Annule la carte jouée.", "Cancels the card played.") });
+  if (sabotage) sabotage.innerHTML = carteHTML({ defId: "nuage-grognon", uid: "accueil-sabotage" }, { texteCourt: L("Annule la prochaine Magie de la cible.", "Cancels the target\u2019s next Magic.") });
 }
 
 /* ------------------------------ Accueil ---------------------------- */
