@@ -357,6 +357,9 @@ html, body {
 .carte-selectionnee { outline: 4px solid var(--rose-fonce); transform: translateY(-8px); }
 .carte-ciblable { outline: 3px dashed var(--rose-fonce); cursor: pointer; animation: pulse 1s infinite; }
 @keyframes pulse { 50% { outline-color: var(--violet-fonce); } }
+.carte-gelee{position:relative}
+.carte-gelee .carte-illustration::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(173,216,230,.45),rgba(135,206,235,.55));pointer-events:none;border-radius:inherit}
+.badge-gele{position:absolute;top:6px;right:6px;z-index:2;background:rgba(135,206,235,.92);color:#0b3d62;font-weight:800;font-size:.78rem;padding:2px 8px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .carte-non-jouable { opacity: 0.55; }
 
 /* ------------------------------- Modales --------------------------- */
@@ -1280,13 +1283,13 @@ const DEFINITIONS_CARTES = [
   // -------------------------- DRAGONS CLASSIQUES (x8 : 4 Braises + 4 Givres) --------------------
   {
     id: "licorne-classique", nom: "Dragon des Braises", type: "licorne", emoji: "🔥", couleur: "rouge",
-    texte: "Fier, flamboyant et toujours prêt à défendre son trésor.",
-    effet: { kind: "aucun" }, exemplaires: 4,
+    texte: "Sacrifie ce dragon : pioche 2 cartes.",
+    effet: { kind: "sacrifice-piocher", n: 2 }, exemplaires: 4,
   },
   {
     id: "licorne-givre", nom: "Dragon des Givres", type: "licorne", emoji: "❄️", couleur: "bleu",
-    texte: "Silencieux et majestueux, il fige l'air autour de son trésor.",
-    effet: { kind: "aucun" }, exemplaires: 4,
+    texte: "Quand il entre dans ton repaire : gèle un dragon dans la main d'un adversaire. Il ne peut pas être joué pendant 2 tours.",
+    effet: { kind: "geler-main", declencheur: "entree", cible: "main-adverse" }, exemplaires: 4,
   },
 
   // -------------------------- DRAGONS MYTHIQUES (x10) ---------------------
@@ -1382,9 +1385,9 @@ const DEFINITIONS_CARTES = [
     effet: { kind: "rejouer" }, exemplaires: 2,
   },
   {
-    id: "bouclier-scintillant", nom: "Bouclier d'Écailles", type: "magie", emoji: "🛡️",
-    texte: "Ton repaire est protégé jusqu'à ton prochain tour.",
-    effet: { kind: "proteger" }, exemplaires: 2,
+    id: "flamme-purificatrice", nom: "Flamme Purificatrice", type: "magie", emoji: "🔥",
+    texte: "Détruis un sabotage en jeu.",
+    effet: { kind: "detruire-sabotage", cible: "sabotage-en-jeu" }, exemplaires: 2,
   },
   {
     id: "appel-bebes", nom: "Appel des Dragonneaux", type: "magie", emoji: "🥚",
@@ -1445,7 +1448,7 @@ const DEFINITIONS_CARTES = [
 let LANGUE = "fr";
 const CARTES_EN = {
   "bebe-licorne": { nom: "Baby Dragon", texte: "A tiny ball of scales. Its sneezes already throw sparks." },
-  "licorne-classique": { nom: "Ember Dragon", texte: "Proud, fiery, and always ready to defend its treasure." },
+  "licorne-classique": { nom: "Ember Dragon", texte: "Sacrifice this dragon: draw 2 cards." },
   "licorne-givre": { nom: "Frost Dragon", texte: "Silent and majestic, it freezes the air around its treasure." },
   "licorne-arc-en-ciel": { nom: "Prismatic Dragon", texte: "When it enters your lair: draw 2 cards." },
   "licorne-ninja": { nom: "Shadow Dragon", texte: "When it enters your lair: destroy an Upgrade or Sabotage on any territory." },
@@ -1468,7 +1471,7 @@ const CARTES_EN = {
   "grand-menage": { nom: "Great Dragon’s Breath", texte: "Each opponent chooses 2 cards from their hand and discards them. You are not affected." },
   "echange-royal": { nom: "Pact of Two Lairs", texte: "Trade one of your dragons for an opponent’s dragon." },
   "potion-energie": { nom: "Life Elixir", texte: "Take another turn right after this one. This Elixir does not use the card play from your current turn." },
-  "bouclier-scintillant": { nom: "Scale Shield", texte: "Your lair is protected until your next turn." },
+  "flamme-purificatrice": { nom: "Purifying Flame", texte: "Destroy a sabotage in play." },
   "appel-bebes": { nom: "Call of the Hatchlings", texte: "Find a Baby Dragon in the deck and place it in your lair. Then shuffle the deck." },
   "arc-en-ciel-protecteur": { nom: "Prismatic Aegis", texte: "Your dragons cannot be destroyed during your next 2 turns." },
   "fer-a-cheval": { nom: "Lucky Treasure", texte: "Draw 1 extra card at the start of each of your turns." },
@@ -1723,7 +1726,7 @@ const METEOS_REPAIRE = [
 ];
 function meteoParId(id){return METEOS_REPAIRE.find((meteo)=>meteo.id===id)||null;}
 function tirerMeteo(){return METEOS_REPAIRE[Math.floor(Math.random()*METEOS_REPAIRE.length)].id;}
-const TYPES_EFFETS_VISUELS = ["pluie-etoiles","tornade-paillettes","lasso-magique","grand-menage","echange-royal","potion-energie","bouclier-scintillant","appel-bebes","rugissement-meute","arc-en-ciel-protecteur","fer-a-cheval","clochette-magique","boue-collante","miroir-fele","combo-couleur"];
+const TYPES_EFFETS_VISUELS = ["pluie-etoiles","tornade-paillettes","lasso-magique","grand-menage","echange-royal","potion-energie","flamme-purificatrice","appel-bebes","rugissement-meute","arc-en-ciel-protecteur","fer-a-cheval","clochette-magique","boue-collante","miroir-fele","combo-couleur"];
 function ajouterEffetVisuel(etat,type,parIdx,details){
   if(!etat||!TYPES_EFFETS_VISUELS.includes(type))return;
   const maintenant=Date.now();
@@ -1941,6 +1944,7 @@ function instanceCarteSure(carte) {
     defId,
     ...(defId === "bebe-licorne" && COULEURS_AVATAR.includes(carte.couleurDragon) ? { couleurDragon: carte.couleurDragon } : {}),
     ...(Number.isInteger(carte.toursRestants) ? { toursRestants: Math.max(0, Math.min(2, carte.toursRestants)) } : {}),
+    ...(Number.isInteger(carte.toursGeles) ? { toursGeles: Math.max(0, Math.min(2, carte.toursGeles)) } : {}),
     ...(defId === "miroir-fele" && Number.isInteger(carte.fissures) ? { fissures: Math.max(0, Math.min(3, carte.fissures)) } : {}),
   };
 }
@@ -2375,6 +2379,18 @@ const MESSAGES_JOURNAL = {
     fr: (p) => "💎 L’Égide Prismatique de " + p.nom + " résistera encore à " + p.nb + " tour" + (p.nb > 1 ? "s" : "") + ".",
     en: (p) => "💎 " + p.nom + "’s Prismatic Aegis lasts for " + p.nb + " more turn" + (p.nb > 1 ? "s" : "") + ".",
   },
+  purify: {
+    fr: (p) => "🔥 " + p.nom + " purifie « " + nomCarteJournal(p.defId) + " » du repaire de " + p.cible + ".",
+    en: (p) => "🔥 " + p.nom + " purifies \"" + nomCarteJournal(p.defId) + "\" from " + p.cible + "\u2019s lair.",
+  },
+  sacrifice_braises: {
+    fr: (p) => "🔥 " + p.nom + " sacrifie un Dragon des Braises et pioche 2 cartes.",
+    en: (p) => "🔥 " + p.nom + " sacrifices an Ember Dragon and draws 2 cards.",
+  },
+  freeze: {
+    fr: (p) => "❄️ " + p.nom + " gèle « " + nomCarteJournal(p.defId) + " » dans la main de " + p.cible + " pour 2 tours.",
+    en: (p) => "❄️ " + p.nom + " freezes \"" + nomCarteJournal(p.defId) + "\" in " + p.cible + "\u2019s hand for 2 turns.",
+  },
   aegis_fade: {
     fr: (p) => "💨 L’Égide Prismatique de " + p.nom + " se dissipe après tes " + p.nb + " tours.",
     en: (p) => "💨 " + p.nom + "’s Prismatic Aegis fades after your " + p.nb + " turns.",
@@ -2699,6 +2715,16 @@ function faireExpirerEgideApresTour(etat, idxActif) {
 function appliquerFinTour(etat) {
   // Chaque tour terminé consomme une charge de l’Égide du joueur actif.
   faireExpirerEgideApresTour(etat, etat.tour);
+  // Le gel fond : chaque tour terminé réduit le gel des cartes en main du joueur actif.
+  const joueurActif = etat.joueurs[etat.tour];
+  if (joueurActif) {
+    joueurActif.main.forEach((carte) => {
+      if (Number.isInteger(carte.toursGeles) && carte.toursGeles > 0) {
+        carte.toursGeles -= 1;
+        if (carte.toursGeles === 0) delete carte.toursGeles;
+      }
+    });
+  }
   if (etat.tourBonus === etat.tour) {
     etat.tourBonus = null;
     debutTour(etat);
@@ -2790,6 +2816,7 @@ function peutSaboter(etat, idxCible) {
 function peutJouer(etat, idxJoueur, instance) {
   const def = defCarte(instance);
   if (etat.phase !== "jeu" || etat.tour !== idxJoueur || etat.carteJouee) return false;
+  if (Number.isInteger(instance.toursGeles) && instance.toursGeles > 0) return false; // carte gelée
   if (def.type === "riposte") return false; // seulement en réponse
   // L'Appel reste en main tant qu'il n'y a aucun Dragonneau à aller chercher.
   if (def.id === "appel-bebes" && !etat.pioche.some((c) => c.defId === "bebe-licorne")) return false;
@@ -2798,6 +2825,7 @@ function peutJouer(etat, idxJoueur, instance) {
 
 function raisonCarteNonJouable(etat, idxJoueur, instance) {
   const def = defCarte(instance);
+  if (Number.isInteger(instance.toursGeles) && instance.toursGeles > 0) return L("Cette carte est gelée pour encore " + instance.toursGeles + " tour" + (instance.toursGeles > 1 ? "s" : "") + ".", "This card is frozen for " + instance.toursGeles + " more turn" + (instance.toursGeles > 1 ? "s" : "") + ".");
   if (def.type === "riposte") return L("Cette carte se joue seulement en réponse à une carte adverse.", "This card can only be played in response to an opponent’s card.");
   if (def.id === "appel-bebes" && !etat.pioche.some((c) => c.defId === "bebe-licorne")) return L("Aucun Bébé Dragon ne reste dans la pioche. Cette carte demeure dans ta main.", "No Baby Dragons remain in the deck. This card stays in your hand.");
   if (cibleRequise(def) && nbCiblesValides(etat, idxJoueur, def) === 0) return L("Aucune cible valide pour cette carte. Elle demeure dans ta main.", "No valid target for this card. It stays in your hand.");
@@ -2809,7 +2837,7 @@ function raisonCarteNonJouable(etat, idxJoueur, instance) {
 /* La carte a-t-elle besoin d'une cible choisie par le joueur ? */
 function cibleRequise(def) {
   const c = def.effet && def.effet.cible;
-  return ["licorne-adverse", "licorne-adverse-non-magique", "echange", "adversaire", "bonus-en-jeu"].includes(c);
+  return ["licorne-adverse", "licorne-adverse-non-magique", "echange", "adversaire", "bonus-en-jeu", "main-adverse", "sabotage-en-jeu"].includes(c);
 }
 
 /* Liste les cibles valides pour une carte. */
@@ -2849,6 +2877,21 @@ function ciblesValides(etat, idxJoueur, def) {
     }
     resultat.miennes = miennes;
     resultat.options = adverses;
+  } else if (cible === "main-adverse") {
+    for (const i of adversaires) {
+      for (const inst of etat.joueurs[i].main) {
+        const d = defCarte(inst);
+        if (!estLicorne(d.type)) continue;
+        resultat.options.push({ joueur: i, uid: inst.uid, nom: d.nom, emoji: d.emoji, couleur: couleurDragonDe(inst) });
+      }
+    }
+  } else if (cible === "sabotage-en-jeu") {
+    for (let i = 0; i < etat.joueurs.length; i++) {
+      for (const inst of etat.joueurs[i].sabotages) {
+        const d = defCarte(inst);
+        resultat.options.push({ joueur: i, uid: inst.uid, zone: "sabotages", nom: d.nom, emoji: d.emoji });
+      }
+    }
   } else if (cible === "bonus-en-jeu") {
     for (let i = 0; i < etat.joueurs.length; i++) {
       for (const inst of etat.joueurs[i].ameliorations) {
@@ -3194,7 +3237,7 @@ function appliquerCarte(etat, cadre) {
   } else {
     // Carte Magie : l'effet se joue discrètement dans le repaire touché.
     // Les effets collectifs apparaissent chez chaque adversaire concerné.
-    if (["pluie-etoiles","tornade-paillettes","lasso-magique","grand-menage","echange-royal","potion-energie","bouclier-scintillant","appel-bebes","rugissement-meute"].includes(def.id)) {
+    if (["pluie-etoiles","tornade-paillettes","lasso-magique","grand-menage","echange-royal","potion-energie","flamme-purificatrice","appel-bebes","rugissement-meute"].includes(def.id)) {
       let ciblesEffet = [parIdx];
       if (def.id === "grand-menage") ciblesEffet = etat.joueurs.map((_,idx)=>idx).filter((idx)=>idx!==parIdx);
       else if (cibles && cibles.adverse && Number.isInteger(cibles.adverse.joueur)) ciblesEffet = [parIdx,cibles.adverse.joueur];
@@ -3309,6 +3352,30 @@ function appliquerEffet(etat, parIdx, def, cibles) {
       traiterEntreeDragon(etat, parIdx, inst);
       activerPouvoirDragonVole(etat, parIdx, inst);
       represailes(etat, t.joueur, parIdx);
+      break;
+    }
+
+    case "detruire-sabotage": {
+      const t = cibles;
+      if (!t) break;
+      const victime = etat.joueurs[t.joueur];
+      const pos = victime.sabotages.findIndex((c) => c.uid === t.uid);
+      if (pos < 0) break;
+      const inst = victime.sabotages[pos];
+      victime.sabotages.splice(pos, 1);
+      etat.defausse.push(inst);
+      journal(etat, "purify", { nom: joueur.nom, cible: victime.nom, defId: defCarte(inst).id });
+      break;
+    }
+
+    case "geler-main": {
+      const t = cibles;
+      if (!t) break;
+      const victime = etat.joueurs[t.joueur];
+      const carte = victime.main.find((c) => c.uid === t.uid);
+      if (!carte) break;
+      carte.toursGeles = 2;
+      journal(etat, "freeze", { nom: joueur.nom, cible: victime.nom, defId: defCarte(carte).id });
       break;
     }
 
@@ -5054,7 +5121,7 @@ function sonPourCarte(defId) {
     "dragon-dore":"piece", "pluie-etoiles":"etoiles",
     "tornade-paillettes":"feu", "lasso-magique":"griffe",
     "grand-menage":"vent", "echange-royal":"pacte",
-    "potion-energie":"elixir", "bouclier-scintillant":"bouclier",
+    "potion-energie":"elixir", "flamme-purificatrice":"flamme",
     "appel-bebes":"eclosion", "arc-en-ciel-protecteur":"prisme",
     "fer-a-cheval":"piece", "clochette-magique":"cloche",
     "nuage-grognon":"cendres", "boue-collante":"terre",
@@ -5556,7 +5623,7 @@ function illustrationObjetHTML(def) {
       '<path class="socle" d="M47 70V46q3-24 22-24t22 24v24Z"/><path class="accent" d="M56 70V47q2-14 13-14t13 14v23Z"/>' +
       '<path class="trait" d="M28 14h37m-7-7 7 7-7 7M68 76H31m7-7-7 7 7 7"/></svg>';
   }
-  if (def.id === "bouclier-scintillant") {
+  if (def.id === "flamme-purificatrice") {
     return '<svg class="objet-dessin" viewBox="0 0 96 82" aria-hidden="true">' +
       '<path class="socle" d="m48 7 29 11-4 34Q69 69 48 77 27 69 23 52l-4-34Z"/>' +
       '<path class="accent" d="m48 15 21 8-3 26Q63 61 48 68 33 61 30 49l-3-26Z"/>' +
@@ -5719,6 +5786,8 @@ function carteHTML(instance, options) {
   const classes = ["carte", typeInfo.classe];
   if (options.selectionnee) classes.push("carte-selectionnee");
   if (options.nonJouable) classes.push("carte-non-jouable");
+  const gele = Number.isInteger(instance.toursGeles) && instance.toursGeles > 0;
+  if (gele) classes.push("carte-gelee");
   if (options.compacte) classes.push("carte-main");
   if (options.zoom) classes.push("carte-zoom");
   const libelle = options.ariaLabel || (L("Jouer ", "Play ") + nomAffiche);
@@ -5727,6 +5796,7 @@ function carteHTML(instance, options) {
     '<div class="' + classes.join(" ") + '" data-uid="' + instance.uid + '"' + interactif + '>' +
     pointCouleur + '<div class="carte-illustration ' + motif + '" style="' + styleArt + '">' +
     illustrationDragonHTML(def) + "</div>" +
+    (gele ? '<div class="badge-gele" aria-hidden="true">❄️ ' + instance.toursGeles + '</div>' : "") +
     '<div class="carte-nom">' + nomAffiche + "</div>" +
     '<div class="carte-texte">' + texteAffiche + "</div>" +
     '<div class="carte-type">' + typeAffiche + "</div>" +
@@ -7761,7 +7831,7 @@ function contenuEffetVisuel(effet){
     case "grand-menage": return '<i class="bourrasque"></i><b class="carte-envolee c1"></b><b class="carte-envolee c2"></b><b class="carte-envolee c3"></b>';
     case "echange-royal": return dragonGraphiqueEffet("dragon-a","licorne-classique","echange-a")+dragonGraphiqueEffet("dragon-b","licorne-arc-en-ciel","echange-b");
     case "potion-energie": return '<i class="rembobine"></i><b class="fiole">🧪</b>';
-    case "bouclier-scintillant": return '<i class="dome"></i><b class="dragon-groupe dragon-graphique" aria-hidden="true">'+illustrationDragonHTML(definitionParId("licorne-classique"))+illustrationDragonHTML(definitionParId("licorne-gardienne"))+'</b>';
+    case "flamme-purificatrice": return '<i class="flamme-puri"></i>';
     case "appel-bebes": return '<i class="etincelles">✦ ✧ ✦</i><b class="oeuf">🥚</b>'+dragonGraphiqueEffet("bebe","bebe-licorne","eclosion");
     case "rugissement-meute": return '<i class="vague-doree"></i><b class="dragon-groupe dragon-graphique" aria-hidden="true">'+illustrationDragonHTML(definitionParId("licorne-classique"))+illustrationDragonHTML(definitionParId("bebe-licorne"))+illustrationDragonHTML(definitionParId("licorne-arc-en-ciel"))+'</b>';
     case "arc-en-ciel-protecteur": return '<i class="prisme"></i><b class="dragon-groupe dragon-graphique" aria-hidden="true">'+illustrationDragonHTML(definitionParId("licorne-arc-en-ciel"))+illustrationDragonHTML(definitionParId("licorne-gardienne"))+'</b>';
@@ -8287,12 +8357,42 @@ function trouverCarteEnJeu(uid) {
 function ouvrirLectureCarteEnJeu(uid) {
   const instance = trouverCarteEnJeu(uid);
   if (!instance) return;
+  const def = defCarte(instance);
+  const etat = UI.etat;
+  const moi = etat && etat.joueurs[UI.monIdx];
+  const estMien = moi && moi.ecurie.some((c) => c.uid === uid);
+  const peutSacrifier = def && def.effet && def.effet.kind === "sacrifice-piocher" && estMien && estMonTour() && etat.phase === "jeu";
+  let boutonSacrifice = "";
+  if (peutSacrifier) {
+    boutonSacrifice = '<button id="modal-sacrifier" class="gros-bouton bouton-primaire">' + L("Sacrifier : piocher 2 cartes", "Sacrifice: draw 2 cards") + '</button>';
+  }
   ouvrirModal(
     '<h3>' + L("Carte sur le territoire", "Card on the territory") + '</h3>' +
     '<div aria-label="' + L("Carte du territoire agrandie", "Enlarged card from the territory") + '">' + carteHTML(instance, { zoom: true }) + '</div>' +
+    boutonSacrifice +
     '<button id="modal-fermer-lecture" class="gros-bouton bouton-secondaire">' + L("Retour au jeu", "Back to game") + '</button>'
   );
   $("modal-fermer-lecture").addEventListener("click", fermerModal);
+  const btnSacrifice = $("modal-sacrifier");
+  if (btnSacrifice) btnSacrifice.addEventListener("click", () => sacrifierBraises(uid));
+}
+
+function sacrifierBraises(uid) {
+  const etat = UI.etat;
+  if (!etat || !estMonTour() || etat.phase !== "jeu") return;
+  const moi = etat.joueurs[UI.monIdx];
+  const pos = moi.ecurie.findIndex((c) => c.uid === uid);
+  if (pos < 0) return;
+  const instance = moi.ecurie[pos];
+  const def = defCarte(instance);
+  if (!def || def.id !== "licorne-classique") return;
+  // Sacrifice : le dragon va à la défausse, le joueur pioche 2 cartes.
+  moi.ecurie.splice(pos, 1);
+  etat.defausse.push(instance);
+  piocherCartes(etat, UI.monIdx, 2);
+  journal(etat, "sacrifice_braises", { nom: moi.nom });
+  fermerModal();
+  apresActionAutomatique();
 }
 
 function activerLectureCartesEnJeu(racine) {
