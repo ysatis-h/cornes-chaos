@@ -610,7 +610,7 @@ body{min-width:0}
 .langue-option[aria-pressed="true"]{background:var(--accueil-encre);color:var(--accueil-creme)}
 .langue-option:focus-visible{outline:3px solid var(--accueil-corail);outline-offset:2px}
 .chaos-scene{position:relative;min-height:420px;display:grid;place-items:center;isolation:isolate}
-.chaos-scene:before{content:"\U0001F525\U0001F525\U0001F525";position:absolute;z-index:1;font-size:clamp(90px,22vw,170px);letter-spacing:-.35em;filter:hue-rotate(175deg) saturate(1.6) drop-shadow(0 0 25px rgba(59,130,246,.55));opacity:.85;animation:flammes-bleues 2.2s ease-in-out infinite;transform:translateY(6%)}
+.chaos-scene:before{content:"\1F525 \1F525 \1F525";position:absolute;z-index:1;font-size:clamp(90px,22vw,170px);letter-spacing:-.35em;filter:hue-rotate(175deg) saturate(1.6) drop-shadow(0 0 25px rgba(59,130,246,.55));opacity:.85;animation:flammes-bleues 2.2s ease-in-out infinite;transform:translateY(6%)}
 .chaos-scene:after{content:"ROOARRR";position:absolute;right:1%;top:12%;padding:8px 12px;background:var(--accueil-acide);color:var(--accueil-encre);font:800 1rem/1 "Fredoka",sans-serif;transform:rotate(9deg);box-shadow:4px 4px 0 var(--accueil-corail)}
 .chaos-embleme{position:relative;z-index:3;width:min(100%,360px);height:auto;filter:drop-shadow(0 15px 18px rgba(0,0,0,.32));animation:embleme-chaos 4.5s ease-in-out infinite}
 .chaos-carte{position:absolute;z-index:2;width:146px;height:206px;filter:drop-shadow(7px 9px 0 rgba(0,0,0,.3))}
@@ -619,7 +619,7 @@ body{min-width:0}
 .chaos-carte .carte-nom{font-size:.76rem}.chaos-carte .carte-texte{font-size:.59rem;line-height:1.22;margin-top:5px}.chaos-carte .carte-type{left:8px;right:8px;bottom:7px;font-size:.49rem;padding:3px 4px}
 .chaos-carte-a{left:-3%;bottom:1%;transform:rotate(-12deg)}
 .chaos-carte-b{right:-1%;bottom:0;transform:rotate(11deg)}
-@keyframes embleme-chaos{0%,100%{transform:translateY(0) rotate(-2deg)}@keyframes flammes-bleues{0%,100%{transform:translateY(6%) scale(1)}50%{transform:translateY(2%) scale(1.06)}}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes embleme-chaos{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}@keyframes flammes-bleues{0%,100%{transform:translateY(6%) scale(1)}50%{transform:translateY(2%) scale(1.06)}}
 .accueil-contenu .message-doux{grid-column:1/-1;margin:0;background:rgba(255,255,255,.62);border-color:rgba(147,51,234,.25);color:var(--accueil-encre)}
 .action-en-cours{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:11px 13px;border-radius:13px;background:var(--surface-2);border:1px solid var(--ligne);color:var(--texte);font-weight:800;animation:action-pop .18s ease-out}
 .action-en-cours.cachee{display:none}
