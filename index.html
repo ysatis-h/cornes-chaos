@@ -6484,7 +6484,10 @@ async function inviterAmi(uidAmi,nomAmi){
 
 async function rejoindreInvitationAmi(uidAmi,code){
   const resultat=await rejoindreSalleEnLigne(code,nomCompteCourt(),Compte.couleurDragon(),tirerThemePlateau());
-  if(resultat&&resultat.ok)Compte.db.ref("users/"+Compte.uid()+"/gameInvites/"+uidAmi).remove();
+  if(resultat&&resultat.ok){
+    Compte.db.ref("users/"+Compte.uid()+"/gameInvites/"+uidAmi).remove();
+    fermerModal();
+  }
 }
 
 function ouvrirAmis(){
