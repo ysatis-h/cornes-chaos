@@ -7541,7 +7541,7 @@ function mettreAJourCompteTour() {
   const effetBloquant = UI.etat.phase === "effets";
   el.hidden = estTourBot || effetBloquant;
   if (estTourBot || effetBloquant) return;
-  const reste = secondesRestantesTour();
+  const reste = Math.min(secondesRestantesTour(), UI.etat.modeEclair ? 30 : 120);
   const minutes = Math.floor(reste / 60);
   const secondes = String(reste % 60).padStart(2, "0");
   el.textContent = minutes + ":" + secondes;
