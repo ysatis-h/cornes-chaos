@@ -1438,9 +1438,9 @@ const DEFINITIONS_CARTES = [
   // Les instances de l’ancienne carte retirée sont converties vers cette carte
   // lors du chargement afin de préserver les parties déjà ouvertes.
   {
-    id: "rugissement-meute", nom: "Rugissement de meute", type: "magie", emoji: "🛡️",
-    texte: "Protège tous tes dragons jusqu’au début de ton prochain tour.",
-    effet: { kind: "proteger" }, exemplaires: 1,
+    id: "rugissement-meute", nom: "Rugissement de meute", type: "magie", emoji: "📣",
+    texte: "Jusqu'à ton prochain tour, tes cartes ne peuvent pas être annulées par un Rugissement.",
+    effet: { kind: "anti-rugissement" }, exemplaires: 1,
   },
 ];
 
@@ -1480,7 +1480,7 @@ const CARTES_EN = {
   "boue-collante": { nom: "Sinking Marsh", texte: "Trap: the next dragon played by this Trainer is discarded." },
   "miroir-fele": { nom: "Shattered Dragon Mirror", texte: "The target discards 1 random card at the start of each of their turns (max 4 turns, then the mirror shatters)." },
   "riposte": { nom: "Roar", texte: "Cancel the card that was just played. Only one Roar may be played against that card." },
-  "rugissement-meute": { nom: "Pack Roar", texte: "Protect all your dragons until the start of your next turn." }
+  "rugissement-meute": { nom: "Pack Roar", texte: "Until your next turn, your cards cannot be cancelled by a Roar." }
 };
 const TYPES_EN = {
   bebe: "Hatchling", licorne: "Dragon", magique: "Mythic dragon", magie: "Dragon magic",
@@ -2391,6 +2391,10 @@ const MESSAGES_JOURNAL = {
     fr: (p) => "❄️ " + p.nom + " gèle « " + nomCarteJournal(p.defId) + " » dans la main de " + p.cible + " pour 2 tours.",
     en: (p) => p.nom + " freezes a card in " + p.cible + " hand for 2 turns.",
   },
+  pack_roar: {
+    fr: (p) => "📣 " + p.nom + " rugit avec sa meute : ses cartes sont inarrêtables jusqu'à son prochain tour.",
+    en: (p) => "📣 " + p.nom + " roars with the pack: their cards cannot be stopped until their next turn.",
+  },
   pluie_defausse: {
     fr: (p) => "✨ " + p.nom + " laisse une carte partir sous la pluie.",
     en: (p) => "✨ " + p.nom + " lets a card go in the rain.",
@@ -2684,6 +2688,9 @@ function debutTour(etat) {
 
   // Le bouclier expire au début de ton prochain tour.
   joueur.protege = false;
+
+  // Le Rugissement de meute expire au début de ton prochain tour.
+  joueur.protectionRugissement = false;
 
   // Miroir Fêlé : défausse 1 carte au début du tour, 4 tours max puis il se brise.
   const miroir = joueur.sabotages.find((c) => c.defId === "miroir-fele");
@@ -3047,7 +3054,7 @@ function jouerCarte(etat, idxJoueur, uidCarte, cibles) {
   // explicitement ce tour pour qu'un Hennissement (ou « Laisser passer ») ne puisse
   // jamais consommer le prochain tour du joueur qui répond.
   if (!etat.pending) etat.pending = { pile: [], tourActif: etat.tour };
-  const repondants = [];
+  let repondants = [];
   // Balle de match : un dragon sans effet qui ferait gagner la partie reste
   // contestable — les adversaires ont leur dernière chance de rugir.
   // (Les dragons sans effet ne sont JAMAIS contestables autrement, même
@@ -3055,7 +3062,10 @@ function jouerCarte(etat, idxJoueur, uidCarte, cibles) {
   const dragonBalleMatch=(def.type==="bebe"||def.type==="licorne")&&!carteEstContestable(def,cibles,idxJoueur)&&valeurEcurie(etat,idxJoueur)+(def.valeur||1)>=LICORNES_POUR_GAGNER;
   const contestable = carteEstContestable(def, cibles, idxJoueur)||dragonBalleMatch;
   const cibleRiposte = cibleAttaque(def, cibles, idxJoueur);
-  if (contestable && cibleRiposte !== null) {
+  const protegeRugissement = etat.joueurs[idxJoueur] && etat.joueurs[idxJoueur].protectionRugissement;
+  if (protegeRugissement) {
+    repondants = [];
+  } else if (contestable && cibleRiposte !== null) {
     // Riposte : les autres Dresseurs ne peuvent pas intervenir dans une attaque
     // qui ne les vise pas, même s'ils ont un Rugissement en main.
     if (aUnHennissement(etat.joueurs[cibleRiposte])) repondants.push(cibleRiposte);
@@ -3370,6 +3380,11 @@ function appliquerEffet(etat, parIdx, def, cibles) {
 
     case "defausser-adversaires-choix":
       commencerChoixSouffle(etat, parIdx, effet.n);
+      break;
+
+    case "anti-rugissement":
+      joueur.protectionRugissement = true;
+      journal(etat, "pack_roar", { nom: joueur.nom });
       break;
 
     case "defausser-puis-piocher":
