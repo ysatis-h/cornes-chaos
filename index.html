@@ -2789,6 +2789,7 @@ function raisonCarteNonJouable(etat, idxJoueur, instance) {
   const def = defCarte(instance);
   if (def.type === "riposte") return L("Cette carte se joue seulement en réponse à une carte adverse.", "This card can only be played in response to an opponent’s card.");
   if (def.id === "appel-bebes" && !etat.pioche.some((c) => c.defId === "bebe-licorne")) return L("Aucun Bébé Dragon ne reste dans la pioche. Cette carte demeure dans ta main.", "No Baby Dragons remain in the deck. This card stays in your hand.");
+  if (cibleRequise(def) && nbCiblesValides(etat, idxJoueur, def) === 0) return L("Aucune cible valide pour cette carte. Elle demeure dans ta main.", "No valid target for this card. It stays in your hand.");
   if (etat.carteJouee && etat.tour === idxJoueur) return L("Tu as déjà joué ta carte pour ce tour.", "You have already played your card this turn.");
   if (etat.tour !== idxJoueur) return L("Tu pourras la jouer à ton tour.", "You can play it on your turn.");
   return L("Cette carte ne peut pas être jouée maintenant.", "This card cannot be played now.");
@@ -2850,6 +2851,14 @@ function ciblesValides(etat, idxJoueur, def) {
     }
   }
   return resultat;
+}
+
+/* Nombre de cibles valides pour une carte qui en requiert une. */
+function nbCiblesValides(etat, idxJoueur, def) {
+  const cibles = ciblesValides(etat, idxJoueur, def);
+  return cibles.type === "echange"
+    ? (cibles.miennes || []).length * cibles.options.length
+    : cibles.options.length;
 }
 
 /* ---------------- Jouer une carte (avec Rugissement) -------------- */
@@ -8230,7 +8239,8 @@ function ouvrirZoomCarte(uid) {
   if (!inst) return;
   const def = defCarte(inst);
   if (UI.tutoriel && def) UI._cartesVuesTutoriel.add(def.id);
-  const jouable = estMonTour() && etat.phase === "jeu" && def.type !== "riposte" && peutJouer(etat, UI.monIdx, inst);
+  const sansCible = cibleRequise(def) && nbCiblesValides(etat, UI.monIdx, def) === 0;
+  const jouable = estMonTour() && etat.phase === "jeu" && def.type !== "riposte" && peutJouer(etat, UI.monIdx, inst) && !sansCible;
   let action = '<button id="modal-fermer-zoom" class="gros-bouton bouton-secondaire">' + L("Retour à ma main", "Back to my hand") + '</button>';
   if (jouable) {
     action = '<button id="modal-jouer-carte" class="gros-bouton bouton-primaire">' + L("Jouer cette carte", "Play this card") + '</button>' + action;
@@ -8447,9 +8457,7 @@ function clicCarteMain(uid) {
   }
   if (cibleRequise(def)) {
     const cibles = ciblesValides(etat, UI.monIdx, def);
-    const nb = cibles.type === "echange"
-      ? (cibles.miennes || []).length * cibles.options.length
-      : cibles.options.length;
+    const nb = nbCiblesValides(etat, UI.monIdx, def);
     if (nb === 0) { toast(L("Aucune cible valide pour cette carte 💫", "No valid target for this card 💫")); return; }
     // Le Dragon Farceur doit d'abord traverser toute la fenêtre de Rugissement.
     // Ses deux choix d'échange ne sont demandés que si son arrivée est confirmée.
