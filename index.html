@@ -737,6 +737,7 @@ body{min-width:0}
 @media (max-width:480px){.bandeau-tour{padding-left:8px;padding-right:68px;font-size:15px}.compte-tour{right:52px;min-width:54px}}
 
 /* Lien de signalement toujours disponible, sans interrompre la partie. */
+.lien-signalement{display:inline-block;text-align:center;text-decoration:none}
 .bouton-signalement{
   position:fixed;z-index:119;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));
   display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:9px 13px;
@@ -750,7 +751,8 @@ body{min-width:0}
 .bouton-signalement:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
 body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
 @media (max-width:480px){
-  .bouton-signalement{right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));min-height:40px;padding:8px 11px;font-size:.78rem}
+  .lien-signalement{display:inline-block;text-align:center;text-decoration:none}
+.bouton-signalement{right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));min-height:40px;padding:8px 11px;font-size:.78rem}
 }
 
 /* Le choix de langue reste accessible sur chaque écran, sans masquer le jeu. */
@@ -4168,11 +4170,8 @@ function erreurReseau(code, repliFr, repliEn) {
       </div>
     </div>
     <button id="btn-menu-instructions" class="volume-bouton-muet" type="button" data-fr="Instructions" data-en="Instructions">Instructions</button>
+    <a id="btn-signaler-bug" class="volume-bouton-muet lien-signalement" href="https://docs.google.com/forms/d/e/1FAIpQLSfp2rDAA7Pzcfa840qjLBtWVa1r7UCJWIv9EEA9vhtEFBXCvQ/viewform" target="_blank" rel="noopener noreferrer" aria-label="Signaler un bug" title="Signaler un bug"><span data-fr="Signaler un bug" data-en="Report a bug">Signaler un bug</span></a>
   </div>
-  <a id="btn-signaler-bug" class="bouton-signalement" href="https://docs.google.com/forms/d/e/1FAIpQLSfp2rDAA7Pzcfa840qjLBtWVa1r7UCJWIv9EEA9vhtEFBXCvQ/viewform" target="_blank" rel="noopener noreferrer" aria-label="Signaler un bug" title="Signaler un bug">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9h8v8a4 4 0 0 1-8 0V9Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2M4 13h4m8 0h4M5 7l3 3m8 0 3-3M5 19l3-3m8 0 3 3"/></svg>
-    <span data-fr="Signaler un bug" data-en="Report a bug">Signaler un bug</span>
-  </a>
   <div id="app">
 
     <!-- ================= ACCUEIL ================= -->
