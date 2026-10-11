@@ -4698,9 +4698,9 @@ const Compte = {
         avecDelaiReseau(this.db.ref("users/"+this.uid()+"/friendRequests").once("value"),8000),
         avecDelaiReseau(this.db.ref("users/"+this.uid()+"/gameInvites").once("value"),8000)
       ]);
-      const bloques=this.bloquesMemoire||{};
+      const maintenant=Date.now(), bloques=this.bloquesMemoire||{};
       const demandes=Object.keys(demandesSnap.val()||{}).filter((uid)=>!bloques[uid]).length;
-      const invitations=Object.entries(invitationsSnap.val()||{}).filter(([uid,inv])=>!bloques[uid]&&inv&&inv.status==="pending"&&inv.code).length;
+      const invitations=Object.entries(invitationsSnap.val()||{}).filter(([uid,inv])=>!bloques[uid]&&inv&&inv.status==="pending"&&inv.code&&inv.createdAt&&maintenant-Number(inv.createdAt)<=10*60*1000).length;
       const total=demandes+invitations;
       pastille.hidden=total===0;
       pastille.textContent=total>9?"9+":String(total);
