@@ -614,10 +614,11 @@ body{min-width:0}
 .chaos-scene:after{content:"ROOARRR";position:absolute;right:1%;top:12%;padding:8px 12px;background:var(--accueil-acide);color:var(--accueil-encre);font:800 1rem/1 "Fredoka",sans-serif;transform:rotate(9deg);box-shadow:4px 4px 0 var(--accueil-corail)}
 .chaos-embleme:before{content:"\1F525 \1F525";position:absolute;z-index:-1;left:50%;top:-38%;font-size:clamp(28px,7vw,52px);letter-spacing:.6em;white-space:nowrap;filter:hue-rotate(175deg) saturate(1.8) drop-shadow(0 0 12px rgba(59,130,246,.6));opacity:.75;animation:flammettes 1.8s ease-in-out infinite;transform:translateX(-50%)}
 .chaos-pile{position:absolute;z-index:2;left:50%;bottom:4%;transform:translateX(-50%) rotate(12deg);width:150px;height:100px}
-.chaos-pile span{position:absolute;left:0;top:0;width:150px;height:92px;border-radius:10px;background:linear-gradient(145deg,#fff,#f3e8ff);border:2px solid #d8b4fe;box-shadow:0 4px 8px rgba(0,0,0,.18)}
+.chaos-pile span{position:absolute;left:0;top:0;width:150px;height:92px;border-radius:10px;border:1px solid hsla(270,55%,45%,.26);border-top:5px solid var(--violet);background:radial-gradient(circle at 26% 28%,hsla(270,88%,94%,.94) 0 16%,transparent 17%),linear-gradient(135deg,hsl(270 70% 89%),hsl(325 74% 78%));box-shadow:0 4px 8px rgba(0,0,0,.18)}
+.chaos-pile span:after{content:"C&C";position:absolute;left:8px;right:8px;bottom:6px;padding:2px 0;border-radius:5px;background:rgba(255,255,255,.84);color:#59439f;font:800 7px/1 "Fredoka",sans-serif;letter-spacing:.12em;text-align:center}
 .chaos-pile span:nth-child(1){transform:rotate(-4deg) translateY(6px)}
 .chaos-pile span:nth-child(2){transform:rotate(3deg) translateY(3px)}
-.chaos-pile span:nth-child(3){transform:rotate(-1deg);background:linear-gradient(145deg,#fef3c7,#fde68a);border-color:#f59e0b}
+.chaos-pile span:nth-child(3){transform:rotate(-1deg)}
 .chaos-embleme{position:relative;z-index:3;width:min(100%,360px);height:auto;filter:drop-shadow(0 15px 18px rgba(0,0,0,.32));animation:embleme-chaos 4.5s ease-in-out infinite}
 .chaos-carte{position:absolute;z-index:2;width:146px;height:206px;filter:drop-shadow(7px 9px 0 rgba(0,0,0,.3))}
 .chaos-carte>.carte{width:100%;height:100%;min-height:0;padding:9px 8px 28px;border-radius:15px;text-align:center;align-items:center;cursor:default;overflow:hidden;box-shadow:none}
