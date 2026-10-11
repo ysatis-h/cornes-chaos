@@ -7,7 +7,7 @@
   <meta name="application-name" content="Cornes &amp; Chaos">
   <meta property="og:title" content="Cornes &amp; Chaos">
   <meta name="twitter:title" content="Cornes &amp; Chaos">
-  <meta name="description" content="Cornes & Chaos, jeu de 76 cartes draconique en français ou en anglais pour 1 à 4 Dresseurs, avec bots, en local ou en ligne.">
+  <meta name="description" content="Cornes & Chaos, jeu de 72 cartes draconique en français ou en anglais pour 1 à 4 Dresseurs, avec bots, en local ou en ligne.">
   <meta name="theme-color" content="#c084fc">
   <meta name="color-scheme" content="light dark">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1280,16 +1280,16 @@ const DEFINITIONS_CARTES = [
     effet: { kind: "aucun" }, exemplaires: 14,
   },
 
-  // -------------------------- DRAGONS CLASSIQUES (x8 : 4 Braises + 4 Givres) --------------------
+  // -------------------------- DRAGONS CLASSIQUES (x4 : 2 Braises + 2 Givres) --------------------
   {
     id: "licorne-classique", nom: "Dragon des Braises", type: "licorne", emoji: "🔥", couleur: "rouge",
     texte: "Sacrifie ce dragon : pioche 2 cartes.",
-    effet: { kind: "sacrifice-piocher", n: 2 }, exemplaires: 4,
+    effet: { kind: "sacrifice-piocher", n: 2 }, exemplaires: 2,
   },
   {
     id: "licorne-givre", nom: "Dragon des Givres", type: "licorne", emoji: "❄️", couleur: "bleu",
     texte: "Quand il entre dans ton repaire : gèle un dragon dans la main d'un adversaire. Il ne peut pas être joué pendant 2 tours.",
-    effet: { kind: "geler-main", declencheur: "entree", cible: "main-adverse" }, exemplaires: 4,
+    effet: { kind: "geler-main", declencheur: "entree", cible: "main-adverse" }, exemplaires: 2,
   },
 
   // -------------------------- DRAGONS MYTHIQUES (x10) ---------------------
