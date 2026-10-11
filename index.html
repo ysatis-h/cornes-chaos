@@ -7,7 +7,7 @@
   <meta name="application-name" content="Cornes &amp; Chaos">
   <meta property="og:title" content="Cornes &amp; Chaos">
   <meta name="twitter:title" content="Cornes &amp; Chaos">
-  <meta name="description" content="Cornes & Chaos, jeu de 72 cartes draconique en français ou en anglais pour 1 à 4 Dresseurs, avec bots, en local ou en ligne.">
+  <meta name="description" content="Cornes & Chaos, jeu de 76 cartes draconique en français ou en anglais pour 1 à 4 Dresseurs, avec bots, en local ou en ligne.">
   <meta name="theme-color" content="#c084fc">
   <meta name="color-scheme" content="light dark">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1270,18 +1270,23 @@ const TYPES_CARTE = {
 /* Chaque définition : { id, nom, type, emoji, texte, effet, exemplaires }
    Les identifiants historiques restent inchangés pour préserver les parties en cours. */
 const DEFINITIONS_CARTES = [
-  // ---------------------------- DRAGONNEAUX (x10) --------------------------
+  // ---------------------------- DRAGONNEAUX (x14 : 2 par couleur) --------------------------
   {
     id: "bebe-licorne", nom: "Bébé Dragon", type: "bebe", emoji: "🥚", couleur: "violet",
     texte: "Une minuscule boule d'écailles. Ses éternuements font déjà des étincelles.",
-    effet: { kind: "aucun" }, exemplaires: 10,
+    effet: { kind: "aucun" }, exemplaires: 14,
   },
 
-  // -------------------------- DRAGONS CLASSIQUES (x11) --------------------
+  // -------------------------- DRAGONS CLASSIQUES (x8 : 4 Braises + 4 Givres) --------------------
   {
     id: "licorne-classique", nom: "Dragon des Braises", type: "licorne", emoji: "🔥", couleur: "rouge",
     texte: "Fier, flamboyant et toujours prêt à défendre son trésor.",
-    effet: { kind: "aucun" }, exemplaires: 8,
+    effet: { kind: "aucun" }, exemplaires: 4,
+  },
+  {
+    id: "licorne-givre", nom: "Dragon des Givres", type: "licorne", emoji: "❄️", couleur: "bleu",
+    texte: "Silencieux et majestueux, il fige l'air autour de son trésor.",
+    effet: { kind: "aucun" }, exemplaires: 4,
   },
 
   // -------------------------- DRAGONS MYTHIQUES (x10) ---------------------
@@ -1441,6 +1446,7 @@ let LANGUE = "fr";
 const CARTES_EN = {
   "bebe-licorne": { nom: "Baby Dragon", texte: "A tiny ball of scales. Its sneezes already throw sparks." },
   "licorne-classique": { nom: "Ember Dragon", texte: "Proud, fiery, and always ready to defend its treasure." },
+  "licorne-givre": { nom: "Frost Dragon", texte: "Silent and majestic, it freezes the air around its treasure." },
   "licorne-arc-en-ciel": { nom: "Prismatic Dragon", texte: "When it enters your lair: draw 2 cards." },
   "licorne-ninja": { nom: "Shadow Dragon", texte: "When it enters your lair: destroy an Upgrade or Sabotage on any territory." },
   "licorne-cupidon": { nom: "Blazing Heart Dragon", texte: "When it enters your lair: steal one NON-mythic dragon from an opponent." },
@@ -1480,6 +1486,7 @@ const TYPES_EN = {
 const META_DRAGONDEX = {
   "bebe-licorne": { tribuFr:"Étincelle", tribuEn:"Spark", ambianceFr:"Curieux et minuscule, il apprend à faire jaillir ses premières étincelles.", ambianceEn:"Tiny and curious, it is learning to summon its very first sparks." },
   "licorne-classique": { tribuFr:"Braises rouges", tribuEn:"Red embers", ambianceFr:"Un gardien fier dont les écailles rougeoient près des trésors qu’il protège.", ambianceEn:"A proud guardian whose scales glow beside the treasures it protects." },
+  "licorne-givre": { tribuFr:"Givres bleus", tribuEn:"Blue frosts", ambianceFr:"Un gardien silencieux dont le souffle givre les trésors qu’il protège.", ambianceEn:"A silent guardian whose breath frosts the treasures it protects." },
   "licorne-arc-en-ciel": { tribuFr:"Prisme", tribuEn:"Prism", ambianceFr:"La lumière se brise sur ses ailes et peint le ciel de couleurs mouvantes.", ambianceEn:"Light splits across its wings and paints the sky in shifting colors." },
   "licorne-ninja": { tribuFr:"Ombre noire", tribuEn:"Black shadow", ambianceFr:"Il glisse entre les territoires sans bruit, aussi sombre qu’une nuit sans lune.", ambianceEn:"It slips between territories without a sound, as dark as a moonless night." },
   "licorne-cupidon": { tribuFr:"Flamme rose", tribuEn:"Rose flame", ambianceFr:"Son feu réchauffe les alliances… et attire parfois un dragon voisin.", ambianceEn:"Its fire warms alliances—and sometimes draws a nearby dragon closer." },
@@ -2109,7 +2116,11 @@ function construirePioche(defiId) {
     const exemplaires = def.exemplaires + (def.saison && definitionsSaisonnieresActives().some((active) => active.id === def.id) ? 1 : 0);
     for (let i = 0; i < exemplaires; i++) {
       const instance = { uid: uidCourt(), defId: def.id };
-      if (def.id === "bebe-licorne") instance.couleurDragon = COULEURS_AVATAR[Math.floor(Math.random() * COULEURS_AVATAR.length)];
+      if (def.id === "bebe-licorne") {
+        // 2 bébés par couleur, en rotation : chaque bébé garde sa couleur du paquet.
+        const couleursBebes = ["violet", "rose", "turquoise", "vert", "orange", "rouge", "bleu"];
+        instance.couleurDragon = COULEURS_AVATAR[IDS_COULEURS_DRAGON.indexOf(couleursBebes[i % couleursBebes.length])];
+      }
       pioche.push(instance);
     }
   }
@@ -5032,7 +5043,7 @@ window.addEventListener("pageshow", () => {
    le contrôle absolu sur ces sons. */
 function sonPourCarte(defId) {
   const signatures = {
-    "bebe-licorne":"eclosion", "licorne-classique":"braises",
+    "bebe-licorne":"eclosion", "licorne-classique":"braises", "licorne-givre":"glace",
     "licorne-arc-en-ciel":"prisme", "licorne-ninja":"ombre",
     "licorne-cupidon":"coeur", "licorne-gourmet":"glouton",
     "licorne-gardienne":"bouclier", "licorne-farceuse":"farce",
@@ -5628,6 +5639,7 @@ function illustrationDragonHTML(def) {
     "licorne-fantome": '<path class="skin-ligne" d="M15 57q8-9 14 0t14 0m18-1q7-9 14 0M18 68q5-5 10 0m34 0q5-5 10 0"/>',
     "licorne-jumelle": '<g class="jumeau-mini"><path class="aile" d="M60 47q16-4 22-15-1 10 3 16-8 5-20 6Z"/><path class="corps" d="M55 50q0-18 13-18t13 18q0 16-13 22-13-6-13-22Z"/><path class="corne" d="m60 36-1-10 7 7m7 3 4-9 2 11"/><ellipse class="oeil" cx="64" cy="47" rx="4" ry="5"/><ellipse class="oeil" cx="73" cy="47" rx="4" ry="5"/><circle class="pupille" cx="65" cy="48" r="2"/><circle class="pupille" cx="72" cy="48" r="2"/><circle class="joue" cx="60" cy="55" r="3"/><circle class="joue" cx="77" cy="55" r="3"/><path class="trait" d="M65 57q4 4 8 0"/></g>',
     "dragon-neiges": '<path class="skin-clair" d="m45 45 4 8 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1Z"/><path class="skin-ligne" d="M18 31h10m-5-5v10m39-5h10m-5-5v10M45 2v9"/>',
+    "licorne-givre": '<path class="skin-clair" d="M45 30v16M37 34l16 8M53 34l-16 8"/><circle class="skin-ligne" cx="45" cy="38" r="3"/>',
     "dragon-bourgeons": '<path class="skin-ligne" d="M45 71q-3-19 3-34M34 62q8-8 14-7m4-8q7-6 13-3"/><path class="skin-accent" d="M48 38c-10-7-9-16 0-11 4-10 12-5 8 4 10-1 11 8 1 11-1 10-10 10-12 1-9 5-13-3-5-9Z"/>',
     "dragon-solaire": '<circle class="skin-clair" cx="45" cy="55" r="12"/><path class="skin-ligne" d="M45 36V25m0 49v7M26 55H15m60 0h-11M31 41l-8-8m36 8 8-8M31 69l-7 7m35-7 7 7"/>',
     "dragon-brumes": '<path class="skin-ligne" d="M12 54q12-9 24 0t24 0q11-8 20 0M9 63q13-8 26 0t27 0q10-7 19 0"/><path class="skin-accent" d="M63 35q11-9 17-1-5 12-18 10-8 10-17 6 5-11 18-15Z"/><path class="skin-ligne" d="M48 50q15-8 28-14"/>',
