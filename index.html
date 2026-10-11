@@ -8653,10 +8653,10 @@ function ouvrirModalReponse(cadre, rIdx) {
       echapper(descriptionEffetEnAttente(etat, cadre)) + '</span></div>' +
     "<p>" + echapper(repondant.nom) + L(", joue un Rugissement pour annuler cette carte, ou laisse l’effet se résoudre.", ", play a Roar to cancel this card, or let its effect resolve.") + "</p>" +
     '<div class="liste-cibles">';
-  hennissements.forEach((henni) => {
+  if (hennissements.length > 0) {
     const libelle = L("✦ RUGIR !", "✦ ROAR!");
-    html += '<button class="gros-bouton bouton-primaire bouton-hennir" data-uid="' + henni.uid + '">' + libelle + "</button>";
-  });
+    html += '<button class="gros-bouton bouton-primaire bouton-hennir" data-uid="' + hennissements[0].uid + '">' + libelle + "</button>";
+  }
   html += '<button id="modal-passer-rep" class="gros-bouton bouton-secondaire">' + L("Laisser passer", "Let it through") + '</button></div>';
   ouvrirModal(html);
 
