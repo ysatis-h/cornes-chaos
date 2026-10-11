@@ -984,8 +984,12 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 /* Comptes de Dresseurs, collection et mode équipe. */
 .compte-accueil{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;max-width:520px;margin:12px 0 0;padding:13px;border:1px solid rgba(89,67,159,.2);border-radius:14px;background:rgba(255,255,255,.58)}.compte-accueil[hidden]{display:none}.compte-identite{display:flex;align-items:center;gap:9px;min-width:0;width:100%}.compte-identite>span:last-child{min-width:0}.compte-identite strong{display:block;color:var(--nuit);overflow-wrap:anywhere}.compte-identite small{display:block;color:#536478;white-space:normal;overflow-wrap:anywhere}.compte-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(89,67,159,.24)}
 .compte-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;min-width:0}.compte-mini{display:flex;align-items:center;justify-content:center;min-width:0;min-height:40px;padding:8px 9px;border:1px solid rgba(89,67,159,.22);border-radius:10px;background:#fff;color:var(--violet-fonce);font:800 .76rem/1.2 "Nunito Sans",sans-serif;text-align:center;white-space:normal;overflow-wrap:anywhere;cursor:pointer}.compte-mini[hidden]{display:none}.compte-mini.primaire{background:var(--nuit);color:#fff}.compte-mini:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
+.compte-mini{position:relative}
+.pastille-notif{position:absolute;top:-7px;right:-7px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#e14b6e;color:#fff;font:800 .72rem/22px "Nunito Sans",sans-serif;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.35);pointer-events:none}
+.pastille-notif[hidden]{display:none}
 .profil-grille{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}.stat-profil{padding:12px;border:1px solid var(--ligne);border-radius:12px;background:var(--surface-2);text-align:left}.stat-profil strong{display:block;font:800 1.45rem/1 "Fredoka",sans-serif;color:var(--violet-fonce)}.stat-profil span{display:block;margin-top:5px;color:var(--texte-doux);font-size:.78rem;font-weight:800}
 .amis-recherche{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin:10px 0 16px}.amis-recherche input{display:block;width:100%;margin:0;min-width:0}.amis-recherche button{width:auto;margin:0;padding:10px 14px}@media(max-width:480px){.amis-recherche{grid-template-columns:1fr}.amis-recherche button{width:100%}}.amis-section{text-align:left;margin:16px 0}.amis-section h4{margin:0 0 8px;color:var(--violet-fonce)}.amis-liste{display:grid;gap:8px}.ami-ligne{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--ligne);border-radius:12px;background:var(--surface-2)}.ami-identite{min-width:0;flex:1}.ami-identite strong,.ami-identite small{display:block}.ami-identite small{margin-top:2px;color:var(--texte-doux);font-size:.76rem}.presence{display:inline-block;width:9px;height:9px;margin-right:5px;border-radius:50%;background:#82929d}.presence.en-ligne{background:#27a65b;box-shadow:0 0 0 3px rgba(39,166,91,.14)}.ami-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}.ami-actions button{min-height:34px;padding:7px 9px;border:1px solid var(--ligne);border-radius:9px;background:var(--surface);color:var(--violet-fonce);font-weight:800;cursor:pointer}.ami-vide{margin:0;color:var(--texte-doux);font-size:.88rem}.invitation-partie{border-color:var(--or);background:#fff8df}
+.ami-statut{font-size:.78rem;font-weight:800;color:var(--texte-doux)}
 .choix-difficulte-bloc{margin:15px 0;text-align:left}.choix-difficulte-titre{display:block;margin-bottom:8px;color:var(--violet-fonce);font-family:"Fredoka",sans-serif;font-size:.92rem}.choix-difficulte{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.difficulte-option{min-width:0;padding:10px 8px;border:1px solid var(--ligne);border-radius:12px;background:var(--surface);color:var(--texte);font-family:"Nunito Sans",sans-serif;text-align:left;cursor:pointer}.difficulte-option strong,.difficulte-option small{display:block}.difficulte-option strong{color:var(--violet-fonce);font-family:"Fredoka",sans-serif;font-size:.88rem}.difficulte-option small{margin-top:4px;color:var(--texte-doux);font-size:.68rem;line-height:1.3}.difficulte-option[aria-pressed="true"]{border-color:var(--violet-fonce);background:var(--surface-2);box-shadow:0 0 0 2px color-mix(in srgb,var(--violet) 35%,transparent)}.difficulte-option:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
 .classement-liste{display:grid;gap:8px;margin:14px 0;text-align:left}.classement-ligne{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;padding:11px;border:1px solid var(--ligne);border-radius:12px;background:var(--surface-2)}.classement-ligne.moi{border-color:var(--violet-fonce);background:color-mix(in srgb,var(--violet) 16%,var(--surface));box-shadow:0 0 0 2px color-mix(in srgb,var(--violet) 24%,transparent)}.classement-rang{font:800 1.15rem/1 "Fredoka",sans-serif;color:var(--violet-fonce);text-align:center}.classement-identite{min-width:0}.classement-identite strong,.classement-identite small{display:block}.classement-identite strong{overflow-wrap:anywhere}.classement-identite small{margin-top:3px;color:var(--texte-doux);font-size:.72rem;line-height:1.3}.classement-stats{display:flex;gap:12px;text-align:right}.classement-stat strong,.classement-stat span{display:block}.classement-stat strong{font:800 1.05rem/1 "Fredoka",sans-serif;color:var(--violet-fonce)}.classement-stat span{margin-top:4px;color:var(--texte-doux);font-size:.65rem;font-weight:800}.classement-note{margin:10px 0;color:var(--texte-doux);font-size:.8rem;line-height:1.4}
 .dragondex-entete{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:20px}.dragondex-entete h3{margin:0}.dragondex-compteur{flex:0 0 auto;padding:5px 9px;border-radius:999px;background:var(--nuit);color:#fff;font:800 .78rem/1 "Fredoka",sans-serif}.dragondex-regle{margin:8px 0 10px;color:var(--texte-doux);font-size:.85rem;line-height:1.4;text-align:left}.dragondex-filtres{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.dragondex-filtre{min-height:34px;padding:7px 10px;border:1px solid var(--ligne);border-radius:999px;background:var(--surface);color:var(--texte);font:800 .72rem/1 "Nunito Sans",sans-serif;cursor:pointer}.dragondex-filtre[aria-pressed="true"]{background:var(--nuit);border-color:var(--nuit);color:#fff}.dragondex{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0;text-align:left}.dragondex-item{display:flex;align-items:center;gap:8px;width:100%;min-width:0;padding:9px;border:1px solid var(--ligne);border-radius:11px;background:var(--surface);color:var(--texte);text-align:left;cursor:pointer}.dragondex-item:hover{background:var(--surface-2)}.dragondex-item:focus-visible{outline:3px solid var(--rose);outline-offset:2px}.dragondex-item.inconnu{opacity:.62}.dragondex-item.inconnu .dragondex-mini{filter:grayscale(1)}.dragondex-mini{width:42px;flex:0 0 42px}.dragondex-mini .dragon-dessin{width:42px;height:39px}.dragondex-item-texte{min-width:0}.dragondex-item strong{display:block;font-size:.76rem;line-height:1.2;overflow-wrap:anywhere}.dragondex-item small{display:block;margin-top:3px;color:var(--texte-doux);font-size:.66rem;font-weight:800}.saison-badge{display:inline-flex;margin:3px 0 0;padding:2px 6px;border-radius:999px;background:#fff0c8;color:#7b4300;font-size:.62rem;font-weight:900}.dragondex-detail{text-align:left}.dragondex-detail-visuel{display:grid;place-items:center;min-height:190px;margin:8px 0 16px;border-radius:16px;background:var(--surface-2);overflow:hidden}.dragondex-detail-visuel .dragon-dessin{width:180px;height:168px}.dragondex-detail-visuel.inconnu{filter:grayscale(1);opacity:.62}.dragondex-infos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:13px 0}.dragondex-info{padding:10px;border:1px solid var(--ligne);border-radius:10px;background:var(--surface-2)}.dragondex-info strong,.dragondex-info span{display:block}.dragondex-info strong{color:var(--texte-doux);font-size:.67rem;text-transform:uppercase;letter-spacing:.04em}.dragondex-info span{margin-top:3px;font-weight:800}.dragondex-effet{padding:12px;border-radius:12px;background:var(--surface-2);line-height:1.45}.dragondex-verrou{margin:12px 0;padding:14px;border:1px solid var(--ligne);border-radius:13px;background:var(--surface-2);text-align:left}.dragondex-verrou strong{display:block;color:var(--violet-fonce);margin-bottom:4px}
@@ -1029,7 +1033,7 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 .signalement-form{text-align:left}.signalement-form label{display:block;margin:12px 0 5px;color:var(--violet-fonce);font-weight:800}
 .signalement-form select{width:100%;min-height:46px;padding:10px 12px;border:2px solid var(--ligne);border-radius:12px;background:var(--surface);color:var(--texte);font:700 1rem/1.25 "Nunito Sans",sans-serif}
 .signalement-aide{margin:10px 0 0;color:var(--texte-doux);font-size:.82rem;line-height:1.4;text-align:left}.bouton-bloquer{background:var(--surface-2);color:var(--texte);border:1px solid var(--ligne);box-shadow:none}.ami-ligne.ami-bloque{opacity:.88}.ami-ligne.ami-bloque .presence{background:#82929d;box-shadow:none}
-.accueil-liens{display:flex;justify-content:center;margin:14px 0 0}.accueil-lien{padding:6px 8px;border:0;background:transparent;color:var(--violet-fonce);font:800 .78rem/1.25 "Nunito Sans",sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.accueil-lien:focus-visible{outline:3px solid var(--rose);outline-offset:2px}.politique-confidentialite{text-align:left}.politique-confidentialite h3{margin-bottom:7px}.politique-intro{margin:0 0 14px;color:var(--texte-doux);line-height:1.45}.politique-liste{display:grid;gap:10px;margin:0 0 16px;padding:0;list-style:none}.politique-liste li{padding:11px 12px;border:1px solid var(--ligne);border-radius:12px;background:var(--surface-2);line-height:1.4}.politique-liste strong{display:block;margin-bottom:2px;color:var(--violet-fonce)}.politique-note{margin:0 0 16px;line-height:1.45}
+.accueil-liens{display:flex;justify-content:center;margin:14px 0 0}.accueil-lien{padding:6px 8px;border:0;background:transparent;color:var(--violet-fonce);font:800 .78rem/1.25 "Nunito Sans",sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.accueil-lien:focus-visible{outline:3px solid var(--rose);outline-offset:2px}.politique-confidentialite{text-align:left}.politique-confidentialite h3{margin-bottom:7px}.politique-confidentialite h4{margin:14px 0 6px;color:var(--violet-fonce)}.politique-intro{margin:0 0 14px;color:var(--texte-doux);line-height:1.45}.politique-liste{display:grid;gap:10px;margin:0 0 16px;padding:0;list-style:none}.politique-liste li{padding:11px 12px;border:1px solid var(--ligne);border-radius:12px;background:var(--surface-2);line-height:1.4}.politique-liste strong{display:block;margin-bottom:2px;color:var(--violet-fonce)}.politique-note{margin:0 0 16px;line-height:1.45}
 @media(max-width:480px){.liste-joueurs li{grid-template-columns:minmax(0,1fr) auto}.bouton-signaler-ligne{min-width:76px;padding:7px 8px}.score-fin{align-items:flex-start}.score-fin-actions{gap:6px;max-width:116px;justify-content:flex-end}.score-fin-actions .bouton-signaler-ligne{min-width:76px}}
 .profil-pseudo{margin:4px 0 18px;padding:13px;border:1px solid var(--ligne);border-radius:13px;background:var(--surface-2);text-align:left}
 .profil-pseudo label{display:block;margin-bottom:4px;color:var(--violet-fonce);font-weight:800}.profil-pseudo small{display:block;margin-bottom:5px;color:var(--texte-doux)}
@@ -1047,6 +1051,9 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 body.avec-bandeau{padding-top:38px}
 .maintenance-ecran{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(35,18,52,.93)}
 .maintenance-ecran[hidden]{display:none}
+#salon-choix-theme{margin:12px 0 4px}
+.maintenance-desactiver{opacity:.7;margin-top:12px}
+.maintenance-desactiver[hidden]{display:none}
 .maintenance-carte{max-width:440px;padding:32px 28px;border-radius:20px;background:var(--surface);text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4)}
 .maintenance-icone{font-size:3rem}
 .maintenance-carte h2{margin:12px 0 8px;color:var(--violet-fonce);font:800 1.5rem/1.2 "Fredoka",sans-serif}
@@ -1410,7 +1417,7 @@ const DEFINITIONS_CARTES = [
   },
   {
     id: "miroir-fele", nom: "Miroir du Dragon Brisé", type: "sabotage", emoji: "🪞",
-    texte: "La cible défausse 1 carte au hasard au début de chacun de ses tours.",
+    texte: "La cible défausse 1 carte au hasard au début de chacun de ses tours (4 tours maximum, puis le miroir se brise).",
     effet: { kind: "passif", passif: "defausse-debut-tour", cible: "adversaire" }, exemplaires: 3,
   },
 
@@ -1462,7 +1469,7 @@ const CARTES_EN = {
   "clochette-magique": { nom: "Lair Bell", texte: "When an opponent steals or destroys one of your dragons: draw 2 cards." },
   "nuage-grognon": { nom: "Ash Cloud", texte: "The next Dragon Magic card played by the target is cancelled. The Cloud then fades." },
   "boue-collante": { nom: "Sinking Marsh", texte: "Trap: the next dragon played by this Trainer is discarded." },
-  "miroir-fele": { nom: "Shattered Dragon Mirror", texte: "The target discards 1 random card at the start of each of their turns." },
+  "miroir-fele": { nom: "Shattered Dragon Mirror", texte: "The target discards 1 random card at the start of each of their turns (max 4 turns, then the mirror shatters)." },
   "riposte": { nom: "Roar", texte: "Cancel the card that was just played. Only one Roar may be played against that card." },
   "rugissement-meute": { nom: "Pack Roar", texte: "Protect all your dragons until the start of your next turn." }
 };
@@ -2337,6 +2344,10 @@ const MESSAGES_JOURNAL = {
     fr: (p) => "🪞 " + p.nom + " défausse 1 carte (Miroir du Dragon Brisé).",
     en: (p) => "🪞 " + p.nom + " discards 1 card (Shattered Dragon Mirror).",
   },
+  mirror_break: {
+    fr: (p) => "🪞 Le Miroir du Dragon Brisé de " + p.nom + " se brise après 4 tours !",
+    en: (p) => "🪞 " + p.nom + "’s Shattered Dragon Mirror shatters after 4 turns!",
+  },
   turn_full: {
     fr: (p) => "▶️ Tour de " + p.nom + " : main pleine (7 cartes ou plus), aucune pioche.",
     en: (p) => "▶️ " + p.nom + "’s turn: full hand (7 cards or more), no draw.",
@@ -2605,13 +2616,22 @@ function debutTour(etat) {
   // Le bouclier expire au début de ton prochain tour.
   joueur.protege = false;
 
-  // Miroir Fêlé : défausse 1 carte au début du tour.
+  // Miroir Fêlé : défausse 1 carte au début du tour, 4 tours max puis il se brise.
   const miroir = joueur.sabotages.find((c) => c.defId === "miroir-fele");
   if (miroir) {
-    miroir.fissures = Math.min(3, (Number(miroir.fissures) || 0) + 1);
+    const toursMiroir = (Number(miroir.toursMiroir) || 0) + 1;
+    miroir.toursMiroir = toursMiroir;
+    miroir.fissures = Math.min(3, toursMiroir);
     defausserAuHasard(etat, idx, 1);
     ajouterEffetVisuel(etat, "miroir-fele", idx, { niveau: miroir.fissures });
-    journal(etat, "mirror_discard", { nom: joueur.nom });
+    if (toursMiroir >= 4) {
+      const pos = joueur.sabotages.indexOf(miroir);
+      if (pos >= 0) joueur.sabotages.splice(pos, 1);
+      etat.defausse.push(miroir);
+      journal(etat, "mirror_break", { nom: joueur.nom });
+    } else {
+      journal(etat, "mirror_discard", { nom: joueur.nom });
+    }
   }
   // Pioche normale : exactement 1 carte si la main en contient moins de 7.
   // Les cartes qui accordent une pioche supplémentaire sont des exceptions
@@ -2860,9 +2880,10 @@ function cibleAttaque(def, cibles, idxJoueur) {
   return Number.isInteger(idxCible) && idxCible !== idxJoueur ? idxCible : null;
 }
 
-/* Les dragons sans effet entrent directement au repaire, sauf si un bot joue
-   le dragon qui lui donnerait la victoire : les humains doivent alors avoir
-   leur dernière chance de rugir. Toute autre carte à effet peut être contrée. */
+/* Les dragons sans effet entrent directement au repaire, sauf (1) quand un bot
+   joue le dragon qui lui donnerait la victoire et (2) en balle de match : si ce
+   dragon ferait gagner la partie, les adversaires ont leur dernière chance de
+   rugir pour l'annuler. Toute autre carte à effet peut être contrée. */
 function carteEstContestable(def, cibles, idxJoueur) {
   if (!def) return false;
   if (def.type === "magie" || def.type === "amelioration" || def.type === "sabotage") return true;
@@ -2909,7 +2930,10 @@ function jouerCarte(etat, idxJoueur, uidCarte, cibles) {
   const repondants = [];
   // Un bot laisse toujours aux humains qui ont un Rugissement la possibilité
   // de réagir, y compris quand son dragon sans effet serait celui de la victoire.
-  const contestable = carteEstContestable(def, cibles, idxJoueur)||joueur.estBot;
+  // Balle de match : un dragon sans effet qui ferait gagner la partie reste
+  // contestable — les adversaires ont leur dernière chance de rugir.
+  const dragonBalleMatch=(def.type==="bebe"||def.type==="licorne")&&!carteEstContestable(def,cibles,idxJoueur)&&valeurEcurie(etat,idxJoueur)+(def.valeur||1)>=LICORNES_POUR_GAGNER;
+  const contestable = carteEstContestable(def, cibles, idxJoueur)||joueur.estBot||dragonBalleMatch;
   const cibleRiposte = cibleAttaque(def, cibles, idxJoueur);
   if (contestable && cibleRiposte !== null) {
     // Riposte : les autres Dresseurs ne peuvent pas intervenir dans une attaque
@@ -3951,7 +3975,7 @@ function erreurReseau(code, repliFr, repliEn) {
             <button id="btn-nouvelle" class="gros-bouton bouton-primaire" data-fr="Nouvelle partie" data-en="New game">Nouvelle partie</button>
             <button id="btn-rejoindre" class="gros-bouton bouton-secondaire" data-fr="Rejoindre une partie" data-en="Join a game">Rejoindre une partie</button>
           </div>
-          <div id="compte-accueil" class="compte-accueil" aria-live="polite"><div id="compte-identite" class="compte-identite"><span class="avatar-dragon" aria-hidden="true">🔑</span><span><strong data-fr="Compte optionnel" data-en="Optional account">Compte optionnel</strong><small data-fr="Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes." data-en="Achievements, the friends leaderboard, and the Daily Challenge are for signed-in accounts.">Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes.</small></span></div><div class="compte-actions"><button id="btn-connexion" class="compte-mini primaire" type="button" data-fr="Se connecter avec Google" data-en="Sign in with Google">Se connecter avec Google</button><button id="btn-dragondex-invite" class="compte-mini" type="button" data-fr="Aperçu du Dragondex" data-en="Dragondex preview">Aperçu du Dragondex</button><button id="btn-profil" class="compte-mini" type="button" data-fr="Mon profil" data-en="My profile" hidden>Mon profil</button><button id="btn-succes" class="compte-mini" type="button" data-fr="Succès" data-en="Achievements" hidden>Succès</button><button id="btn-classement" class="compte-mini" type="button" data-fr="Classement amis" data-en="Friends leaderboard" hidden>Classement amis</button><button id="btn-amis" class="compte-mini" type="button" data-fr="Mes amis" data-en="My friends" hidden>Mes amis</button><button id="btn-equipe" class="compte-mini" type="button" data-fr="Équipe 2v2" data-en="2v2 Team" hidden>Équipe 2v2</button><button id="btn-deconnexion" class="compte-mini" type="button" data-fr="Déconnexion" data-en="Sign out" hidden>Déconnexion</button></div></div>
+          <div id="compte-accueil" class="compte-accueil" aria-live="polite"><div id="compte-identite" class="compte-identite"><span class="avatar-dragon" aria-hidden="true">🔑</span><span><strong data-fr="Compte optionnel" data-en="Optional account">Compte optionnel</strong><small data-fr="Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes." data-en="Achievements, the friends leaderboard, and the Daily Challenge are for signed-in accounts.">Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes.</small></span></div><div class="compte-actions"><button id="btn-connexion" class="compte-mini primaire" type="button" data-fr="Se connecter avec Google" data-en="Sign in with Google">Se connecter avec Google</button><button id="btn-dragondex-invite" class="compte-mini" type="button" data-fr="Aperçu du Dragondex" data-en="Dragondex preview">Aperçu du Dragondex</button><button id="btn-profil" class="compte-mini" type="button" data-fr="Mon profil" data-en="My profile" hidden>Mon profil</button><button id="btn-succes" class="compte-mini" type="button" data-fr="Succès" data-en="Achievements" hidden>Succès</button><button id="btn-classement" class="compte-mini" type="button" data-fr="Classement amis" data-en="Friends leaderboard" hidden>Classement amis</button><button id="btn-amis" class="compte-mini" type="button" data-fr="Mes amis" data-en="My friends" hidden>Mes amis<span id="pastille-amis" class="pastille-notif" hidden></span></button><button id="btn-equipe" class="compte-mini" type="button" data-fr="Équipe 2v2" data-en="2v2 Team" hidden>Équipe 2v2</button><button id="btn-deconnexion" class="compte-mini" type="button" data-fr="Déconnexion" data-en="Sign out" hidden>Déconnexion</button></div></div>
           <p class="accueil-accessibilite" aria-label="7 ans et plus"><strong>7+</strong></p>
         </div>
         <div class="chaos-scene" aria-hidden="true">
@@ -3985,7 +4009,8 @@ function erreurReseau(code, repliFr, repliEn) {
         <div id="salon-code" class="code-salle">····</div>
         <div class="code-copie-actions"><button id="btn-copier-code" class="bouton-copier-code" type="button" data-fr="Copier" data-en="Copy">Copier</button></div>
         <h3 data-fr="Dresseurs dans la salle :" data-en="Trainers in the room:">Dresseurs dans la salle :</h3>
-        <p data-fr="Le plateau sera tiré au hasard parmi les choix des Dresseurs." data-en="The board will be drawn at random from the Trainers’ choices.">Le plateau sera tiré au hasard parmi les choix des Dresseurs.</p>
+        <p data-fr="Le plateau de la partie est choisi par l'hôte." data-en="The host chooses the game board.">Le plateau de la partie est choisi par l'hôte.</p>
+        <div id="salon-choix-theme" class="cachee"></div>
         <ul id="salon-joueurs" class="liste-joueurs"></ul>
         <div id="salon-bots" class="cachee">
           <button id="btn-ajouter-bot" class="gros-bouton bouton-secondaire" data-fr="Ajouter un bot au défi" data-en="Add a bot">Ajouter un bot au défi</button>
@@ -4136,6 +4161,7 @@ function erreurReseau(code, repliFr, repliEn) {
       <h2 id="maintenance-ecran-titre"></h2>
       <p id="maintenance-ecran-message"></p>
       <p class="maintenance-heures" id="maintenance-ecran-heures"></p>
+      <button id="maintenance-ecran-desactiver" class="petit-bouton maintenance-desactiver" type="button" hidden></button>
     </div>
   </div>
 
@@ -4157,7 +4183,7 @@ function erreurReseau(code, repliFr, repliEn) {
 
 const Compte = {
   auth: null, user: null, db: null, pret: false, retourTraite: false,
-  presenceRef: null, connexionRef: null, invitationsRef: null, amisPresenceRefs: [], profilPublicMemoire: null, dateAnniversaireMemoire: "", anniversaireAnnonce: false, dragondexMemoire: {}, bloquesMemoire: {},
+  presenceRef: null, connexionRef: null, invitationsRef: null, amisPresenceRefs: [], profilPublicMemoire: null, dateAnniversaireMemoire: "", anniversaireAnnonce: false, dragondexMemoire: {}, bloquesMemoire: {}, couleurDragonMemoire: "", pastilleRefs: [],
   init() {
     if (!Net.init() || !window.firebase.auth) {
       this.pret=true;
@@ -4175,6 +4201,7 @@ const Compte = {
         this.profilPublicMemoire=null;
         this.dateAnniversaireMemoire="";
         this.anniversaireAnnonce=false;
+        this.couleurDragonMemoire="";
         await this.synchroniserProfilPublic();
         await this.chargerJoueursBloques();
         this.rendre();
@@ -4183,17 +4210,20 @@ const Compte = {
         void chargerDifficulteBotMemorisee();
         this.activerPresence();
         this.ecouterInvitations();
+        this.ecouterPastilleAmis();
         const connexionOuverte=document.querySelector('#modal:not(.modal-cachee) #accueil-connexion-google, #modal:not(.modal-cachee) #defi-connexion, #modal:not(.modal-cachee) #dragondex-connexion');
         if(connexionOuverte){fermerModal();toast(L("Compte connecté : l’aventure complète est débloquée.","Account connected: the full adventure is unlocked."));}
       }else{
         this.profilPublicMemoire=null;
         this.dateAnniversaireMemoire="";
         this.anniversaireAnnonce=false;
+        this.couleurDragonMemoire="";
         masquerSurpriseAnniversaire();
         this.dragondexMemoire={};
         this.bloquesMemoire={};
         this.arreterPresence();
         this.arreterInvitations();
+        this.arreterPastilleAmis();
         this.arreterEcouteAmis();
         this.rendre();
         if(this.retourTraite) window.setTimeout(proposerConnexionAccueil, 80);
@@ -4226,6 +4256,10 @@ const Compte = {
     return texteJoueurSur(profil.trainerName||profil.displayName,G(profil,"Dresseur","Dresseuse","Dragon","Trainer"));
   },
   genreDresseur(){ return genreDepuis(this.profilPublicMemoire || {}); },
+  couleurDragon(){
+    const memoire=String(this.couleurDragonMemoire||"").trim();
+    return COULEURS_AVATAR.includes(memoire)?memoire:COULEURS_AVATAR[0];
+  },
   estAnniversaire(){ return Boolean(this.uid()&&estAnniversaireAujourdhui(this.dateAnniversaireMemoire)); },
   anniversaireDate(){ return this.estAnniversaire()?dateLocaleISO():null; },
   fournisseurGoogle(){
@@ -4350,12 +4384,15 @@ const Compte = {
     if(!this.uid()||!this.db)return;
     try{
       const ref=this.db.ref("users/"+this.uid()+"/public");
-      const [snap,snapAnniversaire]=await Promise.all([
+      const [snap,snapAnniversaire,snapCouleur]=await Promise.all([
         avecDelaiReseau(ref.once("value"),12000),
-        avecDelaiReseau(this.db.ref("users/"+this.uid()+"/profile/dateAnniversaire").once("value"),12000)
+        avecDelaiReseau(this.db.ref("users/"+this.uid()+"/profile/dateAnniversaire").once("value"),12000),
+        avecDelaiReseau(this.db.ref("users/"+this.uid()+"/profile/couleurDragon").once("value"),12000)
       ]);
       const existant=snap.val()||{};
       const anniversaire=String(snapAnniversaire.val()||"").trim();
+      const couleurLue=String(snapCouleur.val()||"").trim();
+      if(COULEURS_AVATAR.includes(couleurLue))this.couleurDragonMemoire=couleurLue;
       const anniversaireSansAnnee=dateAnniversaireSansAnnee(anniversaire);
       this.dateAnniversaireMemoire=anniversaireSansAnnee;
       if(anniversaireSansAnnee&&anniversaire!==anniversaireSansAnnee){
@@ -4393,11 +4430,12 @@ const Compte = {
     await this.synchroniserIndexRecherche(profil.searchName,ancienSearchName);
     this.profilPublicMemoire={...(this.profilPublicMemoire||{}),...profil}; this.rendre(); return profil;
   },
-  async enregistrerPersonnalisation(genreDresseur,dateAnniversaire){
+  async enregistrerPersonnalisation(genreDresseur,dateAnniversaire,couleurDragon){
     if(!this.uid()||!this.db||!genreDresseurValide(genreDresseur))throw new Error("profil-invalide");
     let date=String(dateAnniversaire||"").trim();
     if(/^\d{2}-\d{2}$/.test(date))date="--"+date;
     if(date&&!dateAnniversaireValide(date))throw new Error("date-invalide");
+    const couleur=COULEURS_AVATAR.includes(String(couleurDragon||"").trim())?String(couleurDragon).trim():COULEURS_AVATAR[0];
     const dateRef=this.db.ref("users/"+this.uid()+"/profile/dateAnniversaire");
     const transaction=await avecDelaiReseau(dateRef.transaction((actuelle)=>{
       const valeurActuelle=String(actuelle||"").trim();
@@ -4407,9 +4445,10 @@ const Compte = {
     if(!transaction||!transaction.committed)throw new Error("anniversaire-verrouille");
     const dateSauvee=String(transaction.snapshot&&transaction.snapshot.val()||"").trim();
     const maintenant=window.firebase.database.ServerValue.TIMESTAMP;
-    await avecDelaiReseau(this.db.ref("users/"+this.uid()).update({"public/genreDresseur":genreDresseur,"profile/genreDresseur":genreDresseur,"profile/updatedAt":maintenant,"updatedAt":maintenant}),12000);
+    await avecDelaiReseau(this.db.ref("users/"+this.uid()).update({"public/genreDresseur":genreDresseur,"profile/genreDresseur":genreDresseur,"profile/couleurDragon":couleur,"profile/updatedAt":maintenant,"updatedAt":maintenant}),12000);
     this.profilPublicMemoire={...(this.profilPublicMemoire||{}),genreDresseur};
     this.dateAnniversaireMemoire=dateSauvee;
+    this.couleurDragonMemoire=couleur;
     const anniversaireAujourdhui=this.estAnniversaire(),anniversaireDate=this.anniversaireDate();
     if(typeof UI!=="undefined"&&UI.etat){UI.etat.joueurs.forEach((joueur)=>{if(joueur.accountUid===this.uid()){joueur.genreDresseur=genreDresseur;joueur.anniversaireAujourdhui=anniversaireAujourdhui;joueur.anniversaireDate=anniversaireDate;}});}
     if(typeof Net!=="undefined"&&Net.mode==="online"&&Net.code&&Net.pid){try{await avecDelaiReseau(Net.refSalle(Net.code).child("joueurs").child(Net.pid).update({genreDresseur,anniversaireAujourdhui,anniversaireDate}),12000);}catch(e){console.warn("Profil de la salle non synchronisé :",e&&e.code||e);}}
@@ -4439,16 +4478,51 @@ const Compte = {
     this.invitationsRef.on("child_added",(snap)=>{
       const invitation=snap.val()||{};
       if(invitation.status!=="pending"||!invitation.code||this.estJoueurBloque(snap.key))return;
-      toast(L((invitation.fromName||"Un ami")+" t’invite dans la salle "+invitation.code+".",(invitation.fromName||"A friend")+" invited you to room "+invitation.code+"."),5200);
+      /* Les invitations expirent après 10 min ; celles sans timestamp sont
+         traitées comme expirées. Nettoyage opportuniste (peut être refusé
+         par les règles : le filtrage ci-dessus suffit alors). */
+      const age=invitation.createdAt?Date.now()-Number(invitation.createdAt):Infinity;
+      if(age>10*60*1000){ try{ snap.ref.remove().catch(()=>{}); }catch(e){} return; }
+      toast(L((invitation.fromName||"Un ami")+" t’invite dans la salle "+invitation.code+" (expire dans 10 min).",(invitation.fromName||"A friend")+" invited you to room "+invitation.code+" (expires in 10 min)."),5200);
     });
   },
   arreterInvitations(){ if(this.invitationsRef)this.invitationsRef.off(); this.invitationsRef=null; },
+  ecouterPastilleAmis(){
+    this.arreterPastilleAmis();
+    if(!this.uid()||!this.db)return;
+    const mettreAJour=()=>{ this.actualiserPastilleAmis(); };
+    const demandesRef=this.db.ref("users/"+this.uid()+"/friendRequests");
+    const invitationsRef=this.db.ref("users/"+this.uid()+"/gameInvites");
+    demandesRef.on("value",mettreAJour);
+    invitationsRef.on("value",mettreAJour);
+    this.pastilleRefs=[demandesRef,invitationsRef];
+    mettreAJour();
+  },
+  arreterPastilleAmis(){ (this.pastilleRefs||[]).forEach((ref)=>{try{ref.off();}catch(e){}}); this.pastilleRefs=[]; },
+  async actualiserPastilleAmis(){
+    const pastille=$("pastille-amis"), bouton=$("btn-amis");
+    if(!pastille||!bouton||!this.uid()||!this.db)return;
+    try{
+      const [demandesSnap,invitationsSnap]=await Promise.all([
+        avecDelaiReseau(this.db.ref("users/"+this.uid()+"/friendRequests").once("value"),8000),
+        avecDelaiReseau(this.db.ref("users/"+this.uid()+"/gameInvites").once("value"),8000)
+      ]);
+      const maintenant=Date.now(), bloques=this.bloquesMemoire||{};
+      const demandes=Object.keys(demandesSnap.val()||{}).filter((uid)=>!bloques[uid]).length;
+      const invitations=Object.entries(invitationsSnap.val()||{}).filter(([uid,inv])=>!bloques[uid]&&inv&&inv.status==="pending"&&inv.code&&inv.createdAt&&maintenant-Number(inv.createdAt)<=10*60*1000).length;
+      const total=demandes+invitations;
+      pastille.hidden=total===0;
+      pastille.textContent=total>9?"9+":String(total);
+      const libelle=enAnglais()?"My friends":"Mes amis";
+      bouton.setAttribute("aria-label",libelle+(total?" — "+total+(enAnglais()?" pending":" en attente"):""));
+    }catch(e){/* silencieux : la pastille reste dans son état précédent */}
+  },
   arreterEcouteAmis(){this.amisPresenceRefs.forEach((ref)=>ref.off());this.amisPresenceRefs=[];},
   rendre(){
     const identite=$("compte-identite"), connexion=$("btn-connexion"), apercu=$("btn-dragondex-invite"), profil=$("btn-profil"), succes=$("btn-succes"), classement=$("btn-classement"), amis=$("btn-amis"), equipe=$("btn-equipe"), deconnexion=$("btn-deconnexion"), defi=$("btn-defi"); if(!identite||!connexion)return;
     const connecte=Boolean(this.user); connexion.hidden=connecte; if(apercu)apercu.hidden=connecte; profil.hidden=succes.hidden=classement.hidden=amis.hidden=equipe.hidden=deconnexion.hidden=!connecte; if(defi)defi.hidden=!connecte;
     if(!connecte){ identite.innerHTML='<span class="avatar-dragon" aria-hidden="true">🔑</span><span><strong>'+L("Compte optionnel","Optional account")+'</strong><small>'+L("Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes.","Achievements, the friends leaderboard, and the Daily Challenge are for signed-in accounts.")+'</small></span>'; return; }
-    identite.innerHTML=avatarHTML(COULEURS_AVATAR[0])+'<span><strong>'+echapper(this.nomDresseur())+'</strong><small>'+L("Progression sauvegardée","Progress saved")+'</small></span>';
+    identite.innerHTML=avatarHTML(Compte.couleurDragon())+'<span><strong>'+echapper(this.nomDresseur())+'</strong><small>'+L("Progression sauvegardée","Progress saved")+'</small></span>';
     const partageSalon=document.getElementById("salon-partage");
     if(partageSalon)partageSalon.textContent=L("Partage ce code avec tes amis :","Share this code with your friends:");
   },
@@ -4576,7 +4650,7 @@ function nomJoueurHTML(joueur,forcerMulti){
 function identiteDresseurHTML() {
   const nom=Compte.nomDresseur();
   const profil=Compte.profilPublicMemoire||{};
-  return '<div class="identite-partie">'+avatarHTML(COULEURS_AVATAR[0])+'<span><strong>'+echapper(nom)+'</strong><small>'+G(profil,"Ton nom de Dresseur vient de ton profil. Tu peux le changer dans « Mon profil ».","Ton nom de Dresseuse vient de ton profil. Tu peux le changer dans « Mon profil ».","Ton nom de jeu vient de ton profil. Tu peux le changer dans « Mon profil ».","Your Trainer name comes from your profile. You can change it under “My profile”.")+'</small></span></div>';
+  return '<div class="identite-partie">'+avatarHTML(Compte.couleurDragon())+'<span><strong>'+echapper(nom)+'</strong><small>'+G(profil,"Ton nom de Dresseur vient de ton profil. Tu peux le changer dans « Mon profil ».","Ton nom de Dresseuse vient de ton profil. Tu peux le changer dans « Mon profil ».","Ton nom de jeu vient de ton profil. Tu peux le changer dans « Mon profil ».","Your Trainer name comes from your profile. You can change it under “My profile”.")+'</small></span></div>';
 }
 function saisieNomDresseurHTML(id, placeholder) {
   return Compte.uid()
@@ -4980,7 +5054,7 @@ function typeSonJournal(message) {
       marsh: "marais", everyone_discard: "vent", breath_choices: "vent", breath_discard: "impact", ash_fade: "vent", ash_blocked: "annulation", win: "victoire", team_win: "victoire",
       baby_enters: "eclosion", aegis_one: "bouclier", aegis_fade: "bouclier",
       protect: "bouclier", resist: "bouclier", steal: "envol", trade: "envol",
-      sabotage: "sabotage", mirror_discard: "sabotage", destroy: "impact",
+      sabotage: "sabotage", mirror_discard: "sabotage", mirror_break: "sabotage", destroy: "impact",
       destroy_bonus: "impact", opponents_discard: "impact", draw: "pioche",
       turn_draw: "pioche", turn_draw_bonus: "pioche", bell: "cloche",
       countered: "annulation", turn_full: "tour", dragon_enters: "carte",
@@ -5130,17 +5204,30 @@ function fermerModal() {
 
 function ouvrirPolitiqueConfidentialite() {
   ouvrirModal(
-    '<div class="politique-confidentialite"><h3>' + L("Politique de confidentialité", "Privacy Policy") + '</h3>' +
-    '<p class="politique-intro">' + L("Voici les renseignements utilisés pour faire fonctionner ton compte et le jeu.", "Here is the information used to make your account and the game work.") + '</p>' +
+    '<div class="politique-confidentialite"><h3>' + L("Politique de confidentialité", "Privacy Policy") + ' — Cornes & Chaos</h3>' +
+    '<h4>' + L("Qui sommes-nous", "Who we are") + '</h4>' +
+    '<p class="politique-note">' + L("Un jeu créé par Ysatis H. Pour toute question sur tes renseignements, utilise « Signaler un bug » dans le jeu.", "A game created by Ysatis H. For any question about your information, use \u201cReport a bug\u201d in the game.") + '</p>' +
+    '<h4>' + L("Renseignements recueillis", "Information collected") + '</h4>' +
     '<ul class="politique-liste">' +
-      '<li><strong>' + L("Compte Google", "Google account") + '</strong>' + L("Il sert à te reconnaître quand tu te connectes et à retrouver ta progression.", "It helps recognize you when you sign in and restore your progress.") + '</li>' +
-      '<li><strong>' + L("Pseudo", "Nickname") + '</strong>' + L("Il est montré aux autres Dresseurs dans les salles, les amis et les classements.", "It is shown to other Trainers in rooms, friends lists, and leaderboards.") + '</li>' +
-      '<li><strong>' + L("Genre du Dresseur", "Trainer gender") + '</strong>' + L("Il sert seulement à choisir les bons mots dans le jeu.", "It is used only to choose the right words in the game.") + '</li>' +
-      '<li><strong>' + L("Jour et mois d’anniversaire", "Birthday day and month") + '</strong>' + L("Seuls ton jour et ton mois d’anniversaire sont recueillis pour préparer une petite surprise le jour de ta fête. Ton année de naissance n’est jamais demandée.", "Only your birthday day and month are collected to prepare a little surprise on your birthday. Your birth year is never requested.") + '</li>' +
-      '<li><strong>' + L("Statistiques de jeu", "Game statistics") + '</strong>' + L("Elles servent à sauvegarder tes victoires, tes succès, ton Dragondex et ton classement entre amis.", "They are used to save your wins, achievements, Dragondex, and friends leaderboard.") + '</li>' +
-      '<li><strong>' + L("Sécurité en ligne", "Online safety") + '</strong>' + L("Un signalement garde le joueur, la salle et la raison choisie pour pouvoir vérifier un problème. Ta liste de joueurs bloqués sert à éviter de vous réunir dans une prochaine salle.", "A report keeps the player, room, and chosen reason so a problem can be reviewed. Your blocked-player list helps keep you apart in a future room.") + '</li>' +
+      '<li><strong>' + L("Compte Google", "Google account") + '</strong>' + L("Identifiant unique et nom — pour te reconnaître et retrouver ta progression (via Firebase, un service de Google).", "Unique identifier and name — to recognize you and restore your progress (via Firebase, a Google service).") + '</li>' +
+      '<li><strong>' + L("Pseudo de Dresseur", "Trainer nickname") + '</strong>' + L("Visible par les autres joueurs dans les salles, les listes d’amis et les classements.", "Visible to other players in rooms, friend lists, and leaderboards.") + '</li>' +
+      '<li><strong>' + L("Genre du Dresseur", "Trainer gender") + '</strong>' + L("Sert seulement à choisir les bons mots dans les textes du jeu.", "Used only to choose the right words in the game\u2019s texts.") + '</li>' +
+      '<li><strong>' + L("Jour et mois d’anniversaire", "Birthday day and month") + '</strong>' + L("Pour une petite surprise le jour de ta fête. Ton année de naissance n’est jamais demandée.", "For a little surprise on your birthday. Your birth year is never requested.") + '</li>' +
+      '<li><strong>' + L("Progression", "Progress") + '</strong>' + L("Statistiques, Dragondex, succès, trophées, classements entre amis.", "Statistics, Dragondex, achievements, trophies, friend leaderboards.") + '</li>' +
+      '<li><strong>' + L("Amis", "Friends") + '</strong>' + L("Ta liste d’amis, les demandes envoyées et reçues, et les invitations de partie.", "Your friend list, sent/received requests, and game invitations.") + '</li>' +
+      '<li><strong>' + L("Présence", "Presence") + '</strong>' + L("Ton statut en ligne, visible par tes amis.", "Your online status, visible to your friends.") + '</li>' +
+      '<li><strong>' + L("Sécurité", "Safety") + '</strong>' + L("Les signalements (joueur, salle, raison) pour vérifier un problème, et ta liste de joueurs bloqués.", "Reports (player, room, reason) to review a problem, and your blocked-player list.") + '</li>' +
     '</ul>' +
-    '<p class="politique-note">' + L("Ces renseignements sont utilisés seulement pour ces fonctions du jeu. Si tu as une question, demande l’aide d’un adulte de confiance.", "This information is used only for these game features. If you have a question, ask a trusted adult for help.") + '</p>' +
+    '<h4>' + L("Utilisation", "How we use it") + '</h4>' +
+    '<p class="politique-note">' + L("Ces renseignements servent seulement à faire fonctionner le jeu. Ils ne sont jamais vendus ni partagés pour de la publicité.", "This information is used only to make the game work. It is never sold or shared for advertising purposes.") + '</p>' +
+    '<h4>' + L("Hébergement", "Hosting") + '</h4>' +
+    '<p class="politique-note">' + L("Tes données sont conservées sur les serveurs sécurisés de Google Firebase (États-Unis).", "Your data is stored on Google Firebase\u2019s secure servers (United States).") + '</p>' +
+    '<h4>' + L("Conservation", "Retention") + '</h4>' +
+    '<p class="politique-note">' + L("Conservés tant que ton compte existe. Tu peux réinitialiser ta progression à tout moment dans Mon profil.", "Kept as long as your account exists. You can reset your progress at any time in My profile.") + '</p>' +
+    '<h4>' + L("Tes droits", "Your rights") + '</h4>' +
+    '<p class="politique-note">' + L("Tu peux voir, corriger ou supprimer tes renseignements dans Mon profil, ou nous écrire.", "You can view, correct, or delete your information in My profile, or write to us.") + '</p>' +
+    '<h4>' + L("Enfants", "Children") + '</h4>' +
+    '<p class="politique-note">' + L("Jeu classé 7+. Si tu as une question, demande l’aide d’un adulte de confiance.", "Game rated 7+. If you have a question, ask a trusted adult for help.") + '</p>' +
     '<button id="politique-fermer" class="gros-bouton bouton-secondaire" type="button">' + L("Retour", "Back") + '</button></div>'
   );
   $("politique-fermer").addEventListener("click", fermerModal);
@@ -5268,7 +5355,7 @@ function ouvrirInstructions() {
           '<li>Upgrades stay in your lair; Sabotages are placed on another Trainer’s territory.</li>' +
         '</ul>' +
         '<h4>Roars</h4>' +
-        '<p>If an attack targets a Trainer, only that Trainer may answer. Dragons without an effect enter the lair directly; for a non-attack effect, opponents answer in turn. Only one Roar may be played against a card: it cancels that card and ends the counter immediately.</p>' +
+        '<p>If an attack targets a Trainer, only that Trainer may answer. Dragons without an effect enter the lair directly (no Roar possible) — except at Match point: if that dragon would win the game, opponents may roar to cancel it; for a non-attack effect, opponents answer in turn. Only one Roar may be played against a card: it cancels that card and ends the counter immediately.</p>' +
         '<p><strong>Pack Roar</strong> is defensive Magic played on your turn. It protects all your dragons until the start of your next turn.</p>' +
         '<h4>Weather and color combos</h4>' +
         '<ul><li>Each game begins with random Lair Weather. Each Trainer draws 1 card when their first dragon of the favored color enters their lair during a turn.</li><li>If 2 dragons of the same color enter your lair during one turn—even through an effect—you draw 1 card. Each color can trigger this combo once per turn.</li><li>At the start of each game, there is a 5% chance that the ultra-rare Golden Dragon is placed in the deck. Drawing it adds it directly to your Dragondex.</li></ul>' +
@@ -5308,7 +5395,7 @@ function ouvrirInstructions() {
           '<li>Les Améliorations restent dans ton repaire; les Sabotages se placent sur le territoire d’un autre Dresseur.</li>' +
         '</ul>' +
         '<h4>Rugissements</h4>' +
-        '<p>Si une attaque vise un Dresseur, seul ce Dresseur peut riposter. Les Dragons sans effet entrent directement au repaire; pour un effet non offensif, les adversaires répondent à tour de rôle. Un seul Rugissement peut être joué contre une carte : il l’annule et termine immédiatement la riposte.</p>' +
+        '<p>Si une attaque vise un Dresseur, seul ce Dresseur peut riposter. Les Dragons sans effet entrent directement au repaire (aucun Rugissement possible) — sauf en cas de Balle de match : si ce dragon ferait gagner la partie, les adversaires peuvent rugir pour l’annuler ; pour un effet non offensif, les adversaires répondent à tour de rôle. Un seul Rugissement peut être joué contre une carte : il l’annule et termine immédiatement la riposte.</p>' +
         '<p><strong>Rugissement de meute</strong> est une Magie défensive jouée pendant ton tour. Elle protège tous tes dragons jusqu’au début de ton prochain tour.</p>' +
         '<h4>Météo et combos de couleurs</h4>' +
         '<ul><li>Chaque partie commence avec une Météo du repaire aléatoire. Chaque Dresseur pioche 1 carte quand son premier dragon de la couleur favorisée entre dans son repaire pendant un tour.</li><li>Si 2 dragons de la même couleur entrent dans ton repaire pendant un même tour — même grâce à un effet — tu pioches 1 carte. Chaque couleur peut déclencher ce combo une fois par tour.</li><li>Au début de chaque partie, le Dragon Doré ultra rare a 5 % de chance d’être placé dans la pioche. Le tirer l’ajoute directement à ton Dragondex.</li></ul>' +
@@ -5720,7 +5807,15 @@ function ouvrirFicheDragondex(def,connu,retour){
 const ADMIN_UID = "mOmSIuHAcchkqx0I3icupMiBvSR2";
 function estAdmin(){ try{ return typeof Compte!=="undefined" && Compte.uid && Compte.uid()===ADMIN_UID; }catch(e){ return false; } }
 function formaterHeureMaintenance(ts){
-  try{ return new Date(Number(ts)).toLocaleString(enAnglais()?"en-CA":"fr-CA",{dateStyle:"medium",timeStyle:"short"}); }
+  try{
+    const d=new Date(Number(ts)), h=d.getHours(), m=String(d.getMinutes()).padStart(2,"0");
+    const moment=enAnglais()
+      ? (h<5?"night":h<12?"morning":h<18?"afternoon":"evening")
+      : (h<5?"nuit":h<12?"matin":h<18?"après-midi":"soir");
+    const date=d.toLocaleDateString(enAnglais()?"en-CA":"fr-CA",{dateStyle:"medium"});
+    const heure=String(h).padStart(2,"0")+(enAnglais()?":":" h ")+m;
+    return date+", "+heure+" ("+moment+")";
+  }
   catch(e){ return ""; }
 }
 function versDatetimeLocal(ts){
@@ -5756,6 +5851,13 @@ const Maintenance = {
         this._banniereFermee = false;
         this.evaluer();
       },(err)=>{ log("ERREUR listener: "+(err&&err.message)); });
+      /* Secours discret : seule Ysa voit le bouton « Désactiver » sur l'écran
+         de maintenance (au cas où elle activerait la fenêtre par erreur). */
+      const btnDesactiverEcran=$("maintenance-ecran-desactiver");
+      if(btnDesactiverEcran) btnDesactiverEcran.addEventListener("click",()=>{
+        if(!estAdmin())return;
+        db.ref("maintenance").set({active:false}).catch(()=>{});
+      });
     }catch(e){ log("EXCEPTION listener: "+(e&&e.message)); }
   },
   evaluer(){
@@ -5769,6 +5871,8 @@ const Maintenance = {
       $("maintenance-ecran-titre").textContent=L("Maintenance en cours","Maintenance in progress");
       $("maintenance-ecran-message").textContent=d.message||L("Le jeu est en maintenance. Merci de ta patience !","The game is under maintenance. Thanks for your patience!");
       $("maintenance-ecran-heures").textContent=L("Fin prévue : ","Estimated end: ")+formaterHeureMaintenance(fin);
+      const btnDesactiver=$("maintenance-ecran-desactiver");
+      if(btnDesactiver){ btnDesactiver.hidden=!estAdmin(); btnDesactiver.textContent=L("Désactiver la maintenance","Disable maintenance"); }
       ecran.hidden=false; banniere.hidden=true; document.body.classList.remove("avec-bandeau");
     } else if(debut && fin && maintenant<debut){
       ecran.hidden=true;
@@ -5791,12 +5895,12 @@ function rendreProfilDresseur(profil){
   const anniversaireVerrouille=Boolean(detailsDate.mois&&detailsDate.jour);
   const attributVerrou=anniversaireVerrouille?' disabled aria-disabled="true"':'';
   const sectionMaintenance=estAdmin()?'<div class="maintenance-admin"><h4>'+L("🔧 Maintenance du jeu","🔧 Game maintenance")+'</h4><small>'+L("Réservé à toi : planifie une maintenance pour prévenir tes joueurs à l’avance. Seule toi peux activer cet interrupteur.","Only for you: schedule maintenance to warn your players in advance. Only you can flip this switch.")+'</small><p class="maintenance-statut" id="maintenance-statut">'+L("Chargement…","Loading…")+'</p><div class="profil-champs"><div class="profil-champ"><label for="maintenance-message">'+L("Message","Message")+'</label><input id="maintenance-message" maxlength="120" autocomplete="off" placeholder="'+L("Ex. Mise à jour des dragons","E.g. Dragon update")+'"></div><div class="profil-champ"><label for="maintenance-debut">'+L("Début","Start")+'</label><input id="maintenance-debut" type="datetime-local"></div><div class="profil-champ"><label for="maintenance-fin">'+L("Fin","End")+'</label><input id="maintenance-fin" type="datetime-local"></div></div><div class="maintenance-actions"><button id="maintenance-activer" type="button" class="gros-bouton bouton-primaire">'+L("Activer la maintenance","Enable maintenance")+'</button><button id="maintenance-desactiver" type="button" class="gros-bouton bouton-secondaire">'+L("Désactiver","Disable")+'</button></div></div>':'';
-  ouvrirModal('<div data-profil-dragondex><h3>'+G(profil,"Profil de Dresseur","Profil de Dresseuse","Profil draconique","Trainer Profile")+'</h3><div class="profil-pseudo"><label for="profil-pseudo">'+G(profil,"Nom de Dresseur","Nom de Dresseuse","Nom de jeu","Trainer name")+'</label><small>'+L("Utilisé automatiquement dans toutes tes parties et visible par les autres Dresseurs. 20 caractères maximum.","Used automatically in all your games and visible to other Trainers. Up to 20 characters.")+'</small><input id="profil-pseudo" maxlength="20" autocomplete="off" value="'+echapper(nomPublic)+'"><button id="profil-enregistrer-pseudo" type="button" class="gros-bouton bouton-secondaire">'+G(profil,"Changer mon nom de Dresseur","Changer mon nom de Dresseuse","Changer mon nom de jeu","Change my Trainer name")+'</button></div><div class="profil-personnalisation"><h4>'+L("Personnalisation","Personalization")+'</h4><small>'+L("Ton genre adapte les textes français du jeu. Ta date d’anniversaire reste dans ton profil.","Your gender personalizes French game text. Your birthday stays in your profile.")+'</small><div class="profil-champs"><div class="profil-champ"><label for="profil-genre">'+G(profil,"Genre du Dresseur","Genre de la Dresseuse","Genre du profil","Trainer gender")+'</label><select id="profil-genre" required><option value="">'+L("Choisir…","Choose…")+'</option><option value="feminin" '+(genreChoisi==="feminin"?"selected":"")+'>'+L("Féminin","Female")+'</option><option value="masculin" '+(genreChoisi==="masculin"?"selected":"")+'>'+L("Masculin","Male")+'</option><option value="autre" '+(genreChoisi==="autre"?"selected":"")+'>'+L("Autre","Other")+'</option></select></div><div class="profil-champ"><label for="profil-anniversaire-jour">'+L("Date d’anniversaire","Birthday")+'</label><div class="profil-anniversaire-champs"><input id="profil-anniversaire-jour" type="number" min="1" max="31" inputmode="numeric" aria-label="'+L("Jour","Day")+'" placeholder="'+L("Jour","Day")+'" value="'+(detailsDate.jour||"")+'"'+attributVerrou+'><select id="profil-anniversaire-mois" aria-label="'+L("Mois","Month")+'"'+attributVerrou+'>'+optionsMoisAnniversaire(detailsDate.mois)+'</select></div><small class="profil-anniversaire-note">'+(anniversaireVerrouille?L("Jour et mois verrouillés. Pour les faire corriger, utilise « Signaler un bug ».","Day and month are locked. To have them corrected, use “Report a bug”."):L("Vérifie bien le jour et le mois : une confirmation sera demandée avant de les verrouiller.","Check the day and month carefully: you’ll be asked to confirm before they are locked."))+'</small></div></div><div id="profil-anniversaire-confirmation" class="profil-anniversaire-confirmation" hidden><p>'+L("Confirmer ton anniversaire : ","Confirm your birthday: ")+'<strong id="profil-anniversaire-resume"></strong>?</p><div class="actions-confirmation"><button id="profil-anniversaire-annuler" type="button" class="gros-bouton bouton-secondaire">'+L("Vérifier","Check again")+'</button><button id="profil-anniversaire-confirmer" type="button" class="gros-bouton bouton-primaire">'+L("Oui, verrouiller","Yes, lock it")+'</button></div></div><button id="profil-enregistrer-personnalisation" type="button" class="gros-bouton bouton-secondaire">'+L("Enregistrer mon profil","Save my profile")+'</button></div><div class="profil-grille"><div class="stat-profil"><strong>'+parties+'</strong><span>'+L("Parties jouées","Games played")+'</span></div><div class="stat-profil"><strong>'+taux+' %</strong><span>'+L("Taux de victoire","Win rate")+'</span></div><div class="stat-profil"><strong>'+(stats.currentStreak||0)+'</strong><span>'+L("Série actuelle","Current streak")+'</span></div><div class="stat-profil"><strong>'+(stats.bestStreak||0)+'</strong><span>'+L("Meilleure série","Best streak")+'</span></div><div class="stat-profil"><strong>'+(stats.teamWins||0)+'/'+(stats.teamGames||0)+'</strong><span>'+L("Victoires 2v2","2v2 wins")+'</span></div><div class="stat-profil"><strong>'+echapper(nomPrefere)+'</strong><span>'+L("Dragon porte-bonheur","Lucky dragon")+'</span></div></div><div class="dragondex-entete"><h3>'+L("Dragondex","Dragondex")+'</h3><span class="dragondex-compteur">'+compteurDragondex(trouves)+'/'+total+'</span></div><p class="dragondex-regle">'+L("Joue une carte dragon en partie — solo, en ligne ou dans le tutoriel — pour l’ajouter à ton Dragondex.","Play a dragon card in a solo, online, or tutorial game to add it to your Dragondex.")+'</p>'+filtresDragondexHTML()+'<div class="dragondex"></div><div class="profil-reinitialisation"><button id="profil-reinitialiser" type="button" class="gros-bouton bouton-reset-progression">'+L("Réinitialiser ma progression","Reset my progress")+'</button></div>'+sectionMaintenance+'<button id="profil-fermer" class="gros-bouton bouton-primaire">'+L("Retour au jeu","Back to game")+'</button></div>');
-  const conteneur=$('modal-contenu').querySelector('[data-profil-dragondex]'); conteneur._profilSource=profil; brancherFiltresDragondex(conteneur,trouves);
+  ouvrirModal('<div data-profil-dragondex><h3>'+G(profil,"Profil de Dresseur","Profil de Dresseuse","Profil draconique","Trainer Profile")+'</h3><div class="profil-pseudo"><label for="profil-pseudo">'+G(profil,"Nom de Dresseur","Nom de Dresseuse","Nom de jeu","Trainer name")+'</label><small>'+L("Utilisé automatiquement dans toutes tes parties et visible par les autres Dresseurs. 20 caractères maximum.","Used automatically in all your games and visible to other Trainers. Up to 20 characters.")+'</small><input id="profil-pseudo" maxlength="20" autocomplete="off" value="'+echapper(nomPublic)+'"><button id="profil-enregistrer-pseudo" type="button" class="gros-bouton bouton-secondaire">'+G(profil,"Changer mon nom de Dresseur","Changer mon nom de Dresseuse","Changer mon nom de jeu","Change my Trainer name")+'</button></div><div class="profil-personnalisation"><h4>'+L("Personnalisation","Personalization")+'</h4><small>'+L("Ton genre adapte les textes français du jeu. Ta date d’anniversaire reste dans ton profil.","Your gender personalizes French game text. Your birthday stays in your profile.")+'</small><div class="profil-champs"><div class="profil-champ"><label for="profil-genre">'+G(profil,"Genre du Dresseur","Genre de la Dresseuse","Genre du profil","Trainer gender")+'</label><select id="profil-genre" required><option value="">'+L("Choisir…","Choose…")+'</option><option value="feminin" '+(genreChoisi==="feminin"?"selected":"")+'>'+L("Féminin","Female")+'</option><option value="masculin" '+(genreChoisi==="masculin"?"selected":"")+'>'+L("Masculin","Male")+'</option><option value="autre" '+(genreChoisi==="autre"?"selected":"")+'>'+L("Autre","Other")+'</option></select></div><div class="profil-champ"><label for="profil-anniversaire-jour">'+L("Date d’anniversaire","Birthday")+'</label><div class="profil-anniversaire-champs"><input id="profil-anniversaire-jour" type="number" min="1" max="31" inputmode="numeric" aria-label="'+L("Jour","Day")+'" placeholder="'+L("Jour","Day")+'" value="'+(detailsDate.jour||"")+'"'+attributVerrou+'><select id="profil-anniversaire-mois" aria-label="'+L("Mois","Month")+'"'+attributVerrou+'>'+optionsMoisAnniversaire(detailsDate.mois)+'</select></div><small class="profil-anniversaire-note">'+(anniversaireVerrouille?L("Jour et mois verrouillés. Pour les faire corriger, utilise « Signaler un bug ».","Day and month are locked. To have them corrected, use “Report a bug”."):L("Vérifie bien le jour et le mois : une confirmation sera demandée avant de les verrouiller.","Check the day and month carefully: you’ll be asked to confirm before they are locked."))+'</small></div><div class="profil-champ"><label>'+L("Couleur du dragon","Dragon color")+'</label>'+paletteCouleursHTML("profil-couleur",personnalisation.couleurDragon||COULEURS_AVATAR[0],L("7 couleurs du dragon","7 dragon colors"))+'</div></div><div id="profil-anniversaire-confirmation" class="profil-anniversaire-confirmation" hidden><p>'+L("Confirmer ton anniversaire : ","Confirm your birthday: ")+'<strong id="profil-anniversaire-resume"></strong>?</p><div class="actions-confirmation"><button id="profil-anniversaire-annuler" type="button" class="gros-bouton bouton-secondaire">'+L("Vérifier","Check again")+'</button><button id="profil-anniversaire-confirmer" type="button" class="gros-bouton bouton-primaire">'+L("Oui, verrouiller","Yes, lock it")+'</button></div></div><button id="profil-enregistrer-personnalisation" type="button" class="gros-bouton bouton-secondaire">'+L("Enregistrer mon profil","Save my profile")+'</button></div><div class="profil-grille"><div class="stat-profil"><strong>'+parties+'</strong><span>'+L("Parties jouées","Games played")+'</span></div><div class="stat-profil"><strong>'+taux+' %</strong><span>'+L("Taux de victoire","Win rate")+'</span></div><div class="stat-profil"><strong>'+(stats.currentStreak||0)+'</strong><span>'+L("Série actuelle","Current streak")+'</span></div><div class="stat-profil"><strong>'+(stats.bestStreak||0)+'</strong><span>'+L("Meilleure série","Best streak")+'</span></div><div class="stat-profil"><strong>'+(stats.teamWins||0)+'/'+(stats.teamGames||0)+'</strong><span>'+L("Victoires 2v2","2v2 wins")+'</span></div><div class="stat-profil"><strong>'+echapper(nomPrefere)+'</strong><span>'+L("Dragon porte-bonheur","Lucky dragon")+'</span></div></div><div class="dragondex-entete"><h3>'+L("Dragondex","Dragondex")+'</h3><span class="dragondex-compteur">'+compteurDragondex(trouves)+'/'+total+'</span></div><p class="dragondex-regle">'+L("Joue une carte dragon en partie — solo, en ligne ou dans le tutoriel — pour l’ajouter à ton Dragondex.","Play a dragon card in a solo, online, or tutorial game to add it to your Dragondex.")+'</p>'+filtresDragondexHTML()+'<div class="dragondex"></div><div class="profil-reinitialisation"><button id="profil-reinitialiser" type="button" class="gros-bouton bouton-reset-progression">'+L("Réinitialiser ma progression","Reset my progress")+'</button></div>'+sectionMaintenance+'<button id="profil-fermer" class="gros-bouton bouton-primaire">'+L("Retour au jeu","Back to game")+'</button></div>');
+  const conteneur=$('modal-contenu').querySelector('[data-profil-dragondex]'); conteneur._profilSource=profil; brancherFiltresDragondex(conteneur,trouves); activerPalettes(conteneur);
   brancherValidationPseudo($('profil-pseudo'));
   $('profil-enregistrer-pseudo').addEventListener('click',async()=>{const champ=$('profil-pseudo'),pseudo=lirePseudoValide(champ);if(!pseudo)return;const bouton=$('profil-enregistrer-pseudo');bouton.disabled=true;bouton.setAttribute('aria-busy','true');try{await Compte.enregistrerPseudoPublic(pseudo);profil.public=profil.public||{};profil.public.trainerName=pseudo;profil.public.displayName=pseudo;toast(G(profil,"Ton nom de Dresseur a bien été mis à jour !","Ton nom de Dresseuse a bien été mis à jour !","Ton nom de jeu a bien été mis à jour !","Your Trainer name has been updated!"));}catch(e){toast(e&&e.message==="pseudo-deja-pris"?L("Ce pseudo est déjà pris.","This username is already taken."):G(profil,"Ton nom de Dresseur n’a pas pu être modifié pour le moment.","Ton nom de Dresseuse n’a pas pu être modifié pour le moment.","Ton nom de jeu n’a pas pu être modifié pour le moment.","Your Trainer name could not be changed right now."),4200);bouton.disabled=false;bouton.removeAttribute('aria-busy');}});
-  const enregistrerPersonnalisation=async(genre,date,bouton)=>{bouton.disabled=true;bouton.setAttribute('aria-busy','true');try{const resultat=await Compte.enregistrerPersonnalisation(genre,date);profil.profile=profil.profile||{};profil.public=profil.public||{};profil.profile.genreDresseur=profil.public.genreDresseur=genre;profil.profile.dateAnniversaire=resultat.dateAnniversaire;toast(L("Ton profil a bien été mis à jour !","Your profile has been updated!"));rendreProfilDresseur(profil);}catch(e){toast(e&&e.message==="anniversaire-verrouille"?L("Le jour et le mois d’anniversaire sont déjà verrouillés pour ce compte. Utilise « Signaler un bug » pour demander une correction.","The birthday day and month are already locked for this account. Use “Report a bug” to request a correction."):L("Ton profil n’a pas pu être modifié pour le moment.","Your profile could not be changed right now."),4200);bouton.disabled=false;bouton.removeAttribute('aria-busy');}};
-  $('profil-enregistrer-personnalisation').addEventListener('click',()=>{const genre=$('profil-genre').value,date=composerDateAnniversaire($('profil-anniversaire-jour').value,$('profil-anniversaire-mois').value);if(!genreDresseurValide(genre)){toast(L("Choisis un genre pour ton profil.","Choose the Trainer gender."));$('profil-genre').focus();return;}if(!date){toast(L("Choisis un jour et un mois valides.","Choose a valid day and month."));$('profil-anniversaire-jour').focus();return;}const bouton=$('profil-enregistrer-personnalisation');if(anniversaireVerrouille){enregistrerPersonnalisation(genre,date,bouton);return;}const confirmation=$('profil-anniversaire-confirmation');$('profil-anniversaire-resume').textContent=anniversaireLisible(date);confirmation.hidden=false;bouton.hidden=true;$('profil-anniversaire-jour').disabled=true;$('profil-anniversaire-mois').disabled=true;$('profil-anniversaire-annuler').onclick=()=>{confirmation.hidden=true;bouton.hidden=false;$('profil-anniversaire-jour').disabled=false;$('profil-anniversaire-mois').disabled=false;$('profil-anniversaire-jour').focus();};$('profil-anniversaire-confirmer').onclick=()=>enregistrerPersonnalisation(genre,date,$('profil-anniversaire-confirmer'));});
+  const enregistrerPersonnalisation=async(genre,date,couleur,bouton)=>{bouton.disabled=true;bouton.setAttribute('aria-busy','true');try{const resultat=await Compte.enregistrerPersonnalisation(genre,date,couleur);profil.profile=profil.profile||{};profil.public=profil.public||{};profil.profile.genreDresseur=profil.public.genreDresseur=genre;profil.profile.couleurDragon=couleur;profil.profile.dateAnniversaire=resultat.dateAnniversaire;toast(L("Ton profil a bien été mis à jour !","Your profile has been updated!"));rendreProfilDresseur(profil);}catch(e){toast(e&&e.message==="anniversaire-verrouille"?L("Le jour et le mois d’anniversaire sont déjà verrouillés pour ce compte. Utilise « Signaler un bug » pour demander une correction.","The birthday day and month are already locked for this account. Use “Report a bug” to request a correction."):L("Ton profil n’a pas pu être modifié pour le moment.","Your profile could not be changed right now."),4200);bouton.disabled=false;bouton.removeAttribute('aria-busy');}};
+  $('profil-enregistrer-personnalisation').addEventListener('click',()=>{const genre=$('profil-genre').value,date=composerDateAnniversaire($('profil-anniversaire-jour').value,$('profil-anniversaire-mois').value),couleur=$('profil-couleur').value;if(!genreDresseurValide(genre)){toast(L("Choisis un genre pour ton profil.","Choose the Trainer gender."));$('profil-genre').focus();return;}if(!date){toast(L("Choisis un jour et un mois valides.","Choose a valid day and month."));$('profil-anniversaire-jour').focus();return;}const bouton=$('profil-enregistrer-personnalisation');if(anniversaireVerrouille){enregistrerPersonnalisation(genre,date,couleur,bouton);return;}const confirmation=$('profil-anniversaire-confirmation');$('profil-anniversaire-resume').textContent=anniversaireLisible(date);confirmation.hidden=false;bouton.hidden=true;$('profil-anniversaire-jour').disabled=true;$('profil-anniversaire-mois').disabled=true;$('profil-anniversaire-annuler').onclick=()=>{confirmation.hidden=true;bouton.hidden=false;$('profil-anniversaire-jour').disabled=false;$('profil-anniversaire-mois').disabled=false;$('profil-anniversaire-jour').focus();};$('profil-anniversaire-confirmer').onclick=()=>enregistrerPersonnalisation(genre,date,couleur,$('profil-anniversaire-confirmer'));});
   $('profil-reinitialiser').addEventListener('click',()=>ouvrirConfirmationReinitialisation(profil));
   if(estAdmin() && Compte.db){
     const refMaintenance=Compte.db.ref("maintenance");
@@ -5953,15 +6057,16 @@ function amiLigneHTML(uid, profil, presence, actions, classe){
 
 async function chargerDonneesAmis(){
   const uid=Compte.uid();
-  if(!uid||!Compte.db)return {amis:[],demandes:[],invitations:[],bloques:[]};
+  if(!uid||!Compte.db)return {amis:[],demandes:[],invitations:[],bloques:[],demandesEnvoyees:[]};
   const racine=Compte.db.ref("users/"+uid);
-  const [amisSnap,demandesSnap,invitationsSnap,bloquesSnap]=await Promise.all([
+  const [amisSnap,demandesSnap,invitationsSnap,bloquesSnap,sortiesSnap]=await Promise.all([
     avecDelaiReseau(racine.child("friends").once("value"),12000),
     avecDelaiReseau(racine.child("friendRequests").once("value"),12000),
     avecDelaiReseau(racine.child("gameInvites").once("value"),12000),
-    avecDelaiReseau(racine.child("blockedPlayers").once("value"),12000)
+    avecDelaiReseau(racine.child("blockedPlayers").once("value"),12000),
+    avecDelaiReseau(racine.child("outgoingRequests").once("value"),12000)
   ]);
-  const amisObjet=amisSnap.val()||{}, demandesObjet=demandesSnap.val()||{}, invitationsObjet=invitationsSnap.val()||{}, bloquesObjet=bloquesSnap.val()||{};
+  const amisObjet=amisSnap.val()||{}, demandesObjet=demandesSnap.val()||{}, invitationsObjet=invitationsSnap.val()||{}, bloquesObjet=bloquesSnap.val()||{}, sortiesObjet=sortiesSnap.val()||{};
   Compte.bloquesMemoire=bloquesObjet;
   const estBloque=(uidCible)=>Boolean(bloquesObjet[uidCible]);
   const amis=await Promise.all(Object.keys(amisObjet).filter((friendUid)=>!estBloque(friendUid)).map(async(friendUid)=>{
@@ -5974,9 +6079,10 @@ async function chargerDonneesAmis(){
     return {uid:friendUid,profil:profilSnap.val()||amisObjet[friendUid]||{},presence:presenceSnap.val()||{},stats:statsSnap.val()||{}};
   }));
   const demandes=Object.keys(demandesObjet).filter((fromUid)=>!estBloque(fromUid)).map((fromUid)=>({uid:fromUid,...demandesObjet[fromUid]}));
-  const invitations=Object.keys(invitationsObjet).filter((fromUid)=>!estBloque(fromUid)).map((fromUid)=>({uid:fromUid,...invitationsObjet[fromUid]})).filter((inv)=>inv.status==="pending"&&inv.code);
+  const invitations=Object.keys(invitationsObjet).filter((fromUid)=>!estBloque(fromUid)).map((fromUid)=>({uid:fromUid,...invitationsObjet[fromUid]})).filter((inv)=>inv.status==="pending"&&inv.code&&inv.createdAt&&Date.now()-Number(inv.createdAt)<=10*60*1000);
   const bloques=Object.keys(bloquesObjet).map((blockedUid)=>({uid:blockedUid,...bloquesObjet[blockedUid]}));
-  return {amis,demandes,invitations,bloques};
+  const demandesEnvoyees=Object.keys(sortiesObjet).filter((toUid)=>!estBloque(toUid)).map((toUid)=>({uid:toUid,...sortiesObjet[toUid]}));
+  return {amis,demandes,invitations,bloques,demandesEnvoyees};
 }
 
 async function rendreCentreAmis(message){
@@ -5990,9 +6096,11 @@ async function rendreCentreAmis(message){
     const invitations=donnees.invitations.length?donnees.invitations.map((inv)=>amiLigneHTML(inv.uid,{displayName:inv.fromName},{online:true},'<button type="button" data-rejoindre-invitation="'+echapper(inv.uid)+'" data-code="'+echapper(inv.code)+'">'+L("Rejoindre "+inv.code,"Join "+inv.code)+'</button>','invitation-partie')).join(''):'<p class="ami-vide">'+L("Aucune invitation de partie.","No game invitations.")+'</p>';
     const amis=donnees.amis.length?donnees.amis.map((ami)=>amiLigneHTML(ami.uid,ami.profil,ami.presence,'<button type="button" data-inviter="'+echapper(ami.uid)+'" data-nom="'+echapper(ami.profil.displayName||L("Dresseur","Trainer"))+'" '+(ami.presence.online?'':'disabled')+'>'+L("Inviter","Invite")+'</button><button type="button" data-bloquer-ami="'+echapper(ami.uid)+'" data-nom="'+echapper(ami.profil.displayName||L("Dresseur","Trainer"))+'">'+L("Bloquer","Block")+'</button>')).join(''):'<p class="ami-vide">'+L("Ta liste d’amis est vide pour le moment.","Your friends list is empty for now.")+'</p>';
     const bloques=donnees.bloques.length?donnees.bloques.map((bloque)=>amiLigneHTML(bloque.uid,{displayName:bloque.displayName||L("Dresseur","Trainer")},{},'<button type="button" data-debloquer="'+echapper(bloque.uid)+'">'+L("Débloquer","Unblock")+'</button>','ami-bloque')).join(''):'<p class="ami-vide">'+L("Aucun joueur bloqué.","No blocked players.")+'</p>';
-    zone.innerHTML='<section class="amis-section"><h4>'+L("Invitations à jouer","Game invitations")+'</h4><div class="amis-liste">'+invitations+'</div></section><section class="amis-section"><h4>'+L("Demandes d’amis","Friend requests")+'</h4><div class="amis-liste">'+demandes+'</div></section><section class="amis-section"><h4>'+L("Mes amis","My friends")+'</h4><div class="amis-liste">'+amis+'</div></section><section class="amis-section"><h4>'+L("Joueurs bloqués","Blocked players")+'</h4><div class="amis-liste">'+bloques+'</div></section>';
+    const envoyees=donnees.demandesEnvoyees.length?donnees.demandesEnvoyees.map((demande)=>amiLigneHTML(demande.uid,{displayName:demande.displayName||L("Dresseur","Trainer")},{},'<span class="ami-statut">'+L("En attente","Pending")+'</span><button type="button" data-annuler-demande="'+echapper(demande.uid)+'">'+L("Annuler","Cancel")+'</button>')).join(''):'<p class="ami-vide">'+L("Aucune demande envoyée.","No sent requests.")+'</p>';
+    zone.innerHTML='<section class="amis-section"><h4>'+L("Invitations à jouer","Game invitations")+'</h4><div class="amis-liste">'+invitations+'</div></section><section class="amis-section"><h4>'+L("Demandes d’amis","Friend requests")+'</h4><div class="amis-liste">'+demandes+'</div></section><section class="amis-section"><h4>'+L("Demandes envoyées","Sent requests")+'</h4><div class="amis-liste">'+envoyees+'</div></section><section class="amis-section"><h4>'+L("Mes amis","My friends")+'</h4><div class="amis-liste">'+amis+'</div></section><section class="amis-section"><h4>'+L("Joueurs bloqués","Blocked players")+'</h4><div class="amis-liste">'+bloques+'</div></section>';
     zone.querySelectorAll("[data-accepter]").forEach((bouton)=>bouton.addEventListener("click",()=>accepterAmi(bouton.dataset.accepter)));
     zone.querySelectorAll("[data-refuser]").forEach((bouton)=>bouton.addEventListener("click",()=>refuserAmi(bouton.dataset.refuser)));
+    zone.querySelectorAll("[data-annuler-demande]").forEach((bouton)=>bouton.addEventListener("click",()=>annulerDemandeAmi(bouton.dataset.annulerDemande)));
     zone.querySelectorAll("[data-inviter]").forEach((bouton)=>bouton.addEventListener("click",()=>inviterAmi(bouton.dataset.inviter,bouton.dataset.nom)));
     zone.querySelectorAll("[data-bloquer-ami]").forEach((bouton)=>bouton.addEventListener("click",()=>confirmerBlocageJoueur({pid:"ami_"+bouton.dataset.bloquerAmi,accountUid:bouton.dataset.bloquerAmi,nom:bouton.dataset.nom},()=>ouvrirAmis())));
     zone.querySelectorAll("[data-debloquer]").forEach((bouton)=>bouton.addEventListener("click",()=>debloquerJoueurCompte(bouton.dataset.debloquer)));
@@ -6147,6 +6255,24 @@ async function refuserAmi(uidAmi){
   try{await Compte.db.ref("users/"+Compte.uid()+"/friendRequests/"+uidAmi).remove();await rendreCentreAmis();}catch(e){toast(L("Impossible de refuser la demande.","The request could not be declined."),4200);}
 }
 
+async function annulerDemandeAmi(uidCible){
+  const uid=Compte.uid();
+  if(!uid||!uidCible)return;
+  /* La demande est retirée des deux côtés. LIMITE CONNUE : la règle Firebase
+     users/$uid/outgoingRequests/$otherId n'autorise aujourd'hui la suppression
+     que par $otherId ; si la suppression côté envoyeur est refusée, le toast
+     l'explique et la règle devra être ajustée dans la console Firebase. */
+  let retiree=false, regle=false;
+  try{ await Compte.db.ref("users/"+uidCible+"/friendRequests/"+uid).remove(); retiree=true; }
+  catch(e){ console.warn("Annulation côté destinataire refusée :",e&&e.code||e); }
+  try{ await Compte.db.ref("users/"+uid+"/outgoingRequests/"+uidCible).remove(); retiree=true; }
+  catch(e){ regle=true; console.warn("Annulation côté envoyeur refusée (règle Firebase) :",e&&e.code||e); }
+  await rendreCentreAmis();
+  if(regle) toast(L("Demande retirée, mais la règle Firebase des demandes envoyées doit encore être ajustée pour la masquer de ton côté.","The request was withdrawn, but the Firebase sent-request rule still needs adjusting to hide it on your side."),6200);
+  else if(retiree) toast(L("Demande annulée.","Request cancelled."));
+  else toast(L("Impossible d’annuler la demande pour le moment.","The request could not be cancelled right now."),4200);
+}
+
 async function debloquerJoueurCompte(uidCible){
   const uid=Compte.uid(); if(!uid||!uidCible)return;
   try{
@@ -6165,17 +6291,17 @@ async function inviterAmi(uidAmi,nomAmi){
   try{
     let code=Net.mode==="online"&&Net.code?Net.code:null;
     if(!code){
-      code=await Net.creerSalle(nomCompteCourt(),COULEURS_AVATAR[0],tirerThemePlateau(),false);
+      code=await Net.creerSalle(nomCompteCourt(),Compte.couleurDragon(),tirerThemePlateau(),false);
       UI.mode="online"; UI.tutoriel=false;
     }
-    await Compte.db.ref("users/"+uidAmi+"/gameInvites/"+Compte.uid()).set({fromUid:Compte.uid(),fromName:Compte.profilPublic().displayName,code,status:"pending",at:window.firebase.database.ServerValue.TIMESTAMP});
+    await Compte.db.ref("users/"+uidAmi+"/gameInvites/"+Compte.uid()).set({fromUid:Compte.uid(),fromName:Compte.profilPublic().displayName,code,status:"pending",createdAt:Date.now(),at:window.firebase.database.ServerValue.TIMESTAMP});
     fermerModal(); afficherSalon(code);
     toast(L("Invitation envoyée à "+nomAmi+".","Invitation sent to "+nomAmi+"."));
   }catch(e){toast(L("L’invitation n’a pas pu être envoyée.","The invitation could not be sent."),4200);console.warn("Invitation indisponible :",e&&e.code||e);}
 }
 
 async function rejoindreInvitationAmi(uidAmi,code){
-  const resultat=await rejoindreSalleEnLigne(code,nomCompteCourt(),COULEURS_AVATAR[0],tirerThemePlateau());
+  const resultat=await rejoindreSalleEnLigne(code,nomCompteCourt(),Compte.couleurDragon(),tirerThemePlateau());
   if(resultat&&resultat.ok)Compte.db.ref("users/"+Compte.uid()+"/gameInvites/"+uidAmi).remove();
 }
 
@@ -6796,6 +6922,29 @@ async function reprendreSalleEnLigne(code, pseudo) {
   }
 }
 
+/* Choix du plateau par l'hôte dans la salle d'attente : le choix est stocké
+   dans la salle (rooms/<code>/themeHote) et lu au démarrage. */
+function initialiserChoixThemeSalon(code){
+  const conteneur=$("salon-choix-theme");
+  if(!conteneur||!Net.estHote)return;
+  const afficher=(initial)=>{
+    Net.themeHoteSalon=initial;
+    conteneur.innerHTML=choixThemeHTML("salon-theme",initial);
+    activerChoixThemes(conteneur);
+    conteneur.querySelectorAll(".theme-option").forEach((bouton)=>bouton.addEventListener("click",()=>{
+      const theme=themeChoisi("salon-theme");
+      Net.themeHoteSalon=theme;
+      try{Net.refSalle(code).child("themeHote").set(theme).catch(()=>{});}catch(e){}
+    }));
+  };
+  try{
+    Net.refSalle(code).child("themeHote").get().then((snap)=>{
+      const stocke=snap.val();
+      afficher(stocke&&themeValide(stocke)?stocke:THEMES_PLATEAU[0].id);
+    }).catch(()=>afficher(THEMES_PLATEAU[0].id));
+  }catch(e){ afficher(THEMES_PLATEAU[0].id); }
+}
+
 function afficherSalon(code) {
   afficherEcran("salon");
   $("salon-code").textContent = code;
@@ -6806,14 +6955,17 @@ function afficherSalon(code) {
   $("btn-demarrer").classList.toggle("cachee", !Net.estHote);
   $("salon-bots").classList.toggle("cachee", !Net.estHote);
   $("option-eclair-salon").classList.toggle("cachee", !Net.estHote);
-  if (Net.estHote) $("mode-eclair-salon").checked = false;
+  $("salon-choix-theme").classList.toggle("cachee", !Net.estHote);
+  if (Net.estHote) { $("mode-eclair-salon").checked = false; initialiserChoixThemeSalon(code); }
   $("salon-attente").classList.toggle("cachee", Net.estHote);
 
   Net.ecouterHote((estHote) => {
     $("btn-demarrer").classList.toggle("cachee", !estHote);
     $("salon-bots").classList.toggle("cachee", !estHote);
     $("option-eclair-salon").classList.toggle("cachee", !estHote);
+    $("salon-choix-theme").classList.toggle("cachee", !estHote);
     $("salon-attente").classList.toggle("cachee", estHote);
+    if (estHote) initialiserChoixThemeSalon(code);
   });
   Net.ecouterJoueurs((joueurs) => {
     const liste = Object.entries(joueurs || {}).map(([pid, joueur]) => ({ ...joueur, pid }));
@@ -6853,6 +7005,9 @@ async function hoteDemarrePartie() {
   try {
     const snapJoueurs = await Net.refSalle(Net.code).child("joueurs").get();
     const joueurs = snapJoueurs.val() || {};
+    let themeHote = null;
+    try { themeHote = (await Net.refSalle(Net.code).child("themeHote").get()).val(); } catch (e) { themeHote = null; }
+    const themeChoix = (themeHote && themeValide(themeHote)) ? themeHote : themeChoisi("salon-theme");
     const pids = Object.keys(joueurs);
     if (pids.length < 2) { toast(L("Il faut au moins 2 Dresseurs ! ✦", "At least 2 Trainers are required! ✦")); return; }
     const profils = pids.map((pid, i) => ({
@@ -6866,7 +7021,7 @@ async function hoteDemarrePartie() {
       anniversaireDate: joueurs[pid].anniversaireDate || null,
     }));
     if (Net.equipe2v2 && pids.length !== 4) { toast(L("Le mode 2v2 demande exactement 4 Dresseurs.", "2v2 mode requires exactly 4 Trainers.")); return; }
-    const etat = nouvellePartie(profils, { modeEclair: $("mode-eclair-salon").checked, tirageThemesChoisis: true, equipes2v2: Net.equipe2v2 });
+    const etat = nouvellePartie(profils, { modeEclair: $("mode-eclair-salon").checked, tirageThemesChoisis: false, themePlateau: themeChoix, equipes2v2: Net.equipe2v2 });
     // On conserve les pid réseau pour reconnaître chaque téléphone.
     etat.joueurs.forEach((j, i) => { j.pid = pids[i]; });
     UI.etat = etat;
@@ -8489,7 +8644,7 @@ function ouvrirModalReponse(cadre, rIdx) {
     return d && d.type === "riposte";
   });
   const riposteContreBot=Boolean(etat.joueurs[cadre.parIdx]&&etat.joueurs[cadre.parIdx].estBot);
-  const expireLe=riposteContreBot?(Number(cadre.t)||Date.now())+9000:0;
+  const expireLe=riposteContreBot?(Number(cadre.t)||Date.now())+20000:0;
   const secondesInitiales=Math.max(0,Math.ceil((expireLe-Date.now())/1000));
 
   let html = "<h3>✦ " + L("Veux-tu rugir ?", "Do you want to roar?") + (riposteContreBot?' <span id="compte-riposte" class="compte-riposte" aria-label="'+echapper(L("secondes restantes","seconds remaining"))+'">'+secondesInitiales+'</span>':'') + "</h3>" +
@@ -8818,8 +8973,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const deverrouillerAuPremierGeste = (event) => {
     if (event.target && event.target.closest && event.target.closest("#btn-son")) return;
     Sons.deverrouiller();
-    document.removeEventListener("pointerdown", deverrouillerAuPremierGeste, true);
-    document.removeEventListener("keydown", deverrouillerAuPremierGeste, true);
+    /* On garde l'écouteur actif tant que la musique ne joue pas vraiment :
+       si le premier geste n'a pas suffi (contexte encore suspendu), le
+       prochain geste retentera le déverrouillage. Impossible de démarrer le
+       son avant le premier toucher (politique autoplay des navigateurs). */
+    if (Sons._timerMusique) {
+      document.removeEventListener("pointerdown", deverrouillerAuPremierGeste, true);
+      document.removeEventListener("keydown", deverrouillerAuPremierGeste, true);
+    }
   };
   document.addEventListener("pointerdown", deverrouillerAuPremierGeste, true);
   document.addEventListener("keydown", deverrouillerAuPremierGeste, true);
