@@ -1690,6 +1690,7 @@ function taillePaquet() {
 function saisonActive(date) { const m=(date||new Date()).getMonth()+1; if(m===12||m<=2)return "hiver"; if(m<=5)return "printemps"; if(m<=8)return "ete"; return "automne"; }
 function definitionsSaisonnieresActives(date) { const saison=saisonActive(date); return DEFINITIONS_CARTES.filter((d)=>d.saison===saison); }
 function nomSaison(saison) { const noms={hiver:["Hiver","Winter"],printemps:["Printemps","Spring"],ete:["Été","Summer"],automne:["Automne","Autumn"]}; const valeur=noms[saison]||[saison,saison]; return L(valeur[0],valeur[1]); }
+function periodesSaison(saison) { const periodes={hiver:["déc.–fév.","Dec–Feb"],printemps:["mars–mai","Mar–May"],ete:["juin–août","Jun–Aug"],automne:["sept.–nov.","Sep–Nov"]}; const valeur=periodes[saison]||[saison,saison]; return L(valeur[0],valeur[1]); }
 function maximumExemplaires(def) { return def.exemplaires + (def.saison ? 1 : 0) + (def.id === "dragon-dore" ? 1 : 0); }
 function taillePaquetMaximum() { return taillePaquet()+2; }
 
@@ -5567,8 +5568,6 @@ function ouvrirInstructions() {
         '<p>A Roar cancels the card just played (one Roar max per card). If an attack targets you, only you may roar. Effect-less dragons cannot be roared — except at Match point.</p>' +
         '<p><strong>Golden Dragon:</strong> its Golden Purification is unstoppable — no one can roar against it.</p>' +
         '<p><strong>Pack Roar:</strong> your cards cannot be cancelled until your next turn.</p>' +
-        '<h4>Seasonal dragons</h4>' +
-        '<ul><li>❄️ Snow Dragon: Dec–Feb 🌸 Bud Dragon: Mar–May ☀️ Solar Dragon: Jun–Aug 🍂 Mist Dragon: Sep–Nov</li></ul>' +
         '<h4>Weather & combos</h4>' +
         '<ul><li>Random Lair Weather each game: draw 1 card when your first dragon of the favored color arrives.</li><li>2 dragons of the same color in one turn = draw 1 card (once per color per turn).</li></ul>' +
         '<h4>Modes</h4>' +
@@ -5604,8 +5603,6 @@ function ouvrirInstructions() {
         '<p>Un Rugissement annule la carte qui vient d’être jouée (un seul par carte). Si une attaque te vise, seul toi peux rugir. Les dragons sans effet ne peuvent pas être contrés — sauf en Balle de match.</p>' +
         '<p><strong>Dragon Doré :</strong> sa Purification dorée est inarrêtable — personne ne peut rugir contre elle.</p>' +
         '<p><strong>Rugissement de meute :</strong> tes cartes ne peuvent pas être annulées jusqu’à ton prochain tour.</p>' +
-        '<h4>Dragons saisonniers</h4>' +
-        '<ul><li>❄️ Dragon des Neiges : déc. à fév. 🌸 Dragon des Bourgeons : mars à mai ☀️ Dragon Solaire : juin à août 🍂 Dragon des Brumes : sept. à nov.</li></ul>' +
         '<h4>Météo et combos</h4>' +
         '<ul><li>Météo du repaire aléatoire : pioche 1 carte quand ton premier dragon de la couleur favorisée arrive.</li><li>2 dragons de la même couleur en un tour = pioche 1 carte (une fois par couleur par tour).</li></ul>' +
         '<h4>Modes</h4>' +
@@ -5988,7 +5985,7 @@ function compteurDragondex(trouves){return dragonsDragondex().filter((def)=>Bool
 function styleIllustrationDragondex(def){return styleIllustration({defId:def.id,uid:"dragondex-"+def.id});}
 function filtresDragondexHTML(){return '<div class="dragondex-filtres" role="group" aria-label="'+L("Filtres du Dragondex","Dragondex filters")+'">'+FILTRES_DRAGONDEX.map((filtre)=>'<button type="button" class="dragondex-filtre" data-filtre="'+filtre.id+'" aria-pressed="'+(filtre.id==="tous"?'true':'false')+'">'+echapper(enAnglais()?filtre.en:filtre.fr)+'</button>').join('')+'</div>';}
 function carteDragondexHTML(def,trouves){
-  const connu=Boolean(trouves&&trouves[def.id]), badge=def.saison?'<span class="saison-badge">'+def.emoji+' '+echapper(nomSaison(def.saison))+'</span>':'';
+  const connu=Boolean(trouves&&trouves[def.id]), badge=def.saison?'<span class="saison-badge">'+def.emoji+' '+echapper(nomSaison(def.saison))+' ('+echapper(periodesSaison(def.saison))+')</span>':'';
   return '<button type="button" class="dragondex-item '+(connu?'':'inconnu')+'" data-dragon="'+def.id+'"><span class="dragondex-mini" style="'+styleIllustrationDragondex(def)+'">'+illustrationDragonHTML(def)+'</span><span class="dragondex-item-texte"><strong>'+(connu?echapper(nomCarte(def)):'???')+'</strong>'+badge+(connu?'<small>'+echapper(nomTypeCarte(def))+'</small>':'')+'</span></button>';
 }
 function mettreAJourGrilleDragondex(zone,trouves,filtre){
