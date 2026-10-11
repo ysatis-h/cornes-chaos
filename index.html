@@ -1361,7 +1361,7 @@ const DEFINITIONS_CARTES = [
   { id: "dragon-brumes", nom: "Dragon des Brumes", type: "licorne", emoji: "🍂", couleur: "rouge", texte: "Quand il entre dans ton repaire : chaque adversaire défausse 1 carte au hasard.", effet: { kind: "defausser-adversaires", n: 1, declencheur: "entree" }, exemplaires: 0, saison: "automne" },
 
   // Une chance sur vingt par partie ajoute cet exemplaire secret à la pioche.
-  { id: "dragon-dore", nom: "Dragon Doré", type: "licorne", emoji: "✦", couleur: "orange", texte: "Ultra rare : dès qu’il rejoint ta main, il est ajouté à ton Dragondex.", effet: { kind: "aucun" }, exemplaires: 0, rarete: "ultra-rare" },
+  { id: "dragon-dore", nom: "Dragon Doré", type: "magique", emoji: "✦", couleur: "orange", texte: "Ultra rare : quand il entre dans ton repaire, sa lumière purificatrice retire toutes les améliorations des adversaires et tous les sabotages sur tes dragons.", effet: { kind: "purification-doree", declencheur: "entree" }, exemplaires: 0, rarete: "ultra-rare" },
 
   // ------------------------ MAGIE DRACONIQUE (x23) ------------------------
   {
@@ -1474,7 +1474,7 @@ const CARTES_EN = {
   "dragon-bourgeons": { nom: "Bud Dragon", texte: "When it enters your lair: find a Baby Dragon in the deck and welcome it." },
   "dragon-solaire": { nom: "Solar Dragon", texte: "When it enters your lair: protect your territory until your next turn." },
   "dragon-brumes": { nom: "Mist Dragon", texte: "When it enters your lair: each opponent discards 1 random card." },
-  "dragon-dore": { nom: "Golden Dragon", texte: "Ultra rare: as soon as it reaches your hand, it is added to your Dragondex." },
+  "dragon-dore": { nom: "Golden Dragon", texte: "Ultra rare: when it enters your lair, its purifying light removes all enemy upgrades and all sabotages on your dragons." },
   "pluie-etoiles": { nom: "Scale Shower", texte: "Discard 1 card, then draw 2 cards." },
   "tornade-paillettes": { nom: "Flame Tornado", texte: "Destroy an opponent’s dragon." },
   "lasso-magique": { nom: "Thieving Claw", texte: "Steal an opponent’s dragon." },
@@ -2551,6 +2551,10 @@ const MESSAGES_JOURNAL = {
     fr: (p) => "🥷 " + p.nom + " détruit « " + nomCarteJournal(p.defId) + " » !",
     en: (p) => "🥷 " + p.nom + " destroys “" + nomCarteJournal(p.defId) + "”!",
   },
+  purification_doree: {
+    fr: (p) => "✦ Le Dragon Doré de " + p.nom + " purifie le jeu : améliorations adverses et sabotages dissipés !",
+    en: (p) => "✦ " + p.nom + "'s Golden Dragon purifies the game: enemy upgrades and sabotages dispelled!",
+  },
   bell: {
     fr: (p) => "🔔 La Cloche du Repaire de " + p.nom + " tinte : +2 cartes !",
     en: (p) => "🔔 " + p.nom + "’s Lair Bell rings: +2 cards!",
@@ -3010,7 +3014,7 @@ function aUnHennissement(joueur) {
 /* Renvoie le Dresseur visé lorsqu'une carte constitue une attaque ciblée. */
 function cibleAttaque(def, cibles, idxJoueur) {
   if (!def || !cibles) return null;
-  const effetsHostiles = ["detruire", "voler", "echanger", "detruire-bonus"];
+  const effetsHostiles = ["detruire", "voler", "echanger", "detruire-bonus", "purification-doree"];
   if (def.type !== "sabotage" && !effetsHostiles.includes(def.effet && def.effet.kind)) return null;
   const idxCible = cibles.adverse && Number.isInteger(cibles.adverse.joueur)
     ? cibles.adverse.joueur
@@ -3553,6 +3557,25 @@ function appliquerEffet(etat, parIdx, def, cibles) {
       const bonus = zone.splice(pos, 1)[0];
       etat.defausse.push(bonus);
       journal(etat, "destroy_bonus", { nom: joueur.nom, defId: defCarte(bonus).id });
+      break;
+    }
+
+    case "purification-doree": {
+      /* Dragon Doré : enlève toutes les améliorations des adversaires
+         et tous les sabotages sur tes propres dragons. */
+      for (let i = 0; i < etat.joueurs.length; i++) {
+        const estMoi = i === parIdx;
+        const estAllie = etat.equipes2v2 && etat.joueurs[i].equipe === joueur.equipe;
+        if (!estMoi && !estAllie) {
+          const adv = etat.joueurs[i];
+          while (adv.ameliorations.length) etat.defausse.push(adv.ameliorations.pop());
+        }
+        if (estMoi || estAllie) {
+          const allie = etat.joueurs[i];
+          while (allie.sabotages.length) etat.defausse.push(allie.sabotages.pop());
+        }
+      }
+      journal(etat, "purification_doree", { nom: joueur.nom });
       break;
     }
   }
