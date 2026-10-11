@@ -1131,7 +1131,7 @@ body.avec-bandeau{padding-top:38px}
 .effet-tornade-paillettes .tornade{width:72px;height:205px;border-radius:50%;border:12px solid transparent;border-left-color:#ffb347;border-right-color:#ef4938;filter:drop-shadow(0 0 12px #ff7a35);animation:tornade-feu .42s linear infinite}
 .effet-tornade-paillettes .dragon-effet{animation:dragon-consume 2.1s ease both}
 @keyframes tornade-feu{to{transform:rotate(1turn) scaleX(.72)}}@keyframes dragon-consume{0%,22%{opacity:1;transform:scale(1)}72%,100%{opacity:0;transform:scale(.18) rotate(20deg);filter:sepia(1) saturate(4)}}
-.effet-lasso-magique .griffe{z-index:2;font-size:96px;animation:griffe-vole 2.1s cubic-bezier(.2,.8,.25,1) both}.effet-lasso-magique .dragon-effet{width:72px;height:67px;animation:dragon-emporte 2.1s cubic-bezier(.2,.8,.25,1) both}
+.effet-lasso-magique .griffe{z-index:2;font-size:96px;animation:griffe-vole 2.1s cubic-bezier(.2,.8,.25,1) both}.effet-lasso-magique .griffe-carte .objet-dessin{width:96px;height:82px}.effet-lasso-magique .dragon-effet{width:72px;height:67px;animation:dragon-emporte 2.1s cubic-bezier(.2,.8,.25,1) both}
 @keyframes griffe-vole{0%{transform:translate(150px,-150px) rotate(-24deg)}32%{transform:translate(18px,-18px) rotate(-8deg)}55%{transform:translate(8px,-5px) rotate(-8deg)}100%{transform:translate(-190px,-120px) rotate(-20deg)}}@keyframes dragon-emporte{0%,34%{transform:none}55%{transform:translate(-5px,5px) scale(.9)}100%{transform:translate(-190px,-105px) scale(.7) rotate(-18deg);opacity:0}}
 .effet-grand-menage .bourrasque{width:270px;height:95px;border:10px solid rgba(255,255,255,.88);border-left-color:transparent;border-right-color:transparent;border-radius:50%;animation:bourrasque 1s linear infinite}.effet-grand-menage .carte-envolee{width:52px;height:72px;border:4px solid #fff;border-radius:8px;background:linear-gradient(145deg,#79bed2,#7560bf);animation:carte-envolee 1.7s ease-in infinite}.effet-grand-menage .carte-envolee.c1{left:24%;animation-delay:-.25s}.effet-grand-menage .carte-envolee.c2{left:48%;animation-delay:-.8s}.effet-grand-menage .carte-envolee.c3{left:68%;animation-delay:-1.2s}
 @keyframes bourrasque{to{transform:rotate(1turn) scaleX(.82)}}@keyframes carte-envolee{0%{transform:translateX(-190px) rotate(-35deg);opacity:0}25%{opacity:1}100%{transform:translateX(210px) rotate(300deg);opacity:0}}
@@ -7976,7 +7976,7 @@ function contenuEffetVisuel(effet){
   switch(effet.type){
     case "pluie-etoiles": return '<i class="ecaille"></i><i class="ecaille"></i><i class="ecaille"></i><i class="ecaille"></i><i class="ecaille"></i><b class="carte-pluie c1"></b><b class="carte-pluie c2"></b><b class="carte-pluie c3"></b>';
     case "tornade-paillettes": return '<i class="tornade"></i>'+dragonGraphiqueEffet("dragon-effet","licorne-classique","tornade");
-    case "lasso-magique": return dragonGraphiqueEffet("dragon-effet","licorne-arc-en-ciel","griffe")+'<i class="griffe">🦅</i>';
+    case "lasso-magique": { const defLasso=definitionParId("lasso-magique"); return dragonGraphiqueEffet("dragon-effet","licorne-arc-en-ciel","griffe")+'<span class="griffe griffe-carte">'+illustrationObjetHTML(defLasso)+'</span>'; }
     case "grand-menage": return '<i class="bourrasque"></i><b class="carte-envolee c1"></b><b class="carte-envolee c2"></b><b class="carte-envolee c3"></b>';
     case "echange-royal": return dragonGraphiqueEffet("dragon-a","licorne-classique","echange-a")+dragonGraphiqueEffet("dragon-b","licorne-arc-en-ciel","echange-b");
     case "potion-energie": return '<i class="rembobine"></i><b class="fiole">🧪</b>';
