@@ -7683,6 +7683,20 @@ function choixBotPour(def, idxBot) {
     if (!mesSabotages.length) return { valide: false };
     return { valide: true, cibles: choisirOptionBot(mesSabotages, profil.meilleureCible) };
   }
+  /* Dragon de l'Ombre : le bot détruit une Amélioration adverse (jamais un Sabotage
+     adverse — ça aiderait l'adversaire !). Il peut aussi nettoyer ses propres
+     Sabotages (ou ceux de son coéquipier en 2v2). */
+  if (def.effet && def.effet.kind === "detruire-bonus") {
+    const etat = UI.etat;
+    const valides = disponibles.options.filter((o) =>
+      o.zone === "ameliorations" ||
+      o.joueur === idxBot ||
+      (etat.equipes2v2 && etat.joueurs[o.joueur].equipe === etat.joueurs[idxBot].equipe)
+    );
+    if (!valides.length) return { valide: false };
+    const triees = valides.slice().sort((a, b) => valeurEcurie(UI.etat, b.joueur) - valeurEcurie(UI.etat, a.joueur));
+    return { valide: true, cibles: choisirOptionBot(triees, profil.meilleureCible) };
+  }
   const optionsTriees = disponibles.options.slice().sort((a, b) => {
     if (Number.isInteger(a.joueur) && Number.isInteger(b.joueur)) {
       const scoreA = valeurEcurie(UI.etat, a.joueur) + (a.uid ? 0.1 : 0);
