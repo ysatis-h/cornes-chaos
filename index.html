@@ -2678,6 +2678,8 @@ function choisirDefaussePluie(etat, idxJoueur, uidsChoisis) {
   piocherCartes(etat, idxJoueur, choix.piocher || 2);
   etat.choix = null;
   etat.phase = "jeu";
+  reprendreTimer(etat);
+  terminerAutomatiquementSiPret(etat);
   return true;
 }
 
