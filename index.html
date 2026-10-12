@@ -1320,7 +1320,7 @@ const DEFINITIONS_CARTES = [
   },
   {
     id: "licorne-ninja", nom: "Dragon de l'Ombre", type: "magique", emoji: "🌑", couleur: "violet",
-    texte: "Quand il entre dans ton repaire : détruis une Amélioration ou un Sabotage sur un territoire.",
+    texte: "Quand il entre dans ton repaire : détruis une Amélioration adverse ou un Sabotage en jeu.",
     effet: { kind: "detruire-bonus", declencheur: "entree", cible: "bonus-en-jeu" }, exemplaires: 1,
   },
   {
@@ -1406,7 +1406,7 @@ const DEFINITIONS_CARTES = [
   },
   {
     id: "flamme-purificatrice", nom: "Flamme Purificatrice", type: "magie", emoji: "🔥",
-    texte: "Détruis un sabotage en jeu.",
+    texte: "Détruis un sabotage en jeu. Le Nuage de Cendres ne peut pas annuler cette carte.",
     effet: { kind: "detruire-sabotage", cible: "sabotage-en-jeu" }, exemplaires: 2,
   },
   {
@@ -1459,7 +1459,7 @@ const DEFINITIONS_CARTES = [
   // lors du chargement afin de préserver les parties déjà ouvertes.
   {
     id: "rugissement-meute", nom: "Rugissement de meute", type: "magie", emoji: "📣",
-    texte: "Jusqu'à ton prochain tour, tes cartes ne peuvent pas être annulées par un Rugissement.",
+    texte: "Pendant tes 2 prochains tours, tes cartes ne peuvent pas être annulées par un Rugissement.",
     effet: { kind: "anti-rugissement" }, exemplaires: 1,
   },
 ];
@@ -1471,7 +1471,7 @@ const CARTES_EN = {
   "licorne-classique": { nom: "Ember Dragon", texte: "Sacrifice this dragon: draw 2 cards." },
   "licorne-givre": { nom: "Frost Dragon", texte: "Silent and majestic, it freezes the air around its treasure." },
   "licorne-arc-en-ciel": { nom: "Prismatic Dragon", texte: "When it enters your lair: draw 2 cards." },
-  "licorne-ninja": { nom: "Shadow Dragon", texte: "When it enters your lair: destroy an Upgrade or Sabotage on any territory." },
+  "licorne-ninja": { nom: "Shadow Dragon", texte: "When it enters your lair: destroy an opponent's Upgrade or a Sabotage in play." },
   "licorne-cupidon": { nom: "Blazing Heart Dragon", texte: "When it enters your lair: steal one NON-mythic dragon from an opponent." },
   "licorne-gourmet": { nom: "Glutton Dragon", texte: "When it enters your lair: each opponent discards 1 random card." },
   "licorne-gardienne": { nom: "Guardian Dragon", texte: "This dragon cannot be stolen. Its stare is enough to scare thieves away." },
@@ -1491,7 +1491,7 @@ const CARTES_EN = {
   "grand-menage": { nom: "Great Dragon’s Breath", texte: "Each opponent chooses 2 cards from their hand and discards them. You are not affected." },
   "echange-royal": { nom: "Pact of Two Lairs", texte: "Trade one of your dragons for an opponent’s dragon." },
   "potion-energie": { nom: "Life Elixir", texte: "Take another turn right after this one. This Elixir does not use the card play from your current turn." },
-  "flamme-purificatrice": { nom: "Purifying Flame", texte: "Destroy a sabotage in play." },
+  "flamme-purificatrice": { nom: "Purifying Flame", texte: "Destroy a sabotage in play. Cannot be cancelled by Ash Cloud." },
   "appel-bebes": { nom: "Call of the Hatchlings", texte: "Steal a Baby Dragon from an opponent's lair and put it in your hand." },
   "arc-en-ciel-protecteur": { nom: "Prismatic Aegis", texte: "Your dragons cannot be destroyed during your next 2 turns." },
   "fer-a-cheval": { nom: "Lucky Treasure", texte: "Draw 1 extra card at the start of each of your turns." },
@@ -1500,7 +1500,7 @@ const CARTES_EN = {
   "boue-collante": { nom: "Sinking Marsh", texte: "Trap: the next dragon played by this Trainer is discarded." },
   "miroir-fele": { nom: "Shattered Dragon Mirror", texte: "The target discards 1 random card at the start of each of their turns (max 4 turns, then the mirror shatters)." },
   "riposte": { nom: "Roar", texte: "Cancel the card that was just played. Only one Roar may be played against that card." },
-  "rugissement-meute": { nom: "Pack Roar", texte: "Until your next turn, your cards cannot be cancelled by a Roar." }
+  "rugissement-meute": { nom: "Pack Roar", texte: "During your next 2 turns, your cards cannot be cancelled by a Roar." }
 };
 const TYPES_EN = {
   bebe: "Hatchling", licorne: "Dragon", magique: "Mythic dragon", magie: "Dragon magic",
@@ -2413,8 +2413,8 @@ const MESSAGES_JOURNAL = {
     en: (p) => p.nom + " freezes a card in " + p.cible + " hand for 2 turns.",
   },
   pack_roar: {
-    fr: (p) => "📣 " + p.nom + " rugit avec sa meute : ses cartes sont inarrêtables jusqu'à son prochain tour.",
-    en: (p) => "📣 " + p.nom + " roars with the pack: their cards cannot be stopped until their next turn.",
+    fr: (p) => "📣 " + p.nom + " rugit avec sa meute : ses cartes sont inarrêtables pendant ses 2 prochains tours.",
+    en: (p) => "📣 " + p.nom + " roars with the pack: their cards cannot be stopped during their next 2 turns.",
   },
   pluie_defausse: {
     fr: (p) => "✨ " + p.nom + " laisse une carte partir sous la pluie.",
@@ -2714,8 +2714,13 @@ function debutTour(etat) {
   // Le bouclier expire au début de ton prochain tour.
   joueur.protege = false;
 
-  // Le Rugissement de meute expire au début de ton prochain tour.
-  joueur.protectionRugissement = false;
+  // Le Rugissement de meute dure 2 des tours de son propriétaire : chaque
+  // début de ses tours consomme une charge. (Les anciennes parties stockaient
+  // un booléen : true équivaut à 1 charge restante, soit l'ancien comportement.)
+  if (joueur.protectionRugissement) {
+    const charges = Number.isInteger(joueur.protectionRugissement) ? joueur.protectionRugissement : 1;
+    joueur.protectionRugissement = charges > 1 ? charges - 1 : false;
+  }
 
   // Miroir Fêlé : défausse 1 carte au début du tour, 4 tours max puis il se brise.
   const miroir = joueur.sabotages.find((c) => c.defId === "miroir-fele");
@@ -2984,9 +2989,15 @@ function ciblesValides(etat, idxJoueur, def) {
     }
   } else if (cible === "bonus-en-jeu") {
     for (let i = 0; i < etat.joueurs.length; i++) {
-      for (const inst of etat.joueurs[i].ameliorations) {
-        const d = defCarte(inst);
-        resultat.options.push({ joueur: i, uid: inst.uid, zone: "ameliorations", nom: d.nom, emoji: d.emoji });
+      // Le Dragon de l'Ombre ne propose jamais tes propres Améliorations
+      // (ni celles de ton allié en 2v2) : pas d'accident possible sur tes bonus.
+      // Tes Sabotages restent ciblables pour nettoyer ton propre territoire.
+      const estMoiOuAllie = i === idxJoueur || (etat.equipes2v2 && etat.joueurs[i].equipe === etat.joueurs[idxJoueur].equipe);
+      if (!estMoiOuAllie) {
+        for (const inst of etat.joueurs[i].ameliorations) {
+          const d = defCarte(inst);
+          resultat.options.push({ joueur: i, uid: inst.uid, zone: "ameliorations", nom: d.nom, emoji: d.emoji });
+        }
       }
       for (const inst of etat.joueurs[i].sabotages) {
         const d = defCarte(inst);
@@ -3060,7 +3071,9 @@ function jouerCarte(etat, idxJoueur, uidCarte, cibles) {
 
   // Nuage de Cendres reste visible sur le territoire ciblé jusqu'à ce que ce
   // Dresseur joue une Magie. Il annule alors cette carte et se dissipe.
-  if (def.type === "magie") {
+  // Exception : la Flamme Purificatrice brûle à travers le nuage et ne peut
+  // pas être annulée par lui (le contre des sabotages bat le sabotage).
+  if (def.type === "magie" && def.id !== "flamme-purificatrice") {
     const nuageIdx = joueur.sabotages.findIndex((c) => c.defId === "nuage-grognon");
     if (nuageIdx >= 0) {
       const nuage = joueur.sabotages.splice(nuageIdx, 1)[0];
@@ -3408,7 +3421,9 @@ function appliquerEffet(etat, parIdx, def, cibles) {
       break;
 
     case "anti-rugissement":
-      joueur.protectionRugissement = true;
+      // Dure 2 des tours du propriétaire : le compteur est décrémenté au
+      // début de chacun de ses tours (voir debutTour).
+      joueur.protectionRugissement = 2;
       journal(etat, "pack_roar", { nom: joueur.nom });
       break;
 
@@ -5574,7 +5589,7 @@ function ouvrirInstructions() {
         '<h4>Roars</h4>' +
         '<p>A Roar cancels the card just played (one Roar max per card). If an attack targets you, only you may roar. Effect-less dragons cannot be roared — except at Match point.</p>' +
         '<p><strong>Golden Dragon:</strong> its Golden Purification is unstoppable — no one can roar against it.</p>' +
-        '<p><strong>Pack Roar:</strong> your cards cannot be cancelled until your next turn.</p>' +
+        '<p><strong>Pack Roar:</strong> your cards cannot be cancelled by a Roar during your next 2 turns.</p>' +
         '<h4>Weather & combos</h4>' +
         '<ul><li>Random Lair Weather each game: draw 1 card when your first dragon of the favored color arrives.</li><li>2 dragons of the same color in one turn = draw 1 card (once per color per turn).</li></ul>' +
         '<h4>Modes</h4>' +
@@ -5609,7 +5624,7 @@ function ouvrirInstructions() {
         '<h4>Rugissements</h4>' +
         '<p>Un Rugissement annule la carte qui vient d’être jouée (un seul par carte). Si une attaque te vise, seul toi peux rugir. Les dragons sans effet ne peuvent pas être contrés — sauf en Balle de match.</p>' +
         '<p><strong>Dragon Doré :</strong> sa Purification dorée est inarrêtable — personne ne peut rugir contre elle.</p>' +
-        '<p><strong>Rugissement de meute :</strong> tes cartes ne peuvent pas être annulées jusqu’à ton prochain tour.</p>' +
+        '<p><strong>Rugissement de meute :</strong> tes cartes ne peuvent pas être annulées par un Rugissement pendant tes 2 prochains tours.</p>' +
         '<h4>Météo et combos</h4>' +
         '<ul><li>Météo du repaire aléatoire : pioche 1 carte quand ton premier dragon de la couleur favorisée arrive.</li><li>2 dragons de la même couleur en un tour = pioche 1 carte (une fois par couleur par tour).</li></ul>' +
         '<h4>Modes</h4>' +
@@ -6700,7 +6715,7 @@ function ouvrirTutoriel() {
     "<h3>" + L("Tutoriel avec Pyros", "Tutorial with Pyros") + "</h3>" +
     '<p class="tutoriel-intro">' + L("Une partie guidée contre Pyros pour découvrir la pioche, les dragons, la Magie et les Rugissements à ton rythme. Le mode Découverte se joue sans chrono, avec des textes plus grands et un Pyros plus lent; chaque carte encore inconnue s’agrandira automatiquement.", "A guided game against Pyros to learn drawing, dragons, Magic, and Roars at your own pace. Discovery Mode has no timer, larger text, and a slower Pyros; every card you have not seen yet will enlarge automatically.") + "</p>" +
     '<h4 class="tutoriel-soustitre">' + L("Repères de jeu", "Game tips") + "</h4>" +
-    '<ul class="tutoriel-points"><li>' + L("Touche une carte dans ta main pour l’agrandir et lire son texte, puis touche le bouton pour la jouer.", "Tap a card in your hand to enlarge it and read its text, then tap the button to play it.") + "</li><li>" + L("Un seul Rugissement peut être joué dans une riposte.", "Only one Roar may be played in a counter.") + "</li><li>" + L("Le Rugissement de meute est une Magie : joue-le pendant ton tour pour que tes cartes ne puissent pas être annulées par un Rugissement jusqu’au début de ton prochain tour.", "Pack Roar is Magic: play it on your turn so your cards cannot be cancelled by a Roar until the start of your next turn.") + "</li></ul>" +
+    '<ul class="tutoriel-points"><li>' + L("Touche une carte dans ta main pour l’agrandir et lire son texte, puis touche le bouton pour la jouer.", "Tap a card in your hand to enlarge it and read its text, then tap the button to play it.") + "</li><li>" + L("Un seul Rugissement peut être joué dans une riposte.", "Only one Roar may be played in a counter.") + "</li><li>" + L("Le Rugissement de meute est une Magie : joue-le pendant ton tour pour que tes cartes ne puissent pas être annulées par un Rugissement pendant tes 2 prochains tours.", "Pack Roar is Magic: play it on your turn so your cards cannot be cancelled by a Roar during your next 2 turns.") + "</li></ul>" +
     '<h4 class="tutoriel-soustitre">' + L("Types de cartes", "Card Types") + "</h4>" +
     '<ul class="tutoriel-points"><li>' + L("Les Dragons déclenchent leur pouvoir dès leur arrivée dans ton repaire, quand ils en ont un.", "Dragons trigger their power as soon as they enter your lair, when they have one.") + "</li><li>" + L("Les cartes Magie produisent un effet immédiat, puis vont à la défausse.", "Magic cards produce an immediate effect, then go to the discard pile.") + "</li><li>" + L("Les Améliorations restent dans ton repaire; les Sabotages se placent sur le territoire d’un autre Dresseur.", "Upgrades remain in your lair; Sabotages are placed on another Trainer’s territory.") + "</li></ul>" +
     saisieNomDresseurHTML("tutoriel-pseudo", L("Ton nom de Dresseur", "Your Trainer name")) +
