@@ -1968,6 +1968,7 @@ function instanceCarteSure(carte) {
     defId,
     ...(defId === "bebe-licorne" && COULEURS_AVATAR.includes(carte.couleurDragon) ? { couleurDragon: carte.couleurDragon } : {}),
     ...(Number.isInteger(carte.toursRestants) ? { toursRestants: Math.max(0, Math.min(2, carte.toursRestants)) } : {}),
+    ...(Number.isInteger(carte.tourPose) ? { tourPose: carte.tourPose } : {}),
     ...(Number.isInteger(carte.toursGeles) ? { toursGeles: Math.max(0, Math.min(2, carte.toursGeles)) } : {}),
     ...(defId === "miroir-fele" && Number.isInteger(carte.fissures) ? { fissures: Math.max(0, Math.min(3, carte.fissures)) } : {}),
   };
@@ -2772,12 +2773,18 @@ function debutTour(etat) {
 }
 
 function faireExpirerEgideApresTour(etat, idxActif) {
-  // L'Egide protege pendant 2 des tours de son proprietaire, peu importe
-  // le nombre de Dresseurs : chaque tour termine consomme une charge.
+  // L'Egide protege pendant les 2 PROCHAINS tours de son proprietaire : le tour
+  // où elle est jouée ne consomme pas de charge. Chaque tour suivant terminé
+  // consomme une charge, peu importe le nombre de Dresseurs.
   const joueur = etat.joueurs[idxActif];
   const conservees = [];
   joueur.ameliorations.forEach((carte) => {
     if (carte.defId !== "arc-en-ciel-protecteur") {
+      conservees.push(carte);
+      return;
+    }
+    // Jouée pendant ce tour-ci ? On ne touche pas aux charges.
+    if (Number.isInteger(carte.tourPose) && carte.tourPose === etat.numeroTour) {
       conservees.push(carte);
       return;
     }
@@ -3330,7 +3337,12 @@ function appliquerCarte(etat, cadre) {
   // ...puis les autres types de cartes.
   if (def.type === "amelioration") {
     const dureeEgide = 2;
-    if (def.id === "arc-en-ciel-protecteur") carte.toursRestants = dureeEgide;
+    if (def.id === "arc-en-ciel-protecteur") {
+      carte.toursRestants = dureeEgide;
+      // Le tour où l'Égide est jouée ne compte pas : on note le numéro du tour
+      // pour ne pas consommer de charge à la fin de ce tour-ci.
+      carte.tourPose = etat.numeroTour;
+    }
     joueur.ameliorations.push(carte);
     if (def.id === "arc-en-ciel-protecteur") ajouterEffetVisuel(etat, def.id, parIdx);
     journal(etat, def.id === "arc-en-ciel-protecteur" ? "equip_aegis" : "equip", { nom: joueur.nom, defId: def.id, nb: dureeEgide });
