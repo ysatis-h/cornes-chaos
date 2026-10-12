@@ -3029,6 +3029,8 @@ function ciblesValides(etat, idxJoueur, def) {
       // Le Dragon de l'Ombre ne propose jamais tes propres Améliorations
       // (ni celles de ton allié en 2v2) : pas d'accident possible sur tes bonus.
       // Tes Sabotages restent ciblables pour nettoyer ton propre territoire.
+      // Les Sabotages adverses ne sont JAMAIS proposés : ils les pénalisent
+      // déjà, aucun intérêt à les détruire.
       const estMoiOuAllie = i === idxJoueur || (etat.equipes2v2 && etat.joueurs[i].equipe === etat.joueurs[idxJoueur].equipe);
       if (!estMoiOuAllie) {
         for (const inst of etat.joueurs[i].ameliorations) {
@@ -3036,9 +3038,11 @@ function ciblesValides(etat, idxJoueur, def) {
           resultat.options.push({ joueur: i, uid: inst.uid, zone: "ameliorations", nom: d.nom, emoji: d.emoji });
         }
       }
-      for (const inst of etat.joueurs[i].sabotages) {
-        const d = defCarte(inst);
-        resultat.options.push({ joueur: i, uid: inst.uid, zone: "sabotages", nom: d.nom, emoji: d.emoji });
+      if (estMoiOuAllie) {
+        for (const inst of etat.joueurs[i].sabotages) {
+          const d = defCarte(inst);
+          resultat.options.push({ joueur: i, uid: inst.uid, zone: "sabotages", nom: d.nom, emoji: d.emoji });
+        }
       }
     }
   }
@@ -7306,6 +7310,7 @@ function afficherSalon(code) {
     if (Net.estHote) {
       $("btn-demarrer").disabled = Net.equipe2v2 ? liste.length !== 4 : liste.length < 2;
       $("btn-ajouter-bot").disabled = liste.length >= 4;
+      $("btn-ajouter-bot").classList.toggle("cachee", liste.length >= 4);
       $("btn-retirer-bot").classList.toggle("cachee", !liste.some((j) => j.estBot));
       $("btn-demarrer").textContent = (Net.equipe2v2 ? liste.length !== 4 : liste.length < 2)
         ? L("⏳ En attente de Dresseurs... (", "⏳ Waiting for Trainers... (") + liste.length + "/4)"
