@@ -1971,6 +1971,7 @@ function instanceCarteSure(carte) {
     ...(Number.isInteger(carte.tourPose) ? { tourPose: carte.tourPose } : {}),
     ...(Number.isInteger(carte.toursGeles) ? { toursGeles: Math.max(0, Math.min(2, carte.toursGeles)) } : {}),
     ...(defId === "miroir-fele" && Number.isInteger(carte.fissures) ? { fissures: Math.max(0, Math.min(3, carte.fissures)) } : {}),
+    ...(defId === "miroir-fele" && Number.isInteger(carte.toursMiroir) ? { toursMiroir: Math.max(0, Math.min(4, carte.toursMiroir)) } : {}),
   };
 }
 
@@ -2728,9 +2729,10 @@ function debutTour(etat) {
     joueur.protectionRugissement = charges > 1 ? charges - 1 : false;
   }
 
-  // Miroir Fêlé : défausse 1 carte au début du tour, 4 tours max puis il se brise.
-  const miroir = joueur.sabotages.find((c) => c.defId === "miroir-fele");
-  if (miroir) {
+  // Miroir Fêlé : CHAQUE miroir défausse 1 carte au début du tour, 4 tours max
+  // puis il se brise. Le compteur avance même si la main est vide.
+  const miroirs = joueur.sabotages.filter((c) => c.defId === "miroir-fele");
+  miroirs.forEach((miroir) => {
     const toursMiroir = (Number(miroir.toursMiroir) || 0) + 1;
     miroir.toursMiroir = toursMiroir;
     miroir.fissures = Math.min(3, toursMiroir);
@@ -2744,7 +2746,7 @@ function debutTour(etat) {
     } else {
       journal(etat, "mirror_discard", { nom: joueur.nom });
     }
-  }
+  });
   // Pioche normale : exactement 1 carte si la main en contient moins de 7.
   // Les cartes qui accordent une pioche supplémentaire sont des exceptions
   // explicites et peuvent donc faire dépasser la limite de 7 cartes.
@@ -5932,6 +5934,9 @@ function carteHTML(instance, options) {
   if (options.mini) {
     const duree = def.id === "arc-en-ciel-protecteur" && Number.isInteger(instance.toursRestants)
       ? '<span class="mini-duree" title="' + L("Tours de protection restants", "Turns of protection remaining") + '">' + instance.toursRestants + ' ' + L(instance.toursRestants > 1 ? "tours" : "tour", instance.toursRestants > 1 ? "turns" : "turn") + '</span>'
+      : def.id === "miroir-fele"
+      ? (() => { const restants = Math.max(0, 4 - (Number.isInteger(instance.toursMiroir) ? instance.toursMiroir : 0));
+          return '<span class="mini-duree" title="' + L("Tours avant que le miroir se brise", "Turns before the mirror breaks") + '">' + restants + ' ' + L(restants > 1 ? "tours" : "tour", restants > 1 ? "turns" : "turn") + '</span>'; })()
       : "";
     const miniInteractif = options.interactive
       ? ' data-uid="' + instance.uid + '" role="button" tabindex="0" aria-label="' + L("Lire l’effet de ", "Read the effect of ") + nomAffiche + '"'
@@ -9129,6 +9134,8 @@ function ouvrirModalDefausseSouffle() {
     confirmer.disabled = true;
     const ok = choisirDefausseSouffle(etat, choix.parIdx, Array.from(selection));
     if (!ok) { rendreTout(); return; }
+    // Dernier défausseur : le choix est terminé, on ferme le modal.
+    if (!etat.choix) fermerModal();
     if (UI.mode === "online") void Net.envoyerEtat(etat);
     if (UI.mode === "local") rendreApresActionLocale(); else rendreTout();
   });
@@ -9171,6 +9178,7 @@ function ouvrirModalDefaussePluie() {
     const parIdx = choix.parIdx;
     const ok = choisirDefaussePluie(etat, parIdx, [selectionUid]);
     if (!ok) { rendreTout(); return; }
+    fermerModal();
     if (UI.mode === "online") void Net.envoyerEtat(etat);
     terminerTourApresCarte(etat, parIdx);
     apresActionAutomatique();
