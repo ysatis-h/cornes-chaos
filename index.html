@@ -4022,12 +4022,30 @@ const Net = {
     etat.revision = (Number.isInteger(etat.revision) ? etat.revision : 0) + 1;
     try {
       await this.refSalle(this.code).child("partie").set(etat);
+      if (this._aRenvoyer && this._aRenvoyer.etat === etat) this._aRenvoyer = null;
     } catch (e) {
       console.warn("Synchronisation retardée :", e);
-      toast("La carte est jouée ici, mais la synchronisation tarde… Vérifie ta connexion.", 4200);
+      // Échec réseau : on garde l'état en file pour réessai automatique (le watchdog s'en charge).
+      // La révision déjà incrémentée est conservée pour ne pas la ré-incrémenter au réessai.
+      this._aRenvoyer = { etat: etat, t: Date.now() };
+      toast(L("La carte est jouée ici, mais la synchronisation tarde… Nouvel essai automatique.", "Your move is played here, but syncing is slow… Retrying automatically."), 4200);
       return false;
     }
     return true;
+  },
+
+  /* Renvoie un état dont l'envoi a échoué (appelé par le watchdog). */
+  async renvoyerEtatEnAttente() {
+    if (this.mode !== "online" || !this.code || !this._aRenvoyer) return;
+    var attente = this._aRenvoyer;
+    // Si l'état a changé depuis (nouvelle action), l'envoi récent a déjà tout couvert.
+    if (typeof UI === "undefined" || UI.etat !== attente.etat) { this._aRenvoyer = null; return; }
+    try {
+      await this.refSalle(this.code).child("partie").set(attente.etat);
+      if (this._aRenvoyer === attente) this._aRenvoyer = null;
+    } catch (e) {
+      // On réessaiera au prochain passage du watchdog.
+    }
   },
 
   /* Enregistre un signalement sans exposer la liste aux autres joueurs. */
@@ -7338,6 +7356,16 @@ function demarrerWatchdog() {
       if (!peutPiloterBotsEtMinuteur() || UI._botTimer || UI._botAnnonce) return;
       const ageTour = Date.now() - (Number(etat.tourCommenceLe) || Date.now());
       if (ageTour > 15000) planifierBot();
+      return;
+    }
+    // Réessai automatique d'une synchronisation qui avait échoué.
+    if (UI.mode === "online" && Net._aRenvoyer) Net.renvoyerEtatEnAttente();
+    // Récupération : phase "reponse" mais pile vide = état incohérent (ne devrait jamais arriver).
+    if (etat.phase === "reponse" && (!etat.pending || etat.pending.pile.length === 0)) {
+      etat.phase = "jeu";
+      reprendreTimer(etat);
+      if (UI.mode === "online") Net.envoyerEtat(etat);
+      rendreTout();
       return;
     }
     if (etat.phase !== "reponse" || !etat.pending) return;
