@@ -2064,6 +2064,12 @@ function normaliserEtat(etat) {
         .filter((idx) => Number.isInteger(idx) && idx >= 0 && idx < etat.joueurs.length && idx !== etat.choix.parIdx)
         .slice(0, 3);
     }
+    // Préserve le timestamp d'expiration du choix (compte à rebours 20 s).
+    if (Number.isInteger(etat.choix.expire)) {
+      etat.choix.expire = Math.max(0, etat.choix.expire);
+    } else {
+      delete etat.choix.expire;
+    }
   }
   const typeReaction = etat.reaction && typeReactionSur(etat.reaction.type || etat.reaction.emoji);
   if (typeReaction) {
@@ -2647,6 +2653,7 @@ function commencerChoixSouffle(etat, parIdx, n) {
     n: Math.max(1, Number(n) || 2),
     restants: adversaires.slice(1),
     cartes: [],
+    expire: Date.now() + 20000,
   };
   etat.phase = "choix";
 }
@@ -2662,6 +2669,7 @@ function commencerChoixPluie(etat, parIdx, effet) {
     parIdx: parIdx,
     n: 1,
     piocher: effet.piocher || 2,
+    expire: Date.now() + 20000,
   };
   etat.phase = "choix";
 }
@@ -7357,6 +7365,18 @@ function demarrerWatchdog() {
   UI._watchdog = setInterval(() => {
     const etat = UI.etat;
     if (!etat) return;
+    /* Expiration des choix de défausse (20 s) : sélection aléatoire. */
+    try {
+      if (etat.phase === "choix" && etat.choix && Number.isInteger(etat.choix.expire) && Date.now() > etat.choix.expire) {
+        const concerne = (UI.mode === "local" && !etat.joueurs[etat.choix.parIdx].estBot) || etat.choix.parIdx === UI.monIdx;
+        const estBot = etat.joueurs[etat.choix.parIdx] && etat.joueurs[etat.choix.parIdx].estBot;
+        if (concerne || (UI.mode === "local" && estBot)) {
+          choixExpireAleatoire(etat);
+          if (UI.mode === "online") Net.envoyerEtat(etat);
+          rendreTout();
+        }
+      }
+    } catch (e) { /* le watchdog ne doit jamais planter */ }
     /* Anti-plantage : si le rendu est fige depuis plus de 30 s en pleine partie,
        on force un re-rendu pour debloquer l'interface. */
     try {
@@ -8977,6 +8997,30 @@ function ouvrirModalCiblage(inst, def, cibles) {
 
 /* --------------------- Modales de jeu (moteur) ---------------------- */
 
+/* Quand un choix de défausse expire (20 s), sélectionne des cartes au hasard. */
+function choixExpireAleatoire(etat) {
+  const choix = etat && etat.choix;
+  if (!choix) return;
+  const joueur = etat.joueurs[choix.parIdx];
+  if (!joueur || !joueur.main || joueur.main.length === 0) return;
+  const melangees = joueur.main.slice();
+  for (let i = melangees.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [melangees[i], melangees[j]] = [melangees[j], melangees[i]];
+  }
+  if (choix.type === "pluie-defausse") {
+    const uid = melangees[0].uid;
+    journal(etat, "pluie_expire", { nom: joueur.nom });
+    choisirDefaussePluie(etat, choix.parIdx, [uid]);
+  } else if (choix.type === "grand-souffle") {
+    const nb = Math.min(Math.max(1, Number(choix.n) || 2), joueur.main.length);
+    const uids = melangees.slice(0, nb).map((c) => c.uid);
+    journal(etat, "souffle_expire", { nom: joueur.nom, nb });
+    choisirDefausseSouffle(etat, choix.parIdx, uids);
+  }
+  fermerModal();
+}
+
 function rendreModales() {
   const etat = UI.etat;
   if (!etat) { fermerModal(); return; }
@@ -9003,6 +9047,13 @@ function rendreModales() {
   // Choix de la Bibliothécaire.
   if (etat.phase === "choix" && etat.choix) {
     const concerne = (UI.mode === "local" && !etat.joueurs[etat.choix.parIdx].estBot) || etat.choix.parIdx === UI.monIdx;
+    // Expiration du choix (20 s) : sélection aléatoire si le joueur ne choisit pas.
+    if (concerne && Number.isInteger(etat.choix.expire) && Date.now() > etat.choix.expire) {
+      choixExpireAleatoire(etat);
+      if (UI.mode === "online") Net.envoyerEtat(etat);
+      rendreTout();
+      return;
+    }
     if (concerne) {
       if (etat.choix.type === "grand-souffle") ouvrirModalDefausseSouffle();
       else if (etat.choix.type === "pluie-defausse") ouvrirModalDefaussePluie();
@@ -9159,8 +9210,9 @@ function ouvrirModalDefausseSouffle() {
   const cartes = joueur.main.map((carte) =>
     '<div class="choix-defausse-option" role="button" tabindex="0" aria-pressed="false" data-choix-uid="' + carte.uid + '">' + carteHTML(carte) + '</div>'
   ).join("");
+  const secondesSouffle = Number.isInteger(choix.expire) ? Math.max(0, Math.ceil((choix.expire - Date.now()) / 1000)) : 20;
   ouvrirModal(
-    '<h3>💨 ' + L("Choisis " + nb + " carte" + (nb > 1 ? "s" : "") + " à défausser", "Choose " + nb + " card" + (nb > 1 ? "s" : "") + " to discard") + '</h3>' +
+    '<h3>💨 ' + L("Choisis " + nb + " carte" + (nb > 1 ? "s" : "") + " à défausser", "Choose " + nb + " card" + (nb > 1 ? "s" : "") + " to discard") + ' <span class="compte-riposte">' + secondesSouffle + '</span></h3>' +
     '<p>' + L("Le Souffle du Grand Dragon t’atteint. Tu choisis les cartes qui quittent ta main.", "The Great Dragon’s Breath reaches you. You choose which cards leave your hand.") + '</p>' +
     '<div class="liste-cibles">' + cartes + '</div>' +
     '<button id="confirmer-defausse-souffle" class="gros-bouton bouton-primaire" disabled>' + L("Défausser ", "Discard ") + nb + '</button>'
@@ -9206,8 +9258,9 @@ function ouvrirModalDefaussePluie() {
   const cartes = joueur.main.map((carte) =>
     '<div class="choix-defausse-option" role="button" tabindex="0" aria-pressed="false" data-choix-uid="' + carte.uid + '">' + carteHTML(carte) + '</div>'
   ).join("");
+  const secondesChoix = Number.isInteger(choix.expire) ? Math.max(0, Math.ceil((choix.expire - Date.now()) / 1000)) : 20;
   ouvrirModal(
-    '<h3>✨ ' + L("Choisis 1 carte à laisser partir", "Choose 1 card to let go") + '</h3>' +
+    '<h3>✨ ' + L("Choisis 1 carte à laisser partir", "Choose 1 card to let go") + ' <span class="compte-riposte">' + secondesChoix + '</span></h3>' +
     '<p>' + L("La Pluie d'Écailles t'offre 2 cartes en échange.", "The Scale Shower offers you 2 cards in exchange.") + '</p>' +
     '<div class="liste-cibles">' + cartes + '</div>' +
     '<button id="confirmer-defausse-pluie" class="gros-bouton bouton-primaire" disabled>' + L("Défausser", "Discard") + '</button>'
