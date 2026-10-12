@@ -2718,9 +2718,11 @@ function debutTour(etat) {
   // Le bouclier expire au début de ton prochain tour.
   joueur.protege = false;
 
-  // Le Rugissement de meute dure 2 des tours de son propriétaire : chaque
-  // début de ses tours consomme une charge. (Les anciennes parties stockaient
-  // un booléen : true équivaut à 1 charge restante, soit l'ancien comportement.)
+  // Le Rugissement de meute protège pendant les 2 PROCHAINS tours de son
+  // propriétaire : chaque début de ses tours consomme une charge (3 charges
+  // posées = fin du tour actuel + 2 tours complets). (Les anciennes parties
+  // stockaient un booléen : true équivaut à 1 charge restante, soit l'ancien
+  // comportement.)
   if (joueur.protectionRugissement) {
     const charges = Number.isInteger(joueur.protectionRugissement) ? joueur.protectionRugissement : 1;
     joueur.protectionRugissement = charges > 1 ? charges - 1 : false;
@@ -3437,9 +3439,11 @@ function appliquerEffet(etat, parIdx, def, cibles) {
       break;
 
     case "anti-rugissement":
-      // Dure 2 des tours du propriétaire : le compteur est décrémenté au
-      // début de chacun de ses tours (voir debutTour).
-      joueur.protectionRugissement = 2;
+      // Protège pendant les 2 PROCHAINS tours du propriétaire (le tour où la
+      // carte est jouée ne compte pas). Le compteur est décrémenté au début de
+      // chacun de ses tours (voir debutTour) : 3 charges = fin du tour actuel
+      // + 2 tours complets suivants.
+      joueur.protectionRugissement = 3;
       journal(etat, "pack_roar", { nom: joueur.nom });
       break;
 
