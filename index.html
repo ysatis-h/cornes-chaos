@@ -1972,6 +1972,7 @@ function instanceCarteSure(carte) {
     ...(Number.isInteger(carte.toursGeles) ? { toursGeles: Math.max(0, Math.min(2, carte.toursGeles)) } : {}),
     ...(defId === "miroir-fele" && Number.isInteger(carte.fissures) ? { fissures: Math.max(0, Math.min(3, carte.fissures)) } : {}),
     ...(defId === "miroir-fele" && Number.isInteger(carte.toursMiroir) ? { toursMiroir: Math.max(0, Math.min(4, carte.toursMiroir)) } : {}),
+    ...(defId === "miroir-fele" && Number.isInteger(carte.tourPose) ? { tourPose: carte.tourPose } : {}),
   };
 }
 
@@ -2731,8 +2732,12 @@ function debutTour(etat) {
 
   // Miroir Fêlé : CHAQUE miroir défausse 1 carte au début du tour, 4 tours max
   // puis il se brise. Le compteur avance même si la main est vide.
+  // Le tour où le miroir est posé ne compte pas (comme l'Égide).
   const miroirs = joueur.sabotages.filter((c) => c.defId === "miroir-fele");
   miroirs.forEach((miroir) => {
+    if (Number.isInteger(miroir.tourPose) && miroir.tourPose === etat.numeroTour) {
+      return; // posé ce tour-ci : on ne touche pas au compteur
+    }
     const toursMiroir = (Number(miroir.toursMiroir) || 0) + 1;
     miroir.toursMiroir = toursMiroir;
     miroir.fissures = Math.min(3, toursMiroir);
@@ -3353,6 +3358,7 @@ function appliquerCarte(etat, cadre) {
   } else if (def.type === "sabotage") {
     const cible = cibles && cibles.joueur;
     if (cible !== undefined && peutSaboter(etat, cible)) {
+      if (def.id === "miroir-fele") carte.tourPose = etat.numeroTour;
       etat.joueurs[cible].sabotages.push(carte);
       journal(etat, "sabotage", { nom: joueur.nom, cible: etat.joueurs[cible].nom, defId: def.id });
     } else {
@@ -5954,7 +5960,9 @@ function carteHTML(instance, options) {
     const duree = def.id === "arc-en-ciel-protecteur" && Number.isInteger(instance.toursRestants)
       ? '<span class="mini-duree" title="' + L("Tours de protection restants", "Turns of protection remaining") + '">' + instance.toursRestants + ' ' + L(instance.toursRestants > 1 ? "tours" : "tour", instance.toursRestants > 1 ? "turns" : "turn") + '</span>'
       : def.id === "miroir-fele"
-      ? (() => { const restants = Math.max(0, 4 - (Number.isInteger(instance.toursMiroir) ? instance.toursMiroir : 0));
+      ? (() => { const etatCourant = (typeof UI !== "undefined" && UI.etat) || null;
+          const vientDetrePose = Number.isInteger(instance.tourPose) && etatCourant && instance.tourPose === etatCourant.numeroTour;
+          const restants = vientDetrePose ? 4 : Math.max(0, 4 - (Number.isInteger(instance.toursMiroir) ? instance.toursMiroir : 0));
           return '<span class="mini-duree" title="' + L("Tours avant que le miroir se brise", "Turns before the mirror breaks") + '">' + restants + ' ' + L(restants > 1 ? "tours" : "tour", restants > 1 ? "turns" : "turn") + '</span>'; })()
       : "";
     const miniInteractif = options.interactive
