@@ -3356,12 +3356,13 @@ function appliquerCarte(etat, cadre) {
   verifierVictoire(etat);
 }
 
-/* Un Dragon mythique volé change réellement de Dresseur : son pouvoir d’entrée
-   appartient désormais à son nouveau propriétaire. Les pouvoirs ciblés lui
-   demandent un choix; les autres se déclenchent immédiatement. */
+/* Un Dragon volé change réellement de Dresseur : son pouvoir d’entrée
+   appartient désormais à son nouveau propriétaire, qu’il soit mythique ou
+   régulier. Les pouvoirs ciblés lui demandent un choix; les autres se
+   déclenchent immédiatement. */
 function activerPouvoirDragonVole(etat, parIdx, instance) {
   const def = defCarte(instance);
-  if (!def || def.type !== "magique" || !def.effet || def.effet.declencheur !== "entree") return;
+  if (!def || !estLicorne(def.type) || !def.effet || def.effet.declencheur !== "entree") return;
   if (cibleRequise(def)) {
     const disponibles = ciblesValides(etat, parIdx, def);
     const nb = disponibles.type === "echange"
