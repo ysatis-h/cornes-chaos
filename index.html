@@ -9030,10 +9030,14 @@ function ouvrirModalReponse(cadre, rIdx) {
     return d && d.type === "riposte";
   });
   const riposteContreBot=Boolean(etat.joueurs[cadre.parIdx]&&etat.joueurs[cadre.parIdx].estBot);
-  const expireLe=riposteContreBot?(Number(cadre.t)||Date.now())+20000:0;
+  // En ligne entre humains, on affiche le meme compte a rebours que contre les
+  // bots (20 s) : sans lui, la fenetre de riposte se refermait en silence via
+  // le watchdog (25 s) et on avait l'impression de ne pas pouvoir contrer.
+  const delaiRiposte=riposteContreBot?20000:(UI.mode==="online"?20000:0);
+  const expireLe=delaiRiposte?(Number(cadre.t)||Date.now())+delaiRiposte:0;
   const secondesInitiales=Math.max(0,Math.ceil((expireLe-Date.now())/1000));
 
-  let html = "<h3>✦ " + L("Veux-tu rugir ?", "Do you want to roar?") + (riposteContreBot?' <span id="compte-riposte" class="compte-riposte" aria-label="'+echapper(L("secondes restantes","seconds remaining"))+'">'+secondesInitiales+'</span>':'') + "</h3>" +
+  let html = "<h3>✦ " + L("Veux-tu rugir ?", "Do you want to roar?") + (delaiRiposte?' <span id="compte-riposte" class="compte-riposte" aria-label="'+echapper(L("secondes restantes","seconds remaining"))+'">'+secondesInitiales+'</span>':'') + "</h3>" +
     "<p><strong>" + echapper(auteur) + "</strong> " + L("joue :", "plays:") + "</p>" +
     '<div class="apercu-carte">' + carteHTML(cadre.carte) + "</div>" +
     '<div class="effet-imminent"><strong>' + L("Si tu laisses passer", "If you let it through") + '</strong><span>' +
@@ -9068,7 +9072,7 @@ function ouvrirModalReponse(cadre, rIdx) {
     btn.addEventListener("click", () => traiter(btn.dataset.uid));
   });
   $("modal-passer-rep").addEventListener("click", () => traiter(null));
-  if(riposteContreBot){
+  if(delaiRiposte){
     if(UI._riposteInterval)window.clearInterval(UI._riposteInterval);
     UI._riposteCadreId=String(cadre.carte.uid)+":"+rIdx+":"+String(cadre.t||"");
     const actualiser=()=>{
