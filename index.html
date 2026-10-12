@@ -2052,6 +2052,13 @@ function normaliserEtat(etat) {
     etat.nuageCendresAnimation=uid&&definitionParId(defId)?{id:String(etat.nuageCendresAnimation.id||jusquA).replace(/[^a-z0-9_-]/gi,"").slice(0,80),uid,parIdx,defId,jusquA}:null;
   }else etat.nuageCendresAnimation=null;
   if(etat.phase==="nuage-cendres"&&!etat.nuageCendresAnimation)etat.phase="jeu";
+  if (etat.derniereCarteJouee && typeof etat.derniereCarteJouee === "object") {
+    const dcj = etat.derniereCarteJouee;
+    const defIdDcj = String(dcj.defId || "").replace(/[^a-z0-9_-]/gi, "").slice(0, 48);
+    etat.derniereCarteJouee = (definitionParId(defIdDcj) && Number.isInteger(dcj.parIdx))
+      ? { uid: String(dcj.uid || "").replace(/[^a-z0-9_-]/gi, "").slice(0, 32), defId: defIdDcj, parIdx: dcj.parIdx, t: Math.max(0, Number(dcj.t) || 0) }
+      : null;
+  }
   if (etat.choix) {
     etat.choix.cartes = zoneCartesSure(etat.choix.cartes, 3);
     etat.choix.defId = nettoyerTexteJournal(etat.choix.defId, 48);
@@ -2726,6 +2733,7 @@ function choisirDefausseSouffle(etat, idxJoueur, uidsChoisis) {
 function debutTour(etat) {
   const idx = etat.tour;
   const joueur = etat.joueurs[idx];
+  etat.derniereCarteJouee = null;
 
   // Le bouclier expire au début de ton prochain tour.
   joueur.protege = false;
@@ -3097,6 +3105,8 @@ function jouerCarte(etat, idxJoueur, uidCarte, cibles) {
   const instance = joueur.main.splice(pos, 1)[0];
   etat.carteJouee = true; // une seule carte jouée par tour
   etat.derniereCarteContree = false;
+  // Pour l'affichage central (comme les bots) : tous les joueurs voient la carte jouée.
+  etat.derniereCarteJouee = { uid: instance.uid, defId: def.id, parIdx: idxJoueur, t: Date.now() };
 
   // Nuage de Cendres reste visible sur le territoire ciblé jusqu'à ce que ce
   // Dresseur joue une Magie. Il annule alors cette carte et se dissipe.
@@ -8270,6 +8280,16 @@ function rendreCarteJoueeCentre() {
         carte = carteAnnoncee;
         auteur = joueurAnnonce;
         nouvelleDecouverte = Boolean(UI.tutoriel && annonce.nouvelleDecouverte);
+      }
+    }
+  } else if (UI.etat.phase === "jeu" && UI.etat.derniereCarteJouee) {
+    // Carte jouée par un humain : affichée au centre comme pour les bots.
+    const dcj = UI.etat.derniereCarteJouee;
+    if (Date.now() - (dcj.t || 0) < 8000 && dcj.parIdx !== UI.monIdx) {
+      const auteurDcj = UI.etat.joueurs[dcj.parIdx];
+      if (auteurDcj) {
+        carte = { uid: dcj.uid, defId: dcj.defId };
+        auteur = auteurDcj;
       }
     }
   }
