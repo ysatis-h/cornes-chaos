@@ -3555,6 +3555,7 @@ function appliquerEffet(etat, parIdx, def, cibles) {
       victime.ecurie[posAdv] = mienne;
       journal(etat, "trade", { nom: joueur.nom, defId: defCarte(mienne).id, couleur: couleurDragonDe(mienne), defIdCible: defCarte(sienne).id, couleurCible: couleurDragonDe(sienne), adversaire: victime.nom });
       traiterEntreeDragon(etat, parIdx, sienne);
+      activerPouvoirDragonVole(etat, parIdx, sienne);
       break;
     }
 
