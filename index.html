@@ -3632,7 +3632,7 @@ function appliquerEffet(etat, parIdx, def, cibles) {
       for (let i = 0; i < effet.n && etat.pioche.length > 0; i++) {
         cartes.push(etat.pioche.pop());
       }
-      etat.choix = { type: "bibliothecaire", parIdx, cartes };
+      etat.choix = { type: "bibliothecaire", parIdx, cartes, expire: Date.now() + 20000 };
       etat.phase = "choix";
       break;
     }
@@ -7985,6 +7985,12 @@ function planifierBot() {
       const ciblePouvoir = pouvoir && choixBotPour(pouvoir, idxBot);
       if (ciblePouvoir && ciblePouvoir.valide) resoudrePouvoirDragonVole(etat, ciblePouvoir.cibles);
       else { etat.choix = null; etat.phase = "jeu"; terminerAutomatiquementSiPret(etat); }
+      // Si le pouvoir a créé un choix Bibliothécaire (ex. Archiviste), le résoudre aussitôt.
+      if (etat.phase === "choix" && etat.choix && etat.choix.type === "bibliothecaire" && etat.choix.cartes && etat.choix.cartes.length) {
+        const choixTries = etat.choix.cartes.slice().sort((a, b) => valeurStrategiqueCarte(b) - valeurStrategiqueCarte(a));
+        const prise = choisirOptionBot(choixTries, profil.meilleureAction);
+        if (prise) choisirCartePioche(etat, prise.uid);
+      }
       await apresActionAutomatique();
     } else if (etat.phase === "choix" && etat.choix && etat.choix.cartes.length) {
       const choixTries = etat.choix.cartes.slice().sort((a, b) => valeurStrategiqueCarte(b) - valeurStrategiqueCarte(a));
@@ -9048,6 +9054,11 @@ function choixExpireAleatoire(etat) {
     const uids = melangees.slice(0, nb).map((c) => c.uid);
     journal(etat, "souffle_expire", { nom: joueur.nom, nb });
     choisirDefausseSouffle(etat, choix.parIdx, uids);
+  } else if (choix.type === "bibliothecaire" && choix.cartes && choix.cartes.length) {
+    // Le bot ou le joueur ne choisit pas : prendre la meilleure carte.
+    const triees = choix.cartes.slice().sort((a, b) => valeurStrategiqueCarte(b) - valeurStrategiqueCarte(a));
+    journal(etat, "biblio_expire", { nom: joueur.nom });
+    choisirCartePioche(etat, triees[0].uid);
   }
   fermerModal();
 }
