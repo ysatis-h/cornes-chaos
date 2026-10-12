@@ -511,7 +511,7 @@ body{min-width:0}
 .carte-main .carte-nom{width:100%;font-size:clamp(8px,1.35vw,11px);line-height:1.1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .carte-main .carte-texte{display:none}
 .carte-main .carte-type{left:3px;right:3px;bottom:5px;padding:2px 1px;font-size:6px;letter-spacing:.25px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.carte-mini-indicateur-zoom:after{content:"⌕";position:absolute;z-index:4;right:3px;bottom:3px;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.92);color:#59439f;font-size:12px;font-weight:800;line-height:16px;text-align:center;box-shadow:0 1px 3px rgba(20,37,61,.22);pointer-events:none}
+
 .carte.carte-zoom{width:min(100%,300px);min-height:390px;margin:8px auto 16px;padding:18px 16px 44px;border-top-width:10px;align-items:center;text-align:center;cursor:default}
 .carte-zoom .carte-illustration{min-height:180px;margin:4px 0 18px;border-radius:17px}
 .carte-zoom .carte-emoji{font-size:76px}
@@ -845,7 +845,7 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 .carte-jouee-centre .apercu-centre-texte{max-width:13ch;color:var(--texte-doux);font-size:.78rem;font-weight:800;line-height:1.25}
 .carte-jouee-centre .carte{width:94px;min-height:132px;padding:7px 5px 23px;border-radius:11px;outline:3px solid var(--rose-fonce);outline-offset:2px}
 .carte-jouee-centre .carte-illustration{min-height:53px;margin:0 0 4px}
-.carte-jouee-centre .carte-texte{display:none}.carte-jouee-centre .carte-type{font-size:5px;left:4px;right:4px}
+.carte-jouee-centre .carte-texte{display:block;font-size:.72rem;line-height:1.35}.carte-jouee-centre .carte-type{font-size:5px;left:4px;right:4px}
 .rugissement-plein-ecran{text-align:center}.rugissement-plein-ecran h3{font-size:clamp(2rem,9vw,3.4rem);letter-spacing:.04em;color:var(--rose-fonce);text-shadow:0 3px 0 color-mix(in srgb,var(--or) 55%,transparent);margin:0 0 6px}.rugissement-plein-ecran .apercu-carte{display:flex;justify-content:center}.rugissement-plein-ecran .carte{width:min(210px,68vw);min-height:290px;outline:5px solid var(--rose-fonce);outline-offset:4px;box-shadow:0 18px 45px rgba(73,38,89,.28)}.compte-riposte{display:inline-grid;place-items:center;min-width:2.2em;height:2.2em;margin-left:6px;border-radius:999px;background:var(--rose-fonce);color:#fff;font-weight:900;font-variant-numeric:tabular-nums}
 .nuage-cendres-plein-ecran{text-align:center}.nuage-cendres-plein-ecran h3{font-size:clamp(1.75rem,8vw,3rem);letter-spacing:.035em;color:var(--texte);margin:0 0 7px;text-shadow:0 3px 0 color-mix(in srgb,var(--bleu) 55%,transparent)}.nuage-cendres-plein-ecran .apercu-carte{position:relative;display:flex;justify-content:center;margin:14px 0}.nuage-cendres-plein-ecran .carte{position:relative;z-index:2;width:min(210px,68vw);min-height:290px;outline:5px solid #667085;outline-offset:4px;box-shadow:0 18px 45px rgba(44,51,66,.3)}.nuage-cendres-fumee{position:absolute;z-index:3;inset:0;pointer-events:none}.nuage-cendres-fumee span{position:absolute;width:72px;height:72px;border-radius:50%;background:rgba(81,88,103,.7);filter:blur(5px);animation:nuage-cendres-flotte 1.25s ease-in-out infinite alternate}.nuage-cendres-fumee span:nth-child(1){left:4%;top:8%}.nuage-cendres-fumee span:nth-child(2){right:0;top:32%;width:92px;height:92px;animation-delay:-.55s}.nuage-cendres-fumee span:nth-child(3){left:9%;bottom:4%;width:84px;height:84px;animation-delay:-.9s}@keyframes nuage-cendres-flotte{to{transform:translate(12px,-12px) scale(1.16);opacity:.42}}@media(prefers-reduced-motion:reduce){.nuage-cendres-fumee span{animation:none}}
 .reactions-jeu{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;margin:9px 0 11px}
@@ -6006,7 +6006,7 @@ function carteHTML(instance, options) {
       : "";
     const chapeau=options.anniversaire&&estLicorne(def.type)?'<span class="chapeau-fete" aria-hidden="true"></span>':'';
     return (
-      '<div class="carte-mini ' + (options.classeMini || "") + (options.interactive ? ' carte-mini-interactive' : '') + (options.indicateurZoom ? ' carte-mini-indicateur-zoom' : '') + (chapeau ? ' avec-chapeau' : '') + '" style="' + styleArt + '" title="' + nomAffiche + '"' + miniInteractif + '>' +
+      '<div class="carte-mini ' + (options.classeMini || "") + (options.interactive ? ' carte-mini-interactive' : '') + (chapeau ? ' avec-chapeau' : '') + '" style="' + styleArt + '" title="' + nomAffiche + '"' + miniInteractif + '>' +
       pointCouleur + chapeau + illustrationDragonHTML(def) +
       '<div class="mini-nom">' + nomAffiche.split(" ")[0] + "</div>" + duree +
       "</div>"
