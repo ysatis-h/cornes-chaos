@@ -3305,7 +3305,11 @@ function traiterEntreeDragon(etat, idxJoueur, instance) {
 function entrerEcurie(etat, idxJoueur, instance) {
   const joueur = etat.joueurs[idxJoueur];
   const piege = joueur.sabotages.find((c) => c.defId === "boue-collante");
-  if (piege) {
+  // Le Dragon de l'Ombre (détruit un sabotage à l'entrée) n'est pas piégé
+  // par le Marais : son pouvoir le détruit avant.
+  const def = defCarte(instance);
+  const immunisePiege = def && def.effet && def.effet.kind === "detruire-bonus" && def.effet.declencheur === "entree";
+  if (piege && !immunisePiege) {
     // Le piège se déclenche : la licorne est défaussée !
     joueur.sabotages.splice(joueur.sabotages.indexOf(piege), 1);
     etat.defausse.push(piege, instance);
