@@ -8135,7 +8135,16 @@ function rendreTout() {
   rendreThemePlateau();
   synchroniserSons(etat);
   sauvegarderSession();
-  if (etat.phase === "terminee") { afficherVictoire(); return; }
+  if (etat.phase !== "terminee") UI.victoireAffichee = false;
+  if (etat.phase === "terminee") {
+    // Laisse 2,5 s pour voir le coup final (ex. vol via Dragon au Cœur Ardent)
+    // avant d'afficher l'écran de victoire.
+    if (!UI.victoireAffichee) {
+      UI.victoireAffichee = true;
+      setTimeout(() => { if (UI.etat && UI.etat.phase === "terminee") afficherVictoire(); }, 2500);
+    }
+    return;
+  }
   if (etat.lancerDes && etat.lancerDes.ordreFinal && Number(etat.lancerDes.affichageJusquA) > Date.now()) {
     afficherEcran("jeu");
     rendreResultatFinalDes();
