@@ -1311,8 +1311,8 @@ const DEFINITIONS_CARTES = [
   },
   {
     id: "licorne-givre", nom: "Dragon des Givres", type: "licorne", emoji: "❄️", couleur: "bleu",
-    texte: "Quand il entre dans ton repaire : gèle un dragon dans la main d'un adversaire. Il ne peut pas être joué pendant 2 tours.",
-    effet: { kind: "geler-main", declencheur: "entree", cible: "main-adverse" }, exemplaires: 2,
+    texte: "Quand il entre dans ton repaire : gèle le dragon le plus puissant dans la main d'un adversaire. Il ne peut pas être joué pendant 2 tours.",
+    effet: { kind: "geler-main", declencheur: "entree" }, exemplaires: 2,
   },
 
   // -------------------------- DRAGONS MYTHIQUES (x10) ---------------------
@@ -3552,13 +3552,24 @@ function appliquerEffet(etat, parIdx, def, cibles) {
     }
 
     case "geler-main": {
-      const t = cibles;
-      if (!t) break;
-      const victime = etat.joueurs[t.joueur];
-      const carte = victime.main.find((c) => c.uid === t.uid);
-      if (!carte) break;
-      carte.toursGeles = 2;
-      journal(etat, "freeze", { nom: joueur.nom, cible: victime.nom, defId: defCarte(carte).id });
+      // Le Dragon des Givres gèle automatiquement le dragon le plus puissant
+      // dans la main adverse (sans révéler toute la main).
+      let meilleure = null;
+      let meilleureValeur = -1;
+      let victimeIdx = -1;
+      for (let i = 0; i < etat.joueurs.length; i++) {
+        if (i === parIdx || etat.joueurs[i].equipe === joueur.equipe) continue;
+        for (const inst of etat.joueurs[i].main) {
+          const d = defCarte(inst);
+          if (!d || !estLicorne(d.type)) continue;
+          const v = (typeof valeurStrategiqueCarte === "function") ? valeurStrategiqueCarte(inst) : 0;
+          if (v > meilleureValeur) { meilleureValeur = v; meilleure = inst; victimeIdx = i; }
+        }
+      }
+      if (!meilleure) break;
+      meilleure.toursGeles = 2;
+      const victime = etat.joueurs[victimeIdx];
+      journal(etat, "freeze", { nom: joueur.nom, cible: victime.nom, defId: defCarte(meilleure).id });
       break;
     }
 
