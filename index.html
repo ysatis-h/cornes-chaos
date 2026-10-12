@@ -1253,6 +1253,9 @@ body.mode-immersif #ecran-jeu .carte-main .carte-nom{font-size:6px;line-height:1
 body.mode-immersif #ecran-jeu .carte-main .carte-type{bottom:3px;font-size:4.5px}
 body.mode-immersif #ecran-jeu .zone-actions .gros-bouton{margin:4px auto;padding:8px 11px}
 @media(max-width:480px){body.mode-immersif #ecran-jeu .zone-adversaires{grid-template-columns:1fr}}
+/* 2v2 : les deux Dresseurs adverses sont placés côte à côte, comme le joueur et son coéquipier. */
+body.mode-2v2 #ecran-jeu .zone-adversaires{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:350px){body.mode-2v2 #ecran-jeu .zone-adversaires{grid-template-columns:1fr}}
 
 </style>
   <!-- Configuration Firebase officielle du projet -->
@@ -8050,6 +8053,7 @@ function rendreEffetVisuel(){
 function rendreTout() {
   const etat = UI.etat;
   if (!etat) return;
+  document.body.classList.toggle("mode-2v2", Boolean(etat.equipes2v2));
   synchroniserDragonDoreTire(etat);
   rendreThemePlateau();
   synchroniserSons(etat);
