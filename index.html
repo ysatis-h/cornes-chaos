@@ -617,8 +617,8 @@ body{min-width:0}
 .langue-option{min-width:46px;padding:7px 10px;border:0;border-radius:7px;background:transparent;color:var(--accueil-encre);font:800 .78rem/1 "Nunito Sans",sans-serif;cursor:pointer}
 .langue-option[aria-pressed="true"]{background:var(--accueil-encre);color:var(--accueil-creme)}
 .langue-option:focus-visible{outline:3px solid var(--accueil-corail);outline-offset:2px}
-.chaos-scene{position:relative;min-height:420px;display:grid;place-items:center;isolation:isolate}
-.chaos-scene:before{content:"\1F525 \1F525 \1F525";position:absolute;z-index:1;width:100%;overflow:hidden;text-align:center;font-size:clamp(140px,32vw,260px);letter-spacing:-.1em;white-space:nowrap;left:50%;top:48%;filter:hue-rotate(175deg) saturate(1.6) drop-shadow(0 0 25px rgba(59,130,246,.55));opacity:.85;animation:flammes-bleues 2.4s ease-in-out infinite;transform:translate(-50%,-50%)}
+.chaos-scene{position:relative;min-height:420px;display:grid;place-items:center;isolation:isolate;container-type:inline-size}
+.chaos-scene:before{content:"\1F525 \1F525 \1F525";position:absolute;z-index:1;font-size:clamp(140px,32vw,260px);font-size:36cqw;letter-spacing:-.1em;white-space:nowrap;left:58%;top:48%;filter:hue-rotate(175deg) saturate(1.6) drop-shadow(0 0 25px rgba(59,130,246,.55));opacity:.85;animation:flammes-bleues 2.4s ease-in-out infinite;transform:translate(-50%,-50%)}
 .chaos-scene:after{content:"ROOARRR";position:absolute;right:1%;top:12%;padding:8px 12px;background:var(--accueil-acide);color:var(--accueil-encre);font:800 1rem/1 "Fredoka",sans-serif;transform:rotate(9deg);box-shadow:4px 4px 0 var(--accueil-corail)}
 .chaos-embleme:before{content:"\1F525 \1F525";position:absolute;z-index:-1;left:50%;top:-38%;font-size:clamp(28px,7vw,52px);letter-spacing:.6em;white-space:nowrap;filter:hue-rotate(175deg) saturate(1.8) drop-shadow(0 0 12px rgba(59,130,246,.6));opacity:.75;animation:flammettes 1.8s ease-in-out infinite;transform:translateX(-50%)}
 .chaos-eventail{position:absolute;z-index:0;left:50%;top:-14%;transform:translateX(-50%);width:240px;height:60px}
