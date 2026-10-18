@@ -900,6 +900,13 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 #ecran-jeu.mode-decouverte .aide-tutoriel{font-size:1.06rem;line-height:1.55;padding:13px 15px}
 #ecran-jeu.mode-decouverte .main-aide{font-size:.92rem;line-height:1.45}
 #ecran-jeu.mode-decouverte .carte-main .carte-nom{font-size:clamp(10px,1.6vw,13px);line-height:1.18}
+/* Tutoriel Pyros (défis) : fenêtre pop-up et bouton quitter */
+.popup-pyros{text-align:center;max-width:420px}
+.popup-pyros h3{margin:0 0 10px;font-size:1.25rem}
+.popup-pyros p{margin:0 0 14px;line-height:1.5}
+.popup-pyros .gros-bouton{display:block;width:100%;margin:8px 0}
+.btn-quitter-tuto{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:60;width:40px;height:40px;border-radius:50%;border:1px solid var(--ligne);background:var(--surface-2);color:var(--texte);font-size:1.1rem;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.btn-quitter-tuto:active{transform:scale(.94)}
 #ecran-jeu.mode-decouverte .carte-jouee-centre.nouvelle-decouverte{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);justify-content:center;gap:14px;padding:12px;border:2px solid var(--or);border-radius:16px;background:var(--surface)}
 #ecran-jeu.mode-decouverte .carte-jouee-centre.nouvelle-decouverte .apercu-centre-texte{max-width:18ch;font-size:1rem;line-height:1.4;color:var(--texte)}
 #ecran-jeu.mode-decouverte .carte-jouee-centre.nouvelle-decouverte .carte{width:min(230px,52vw);min-height:300px;padding:13px 12px 36px;outline:4px solid var(--rose-fonce)}
@@ -2885,12 +2892,13 @@ function verifierVictoire(etat) {
         etat.gagnant = i;
         etat.phase = "terminee";
         journal(etat, "team_win", { nom: etat.joueurs[i].nom, nb });
+        if (typeof TutorielPyros !== "undefined" && !(typeof UI !== "undefined" && UI.tutoDefis)) TutorielPyros.marquerPartieTerminee();
         return true;
       }
     }
     return false;
   }
-  for (let i=0;i<etat.joueurs.length;i++) if(valeurEcurie(etat,i)>=LICORNES_POUR_GAGNER){etat.gagnant=i;etat.phase="terminee";journal(etat,"win",{nom:etat.joueurs[i].nom,nb:valeurEcurie(etat,i),genreDresseur:etat.joueurs[i].genreDresseur});return true;}
+  for (let i=0;i<etat.joueurs.length;i++) if(valeurEcurie(etat,i)>=LICORNES_POUR_GAGNER){etat.gagnant=i;etat.phase="terminee";journal(etat,"win",{nom:etat.joueurs[i].nom,nb:valeurEcurie(etat,i),genreDresseur:etat.joueurs[i].genreDresseur});if(typeof TutorielPyros!=="undefined"&&!(typeof UI!=="undefined"&&UI.tutoDefis))TutorielPyros.marquerPartieTerminee();return true;}
   return false;
 }
 
@@ -4279,9 +4287,12 @@ function erreurReseau(code, repliFr, repliEn) {
       </div>
     </div>
     <button id="btn-menu-instructions" class="volume-bouton-muet" type="button" data-fr="Instructions" data-en="Instructions">Instructions</button>
+    <button id="btn-menu-revoir-tutoriel" class="volume-bouton-muet" type="button" data-fr="Revoir le tutoriel" data-en="Replay tutorial">Revoir le tutoriel</button>
     <a id="btn-signaler-bug" class="volume-bouton-muet lien-signalement" href="https://docs.google.com/forms/d/1jnvGwEKc61Kzh8PB8JEyhZIbDlEFdD4FigBXZSjelEE/viewform" target="_blank" rel="noopener noreferrer" aria-label="Signaler un bug" title="Signaler un bug"><span data-fr="Signaler un bug" data-en="Report a bug">Signaler un bug</span></a>
   </div>
   <div id="app">
+    <!-- Bouton quitter du tutoriel Pyros (défis) : visible uniquement pendant le tutoriel -->
+    <button id="btn-quitter-tuto-defis" class="btn-quitter-tuto" type="button" hidden data-fr="Quitter le tutoriel" data-en="Quit tutorial" aria-label="Quitter le tutoriel">✕</button>
 
     <!-- ================= ACCUEIL ================= -->
     <section id="ecran-accueil" class="ecran">
@@ -4292,7 +4303,6 @@ function erreurReseau(code, repliFr, repliEn) {
           <h1><span class="cornes" data-fr="Cornes" data-en="Cornes">Cornes</span><span class="chaos"><span class="esperluette">&amp;</span> Chaos</span></h1>
           <p class="soustitre" data-fr="Rassemble 8 dragons. Sabote les repaires rivaux. Rugis sans pitié." data-en="Gather 8 dragons. Sabotage rival lairs. Roar without mercy.">Rassemble 8 dragons. Sabote les repaires rivaux. Rugis sans pitié.</p>
           <div class="accueil-actions">
-            <button id="btn-tutoriel" class="gros-bouton bouton-secondaire" data-fr="Tutoriel avec Pyros" data-en="Tutorial with Pyros">Tutoriel avec Pyros</button>
             <button id="btn-defi" class="gros-bouton bouton-secondaire" data-fr="Défi du jour" data-en="Daily Challenge" hidden>Défi du jour</button>
             <button id="btn-nouvelle" class="gros-bouton bouton-primaire" data-fr="Nouvelle partie" data-en="New game">Nouvelle partie</button>
             <button id="btn-rejoindre" class="gros-bouton bouton-secondaire" data-fr="Rejoindre une partie" data-en="Join a game">Rejoindre une partie</button>
@@ -4534,6 +4544,7 @@ const Compte = {
         this.activerPresence();
         this.ecouterInvitations();
         this.ecouterPastilleAmis();
+        void TutorielPyros.chargerProgressionCompte(); /* Tutoriel Pyros : progression du compte */
         const connexionOuverte=document.querySelector('#modal:not(.modal-cachee) #accueil-connexion-google, #modal:not(.modal-cachee) #defi-connexion, #modal:not(.modal-cachee) #dragondex-connexion');
         if(connexionOuverte){fermerModal();toast(L("Compte connecté : l’aventure complète est débloquée.","Account connected: the full adventure is unlocked."));}
       }else{
@@ -4541,6 +4552,7 @@ const Compte = {
         this.dateAnniversaireMemoire="";
         this.anniversaireAnnonce=false;
         this.couleurDragonMemoire="";
+        TutorielPyros.reinitialiserMemosCompte(); /* Tutoriel Pyros : progression du compte */
         masquerSurpriseAnniversaire();
         this.dragondexMemoire={};
         this.bloquesMemoire={};
@@ -4995,6 +5007,8 @@ function sauvegarderSession() {
     monIdx: UI.monIdx,
     langue: LANGUE,
     tutoriel: Boolean(UI.tutoriel),
+    /* Tutoriel Pyros (défis) : l'étape survit à un rafraîchissement de l'onglet. */
+    tutoDefis: (UI.tutoDefis && !UI.tutoDefis.termine) ? { etape: UI.tutoDefis.etape, ecurieDebut: UI.tutoDefis.ecurieDebut, magiesDefausseDebut: UI.tutoDefis.magiesDefausseDebut, sabotageJoue: Boolean(UI.tutoDefis.sabotageJoue), sabotageUid: UI.tutoDefis.sabotageUid || null } : null,
     cartesVuesTutoriel: UI.tutoriel ? Array.from(UI._cartesVuesTutoriel).filter((id) => definitionParId(id)).slice(0, 80) : [],
     net: UI.mode === "online" ? {
       code: Net.code, pid: Net.pid, pseudo: Net.pseudo,
@@ -5015,6 +5029,14 @@ function restaurerSession() {
   UI.etat = normaliserEtat(reprise.etat);
   UI.monIdx = Number.isInteger(reprise.monIdx) ? reprise.monIdx : 0;
   UI.tutoriel = Boolean(reprise.tutoriel);
+  /* Tutoriel Pyros (défis) : restaure l'étape après un rafraîchissement. */
+  if (reprise.tutoDefis && UI.tutoriel) {
+    const td = reprise.tutoDefis;
+    UI.tutoDefis = { etape: Number.isInteger(td.etape) ? td.etape : 1, ecurieDebut: Number.isInteger(td.ecurieDebut) ? td.ecurieDebut : 0, magiesDefausseDebut: Number.isInteger(td.magiesDefausseDebut) ? td.magiesDefausseDebut : 0, sabotageJoue: td.sabotageJoue === true, sabotageUid: td.sabotageUid || null, termine: false };
+    UI._tutorielRugissementVu = true;
+  } else {
+    UI.tutoDefis = null;
+  }
   UI._cartesVuesTutoriel = new Set(enTableau(reprise.cartesVuesTutoriel).filter((id) => definitionParId(id)).slice(0, 80));
   if (reprise.langue) appliquerLangue(reprise.langue);
   if (UI.mode === "online" && reprise.net && Net.init()) {
@@ -6702,7 +6724,9 @@ function initAccueil() {
   $("btn-deconnexion").addEventListener("click",async()=>{await Compte.deconnexion();toast(L("Compte déconnecté.","Signed out."));});
   $("btn-dragondex-invite").addEventListener("click",ouvrirApercuDragondex);
   $("btn-profil").addEventListener("click",ouvrirProfilDresseur); $("btn-succes").addEventListener("click",ouvrirSucces); $("btn-classement").addEventListener("click",ouvrirClassement); $("btn-amis").addEventListener("click",ouvrirAmis); $("btn-equipe").addEventListener("click",ouvrirModeEquipe); Compte.init(); Maintenance.init();
-  $("btn-tutoriel").addEventListener("click", ouvrirTutoriel);
+  /* Le bouton "Tutoriel avec Pyros" de l'accueil est supprimé (plan 2026-10-18) :
+     le tutoriel est désormais proposé par la fenêtre pop-up Pyros. */
+  planifierPopupTutorielInvite();
   $("btn-defi").addEventListener("click", ouvrirDefiDuJour);
   if (!enLigneOK) {
     $("message-hors-ligne").classList.remove("cachee");
@@ -6800,6 +6824,321 @@ async function ouvrirDefiDuJour() {
     rendreTout();
   });
   $("defi-retour").addEventListener("click", fermerModal);
+}
+
+/* =====================================================================
+   TUTORIEL PYROS — DÉFIS GUIDÉS (plan approuvé le 2026-10-18)
+   ---------------------------------------------------------------------
+   - Pop-up proposée (jamais imposée) au 1er lancement (invité) ou à la
+     1re partie (compte Google). Critère « a joué » = partie TERMINÉE.
+   - 3 défis guidés par Pyros (invoquer / carte spéciale / rugir), sans
+     fausse condition de victoire. Chrono désactivé pendant le tutoriel
+     (mode Découverte), bouton X pour quitter à tout moment.
+   - Le bouton « Tutoriel avec Pyros » de l'accueil est supprimé ; l'entrée
+     « Revoir le tutoriel » vit dans le menu Paramètres (⚙️).
+   - Parité FR/EN sur tous les textes via L().
+   ===================================================================== */
+const TutorielPyros = {
+  cleLocale(nom) { return "cc_tuto_pyros_" + nom; },
+  lireLocal(nom) { try { return window.localStorage.getItem(this.cleLocale(nom)) === "1"; } catch (e) { return false; } },
+  ecrireLocal(nom) { try { window.localStorage.setItem(this.cleLocale(nom), "1"); } catch (e) {} },
+  aTerminePartie() {
+    if (typeof Compte !== "undefined" && Compte.uid()) return Compte._tutoPartieTerminee === true;
+    return this.lireLocal("partie_terminee");
+  },
+  aTermineTutoriel() {
+    if (typeof Compte !== "undefined" && Compte.uid()) return Compte._tutoTermine === true;
+    return this.lireLocal("tutoriel_termine");
+  },
+  aRefuseTutoriel() {
+    if (typeof Compte !== "undefined" && Compte.uid()) return Compte._tutoRefuse === true;
+    return this.lireLocal("tutoriel_refuse");
+  },
+  /* Le pop-up s'affiche ssi : aucune partie terminée ET tutoriel non terminé ET jamais refusé. */
+  doitProposer() {
+    if (typeof UI !== "undefined" && UI._popupTutoSession) return false;
+    return !this.aTerminePartie() && !this.aTermineTutoriel() && !this.aRefuseTutoriel();
+  },
+  marquerPartieTerminee() {
+    if (typeof Compte !== "undefined" && Compte.uid()) {
+      Compte._tutoPartieTerminee = true;
+      if (Compte.db) { try { Compte.db.ref("users/" + Compte.uid() + "/progression/tutorielPyros/partieTerminee").set(true).catch(function(){}); } catch (e) {} }
+    } else this.ecrireLocal("partie_terminee");
+  },
+  marquerTutorielTermine() {
+    if (typeof Compte !== "undefined" && Compte.uid()) {
+      Compte._tutoTermine = true;
+      if (Compte.db) { try { Compte.db.ref("users/" + Compte.uid() + "/progression/tutorielPyros/tutorielTermine").set(true).catch(function(){}); } catch (e) {} }
+    } else this.ecrireLocal("tutoriel_termine");
+  },
+  marquerRefuse() {
+    if (typeof UI !== "undefined") UI._popupTutoSession = true;
+    if (typeof Compte !== "undefined" && Compte.uid()) {
+      Compte._tutoRefuse = true;
+      if (Compte.db) { try { Compte.db.ref("users/" + Compte.uid() + "/progression/tutorielPyros/tutorielRefuse").set(true).catch(function(){}); } catch (e) {} }
+    } else this.ecrireLocal("tutoriel_refuse");
+  },
+  async chargerProgressionCompte() {
+    if (typeof Compte === "undefined" || !Compte.uid() || !Compte.db) return;
+    try {
+      const snap = await Compte.db.ref("users/" + Compte.uid() + "/progression/tutorielPyros").once("value");
+      const v = snap.val() || {};
+      Compte._tutoPartieTerminee = v.partieTerminee === true;
+      Compte._tutoTermine = v.tutorielTermine === true;
+      Compte._tutoRefuse = v.tutorielRefuse === true;
+    } catch (e) {}
+  },
+  reinitialiserMemosCompte() {
+    if (typeof Compte === "undefined") return;
+    Compte._tutoPartieTerminee = false;
+    Compte._tutoTermine = false;
+    Compte._tutoRefuse = false;
+    if (typeof UI !== "undefined") UI._popupTutoSession = false; // nouveau compte = nouvelle décision possible
+  },
+};
+
+/* Fenêtre pop-up Pyros : deux choix limpides, pas de X (choix délibéré). */
+function ouvrirPopupTutorielPyros(surAccepter, surRefuser) {
+  if (typeof UI !== "undefined") UI._popupTutoSession = true;
+  ouvrirModal(
+    '<div class="popup-pyros">' +
+    '<h3>🔥 ' + L("Pyros te propose une visite !", "Pyros offers you a tour!") + '</h3>' +
+    '<p>' + L("Première fois ici ? Je te montre comment jouer en 3 petits défis : invoquer un dragon, jouer une carte spéciale et rugir comme un vrai Dresseur. Ça prend environ 5 minutes !", "First time here? I'll show you how to play in 3 little challenges: summon a dragon, play a special card, and roar like a true Trainer. It takes about 5 minutes!") + '</p>' +
+    '<button id="popup-tuto-oui" class="gros-bouton bouton-primaire" type="button">' + L("Oui, fais-moi visiter !", "Yes, show me around!") + '</button>' +
+    '<button id="popup-tuto-non" class="gros-bouton bouton-secondaire" type="button">' + L("Non merci, je connais", "No thanks, I know how") + '</button>' +
+    '</div>'
+  );
+  $("popup-tuto-oui").addEventListener("click", function() { fermerModal(); surAccepter(); });
+  $("popup-tuto-non").addEventListener("click", function() { fermerModal(); surRefuser(); });
+}
+
+/* Pop-up invité au premier lancement : attend que l'accueil soit visible et
+   qu'aucune modale (ex. suggestion de connexion) ne soit ouverte. */
+function planifierPopupTutorielInvite() {
+  let essais = 0;
+  const verifier = function() {
+    essais++;
+    try {
+      if (typeof Compte !== "undefined" && Compte.uid()) return; // connecté : pop-up au lancement de partie
+      if (!TutorielPyros.doitProposer()) return;
+      const accueil = $("ecran-accueil");
+      if (!accueil || accueil.classList.contains("cachee")) return;
+      const modal = $("modal");
+      if (modal && !modal.classList.contains("modal-cachee")) {
+        if (essais < 8) window.setTimeout(verifier, 2500);
+        return;
+      }
+      ouvrirPopupTutorielPyros(
+        function() { demarrerTutorielDefis(); },
+        function() { TutorielPyros.marquerRefuse(); }
+      );
+    } catch (e) {}
+  };
+  window.setTimeout(verifier, 1200);
+}
+
+/* Interception au lancement d'une partie (comptes Google uniquement).
+   Retourne true si le pop-up a été affiché : le lancement attend le choix. */
+function intercepterLancementPremierePartie(reprendre) {
+  if (typeof Compte === "undefined" || !Compte.uid()) return false; // invités : pop-up à l'accueil
+  if (!TutorielPyros.doitProposer()) return false;
+  ouvrirPopupTutorielPyros(
+    function() { demarrerTutorielDefis(); },
+    function() { TutorielPyros.marquerRefuse(); reprendre(); }
+  );
+  return true;
+}
+
+function pseudoTutorielDefis() {
+  if (typeof Compte !== "undefined" && Compte.uid()) {
+    try {
+      const dernier = (typeof Compte.dernierNomUtilise === "function" && Compte.dernierNomUtilise()) || "";
+      if (dernier) return dernier;
+      const profil = Compte.profilPublic();
+      if (profil && (profil.trainerName || profil.displayName)) return profil.trainerName || profil.displayName;
+    } catch (e) {}
+  }
+  return L("Dresseur", "Trainer");
+}
+
+function donnerCarteTutoriel(etat, idxJoueur, defId, extras) {
+  const instance = Object.assign({ uid: uidCourt(), defId: defId }, extras || {});
+  etat.joueurs[idxJoueur].main.push(instance);
+  return instance;
+}
+
+/* Démarre le tutoriel en 3 défis : partie truquée contre Pyros (coopératif). */
+function demarrerTutorielDefis() {
+  fermerModal();
+  UI.mode = "local";
+  UI.monIdx = 0;
+  UI.tutoriel = true; // mode Découverte : pas de chrono, textes agrandis
+  const profils = [
+    { nom: pseudoTutorielDefis(), couleurAvatar: COULEURS_AVATAR[0], accountUid: Compte.uid(), genreDresseur: Compte.genreDresseur() },
+    { nom: "Pyros", couleurAvatar: COULEURS_AVATAR[3], estBot: true },
+  ];
+  UI.etat = nouvellePartie(profils, {});
+  const etat = UI.etat;
+  // Pyros ne doit jamais rugir pendant le tutoriel : on retire ses ripostes.
+  const mainPyrosSansRiposte = [];
+  for (const carte of etat.joueurs[1].main) {
+    if (defCarte(carte).type === "riposte") etat.defausse.push(carte);
+    else mainPyrosSansRiposte.push(carte);
+  }
+  etat.joueurs[1].main = mainPyrosSansRiposte;
+  // Mains truquées pour les 3 défis.
+  donnerCarteTutoriel(etat, 0, "bebe-licorne", { couleurDragon: COULEURS_AVATAR[0] });
+  donnerCarteTutoriel(etat, 0, "pluie-etoiles");
+  donnerCarteTutoriel(etat, 0, "riposte");
+  donnerCarteTutoriel(etat, 1, "nuage-grognon");
+  donnerCarteTutoriel(etat, 1, "nuage-grognon");
+  // Pas de lancer de dé : le joueur commence, phase de jeu directe.
+  etat.phase = "jeu";
+  etat.tour = 0;
+  etat.tourCommenceLe = Date.now();
+  etat.tourPauseLe = Date.now();
+  UI.tutoDefis = { etape: 1, ecurieDebut: etat.joueurs[0].ecurie.length, magiesDefausseDebut: 0, sabotageJoue: false, sabotageUid: null, termine: false };
+  UI.tutoDefis.magiesDefausseDebut = compterMagiesDefausse(etat);
+  UI._tutorielRugissementVu = true; // guidage du rugissement géré par Pyros (défis), pas la modale générique
+  reinitialiserSonsJournal(etat);
+  rendreTout();
+}
+
+function compterMagiesDefausse(etat) {
+  let n = 0;
+  for (const carte of (etat.defausse || [])) { const d = defCarte(carte); if (d && d.type === "magie") n++; }
+  return n;
+}
+
+/* Tour scripté de Pyros : coopératif, jamais adversarial. */
+function jouerTourPyrosDefis(etat, idxBot) {
+  const T = UI.tutoDefis;
+  if (!T || T.termine || etat.phase !== "jeu" || etat.tour !== idxBot) { rendreTout(); return; }
+  if (!etat.carteJouee && T.etape === 3 && !T.sabotageJoue) {
+    const sab = etat.joueurs[idxBot].main.find(function(c) { return c.defId === "nuage-grognon"; });
+    if (sab) {
+      let cibles = { joueur: 0 };
+      try {
+        const choix = choixBotPour(defCarte(sab), idxBot);
+        if (choix && choix.valide && choix.cibles) cibles = choix.cibles;
+      } catch (e) {}
+      T.sabotageJoue = true;
+      T.sabotageUid = sab.uid;
+      jouerCarte(etat, idxBot, sab.uid, cibles);
+      rendreTout();
+      return;
+    }
+  }
+  if (!etat.carteJouee) {
+    if (passerTour(etat, idxBot)) apresActionTour();
+    else rendreTout();
+    return;
+  }
+  if (terminerTourApresCarte(etat, idxBot)) apresActionTour();
+  else rendreTout();
+}
+
+/* Textes de guidage de Pyros selon l'étape du défi. */
+function texteDefiPyros() {
+  const T = UI.tutoDefis;
+  if (!T || T.termine) return null;
+  if (T.etape === 1) return {
+    titre: L("Défi 1 — Invoquer", "Challenge 1 — Summon"),
+    texte: L("Bienvenue, Dresseur ! Pour gagner une vraie partie, il faut 8 dragons dans ton repaire. Pour commencer, joue ton Bébé Dragon : touche-le dans ta main pour lire sa carte, puis joue-le !", "Welcome, Trainer! To win a real game, you need 8 dragons in your lair. Let's start: play your Baby Dragon — tap it in your hand to read its card, then play it!"),
+  };
+  if (T.etape === 2) return {
+    titre: L("Défi 2 — Carte spéciale", "Challenge 2 — Special card"),
+    texte: L("Bravo ! Maintenant, joue ta carte Magie « Pluie d'Écailles » : défausse 1 carte de ta main, puis pioche 2 cartes. Ensuite, termine ton tour !", "Well done! Now play your Magic card \"Scale Rain\": discard 1 card from your hand, then draw 2 cards. Then end your turn!"),
+  };
+  if (T.etape === 3 && !T.sabotageJoue) return {
+    titre: L("Défi 3 — Rugir", "Challenge 3 — Roar"),
+    texte: L("Dernier défi : à mon tour, je vais jouer un sabotage contre toi, juste pour t'entraîner. Quand ça arrive, joue ton Rugissement pour l'annuler ! Termine ton tour pour que je joue.", "Last challenge: on my turn, I'll play a sabotage on you, just for practice. When it happens, play your Roar to cancel it! End your turn so I can play."),
+  };
+  if (T.etape === 3) return {
+    titre: L("Défi 3 — Rugir", "Challenge 3 — Roar"),
+    texte: L("Oh non, mon Nuage de Cendres te vise ! Vite : joue ton Rugissement pour l'annuler. Prends ton temps, il n'y a pas de chrono !", "Oh no, my Ash Cloud is targeting you! Quick: play your Roar to cancel it. Take your time, there's no timer!"),
+  };
+  return null;
+}
+
+/* Progression des défis, vérifiée après chaque rendu. */
+function verifierDefisTutoriel() {
+  const T = UI.tutoDefis;
+  const btnX = $("btn-quitter-tuto-defis");
+  if (btnX) btnX.hidden = !(T && !T.termine);
+  if (!T || T.termine || !UI.etat || UI.etat.phase === "terminee") return;
+  const etat = UI.etat;
+  const joueur = etat.joueurs[0];
+  if (T.etape === 1) {
+    if (joueur.ecurie.length > T.ecurieDebut) { T.etape = 2; rendreTout(); }
+  } else if (T.etape === 2) {
+    const magiesJouees = compterMagiesDefausse(etat) > T.magiesDefausseDebut;
+    if (magiesJouees && etat.phase === "jeu" && !etat.choix && !etat.pending) { T.etape = 3; rendreTout(); }
+  } else if (T.etape === 3 && T.sabotageJoue && T.sabotageUid && etat.phase === "jeu" && !etat.pending) {
+    const annule = etat.defausse.some(function(c) { return c.uid === T.sabotageUid; });
+    const enPlace = joueur.sabotages.some(function(c) { return c.uid === T.sabotageUid; });
+    if (annule) { terminerDefisTutoriel(); }
+    else if (enPlace) {
+      // Le joueur a laissé passer : Pyros réessaie au prochain tour, sans punition.
+      T.sabotageJoue = false;
+      T.sabotageUid = null;
+      donnerCarteTutoriel(etat, 1, "nuage-grognon");
+      rendreTout();
+    } else {
+      // Sabotage introuvable (ex. restauration de session) : Pyros le rejoue.
+      T.sabotageJoue = false;
+      T.sabotageUid = null;
+      donnerCarteTutoriel(etat, 1, "nuage-grognon");
+      rendreTout();
+    }
+  }
+}
+
+/* Finale : Pyros conclut, sans fausse condition de victoire. */
+function terminerDefisTutoriel() {
+  const T = UI.tutoDefis;
+  if (!T || T.termine) return;
+  T.termine = true;
+  T.etape = 4;
+  TutorielPyros.marquerTutorielTermine();
+  const btnX = $("btn-quitter-tuto-defis");
+  if (btnX) btnX.hidden = true;
+  ouvrirModal(
+    '<div class="popup-pyros">' +
+    '<h3>🔥 ' + L("Tu es prêt !", "You're ready!") + '</h3>' +
+    '<p>' + L("Bravo, Dresseur ! Tu sais invoquer des dragons, jouer des cartes spéciales et rugir pour te défendre. En vraie partie, le premier repaire à 8 dragons gagne. À toi de jouer !", "Well done, Trainer! You can summon dragons, play special cards, and roar to defend yourself. In a real game, the first lair with 8 dragons wins. Your turn!") + '</p>' +
+    '<button id="tuto-jouer-vrai" class="gros-bouton bouton-primaire" type="button">' + L("Jouer pour vrai !", "Play for real!") + '</button>' +
+    '<button id="tuto-retour-accueil" class="bouton-retour" type="button">' + L("Retour à l'accueil", "Back to home") + '</button>' +
+    '</div>'
+  );
+  const nettoyerEtAccueil = function() {
+    fermerModal();
+    UI.tutoDefis = null;
+    UI.tutoriel = false;
+    UI.etat = null;
+    try { effacerSession(); } catch (e) {}
+    afficherEcran("accueil");
+  };
+  $("tuto-jouer-vrai").addEventListener("click", function() {
+    nettoyerEtAccueil();
+    ouvrirNouvellePartie(Net.disponible);
+  });
+  $("tuto-retour-accueil").addEventListener("click", function() {
+    nettoyerEtAccueil();
+    rendreTout();
+  });
+}
+
+/* Quitter le tutoriel à tout moment (bouton X). */
+function quitterTutorielDefis() {
+  UI.tutoDefis = null;
+  UI.tutoriel = false;
+  UI._popupTutoSession = true; // ne pas re-proposer dans cette session
+  UI.etat = null;
+  try { effacerSession(); } catch (e) {}
+  const btnX = $("btn-quitter-tuto-defis");
+  if (btnX) btnX.hidden = true;
+  afficherEcran("accueil");
 }
 
 function ouvrirTutoriel() {
@@ -6908,23 +7247,28 @@ function ouvrirConfigSolo() {
   $("solo-demarrer").addEventListener("click", () => {
     const pseudo = lireNomDresseur("solo-pseudo");
     if (!pseudo) return;
-    const themePlateau = themeChoisi("solo-theme");
-    const profils = [{ nom: pseudo, couleurAvatar: $("solo-couleur").value, themePreferee: themePlateau, accountUid: Compte.uid(), genreDresseur: Compte.genreDresseur(), anniversaireAujourdhui: Compte.estAnniversaire(), anniversaireDate: Compte.anniversaireDate() }];
-    for (let i = 0; i < nbBots; i++) profils.push({
-      nom: nomBot(i + 1),
-      couleurAvatar: COULEURS_AVATAR[(i + 3) % COULEURS_AVATAR.length],
-      estBot: true,
-    });
-    const modeEclair = $("solo-mode-eclair").checked;
-    const difficulteBot = difficulteBotChoisie();
-    memoriserDifficulteBot(difficulteBot);
-    fermerModal();
-    UI.mode = "local";
-    UI.tutoriel = false;
-    UI.monIdx = 0;
-    UI.etat = nouvellePartie(profils, { modeEclair, themePlateau, difficulteBot });
-    reinitialiserSonsJournal(UI.etat);
-    rendreTout();
+    const lancer = () => {
+      const themePlateau = themeChoisi("solo-theme");
+      const profils = [{ nom: pseudo, couleurAvatar: $("solo-couleur").value, themePreferee: themePlateau, accountUid: Compte.uid(), genreDresseur: Compte.genreDresseur(), anniversaireAujourdhui: Compte.estAnniversaire(), anniversaireDate: Compte.anniversaireDate() }];
+      for (let i = 0; i < nbBots; i++) profils.push({
+        nom: nomBot(i + 1),
+        couleurAvatar: COULEURS_AVATAR[(i + 3) % COULEURS_AVATAR.length],
+        estBot: true,
+      });
+      const modeEclair = $("solo-mode-eclair").checked;
+      const difficulteBot = difficulteBotChoisie();
+      memoriserDifficulteBot(difficulteBot);
+      fermerModal();
+      UI.mode = "local";
+      UI.tutoriel = false;
+      UI.monIdx = 0;
+      UI.etat = nouvellePartie(profils, { modeEclair, themePlateau, difficulteBot });
+      reinitialiserSonsJournal(UI.etat);
+      rendreTout();
+    };
+    /* Tutoriel Pyros : pop-up à la 1re partie pour les comptes Google. */
+    if (typeof intercepterLancementPremierePartie === "function" && intercepterLancementPremierePartie(lancer)) return;
+    lancer();
   });
   $("solo-retour").addEventListener("click", () => ouvrirNouvellePartie(Net.disponible));
 }
@@ -7957,6 +8301,12 @@ function planifierBot() {
     if (idxBot === null) return;
     const bot = etat.joueurs[idxBot];
     const profil = profilBotActif(etat);
+    /* Tutoriel Pyros (défis) : Pyros est scripté et coopératif, jamais adversarial. */
+    if (typeof UI.tutoDefis !== "undefined" && UI.tutoDefis && !UI.tutoDefis.termine && bot && bot.nom === "Pyros") {
+      jouerTourPyrosDefis(etat, idxBot);
+      await apresActionAutomatique();
+      return;
+    }
     if (etat.phase === "des") {
       lancerDe(etat, idxBot);
       await apresActionAutomatique();
@@ -8225,6 +8575,7 @@ function rendreTout() {
   rendreEffetVisuel();
   rendreMain();
   rendreTutoriel();
+  verifierDefisTutoriel(); /* Tutoriel Pyros (défis) : fait progresser les étapes */
   rendreReactions();
   rendreArriveeVolee();
   rendreActions();
@@ -8327,6 +8678,18 @@ function rendreTutoriel() {
   if (!UI.tutoriel || !UI.etat) {
     aide.classList.add("cachee");
     aide.innerHTML = "";
+    return;
+  }
+  /* Tutoriel Pyros en défis : guidage de Pyros par étape (remplace les astuces génériques). */
+  if (UI.tutoDefis) {
+    const defi = texteDefiPyros();
+    if (defi) {
+      aide.innerHTML = '<strong>🔥 Pyros · ' + defi.titre + '</strong><br>' + defi.texte;
+      aide.classList.remove("cachee");
+    } else {
+      aide.classList.add("cachee");
+      aide.innerHTML = "";
+    }
     return;
   }
   const etat = UI.etat;
@@ -9155,7 +9518,8 @@ function ouvrirModalReponse(cadre, rIdx) {
   // En ligne entre humains, on affiche le meme compte a rebours que contre les
   // bots (20 s) : sans lui, la fenetre de riposte se refermait en silence via
   // le watchdog (25 s) et on avait l'impression de ne pas pouvoir contrer.
-  const delaiRiposte=riposteContreBot?20000:(UI.mode==="online"?20000:0);
+  // Tutoriel Pyros (défis) : pas de compte à rebours, le joueur apprend à son rythme.
+  const delaiRiposte=(typeof UI!=="undefined"&&UI.tutoDefis&&!UI.tutoDefis.termine)?0:(riposteContreBot?20000:(UI.mode==="online"?20000:0));
   const expireLe=delaiRiposte?(Number(cadre.t)||Date.now())+delaiRiposte:0;
   const secondesInitiales=Math.max(0,Math.ceil((expireLe-Date.now())/1000));
 
@@ -9590,6 +9954,15 @@ document.addEventListener("DOMContentLoaded", () => {
     fermerVolume();
     ouvrirInstructions();
   });
+  /* Tutoriel Pyros (plan 2026-10-18) : relance manuelle depuis le menu Paramètres. */
+  $("btn-menu-revoir-tutoriel").addEventListener("click", () => {
+    fermerVolume();
+    if (UI.etat && UI.etat.phase !== "terminee") {
+      toast(L("Termine ou abandonne ta partie en cours avant de revoir le tutoriel.", "Finish or forfeit your current game before replaying the tutorial."));
+      return;
+    }
+    demarrerTutorielDefis();
+  });
   window.addEventListener("resize",()=>{
     const ecranActif=ecranVisible("jeu")?"jeu":ecranVisible("accueil")?"accueil":"autre";
     UI.immersif=modeImmersifPourEcran(ecranActif);
@@ -9652,7 +10025,11 @@ document.addEventListener("DOMContentLoaded", () => {
     afficherEcran("accueil");
   });
 
-  $("btn-demarrer-local").addEventListener("click", demarrerPartieLocale);
+  $("btn-demarrer-local").addEventListener("click", () => {
+    /* Tutoriel Pyros : pop-up à la 1re partie pour les comptes Google. */
+    if (typeof intercepterLancementPremierePartie === "function" && intercepterLancementPremierePartie(demarrerPartieLocale)) return;
+    demarrerPartieLocale();
+  });
   $("btn-retour-accueil-1").addEventListener("click", () => afficherEcran("accueil"));
 
   $("btn-reveler").addEventListener("click", () => {
@@ -9679,6 +10056,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   $("btn-rejouer").addEventListener("click", rejouer);
+  /* Tutoriel Pyros (défis) : bouton X pour quitter à tout moment. */
+  $("btn-quitter-tuto-defis").addEventListener("click", () => { if (typeof quitterTutorielDefis === "function") quitterTutorielDefis(); });
   $("btn-accueil-fin").addEventListener("click", async () => {
     if (UI.mode === "online") await Net.quitter();
     if (UI._watchdog) clearInterval(UI._watchdog);
