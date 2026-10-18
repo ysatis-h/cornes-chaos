@@ -458,6 +458,7 @@ body{min-width:0}
 .gros-bouton{font-size:1rem;border-radius:15px;box-shadow:none;transition:transform .12s,filter .12s}
 .gros-bouton:active{transform:translateY(2px)}
 .bouton-primaire{background:var(--rose);color:#fff}
+.bouton-nuit{background:var(--nuit);color:#fff}
 .bouton-secondaire{background:var(--surface);color:var(--violet-fonce);border:1px solid var(--ligne)}
 .accueil-contenu .bouton-secondaire{background:rgba(255,255,255,.86);color:var(--nuit);border:1px solid rgba(89,67,159,.18)}
 .message-doux{max-width:520px;background:rgba(255,255,255,.56);border:1px solid rgba(89,67,159,.25);color:#384b68;border-radius:14px;line-height:1.4}
@@ -1013,7 +1014,7 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 @media (prefers-color-scheme:dark){.defi-regle{background:#fff8df;color:#513b18}.option-mode{background:var(--surface-2)}}
 /* Comptes de Dresseurs, collection et mode équipe. */
 .compte-accueil{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;max-width:520px;margin:12px 0 0;padding:13px;border:1px solid rgba(89,67,159,.2);border-radius:14px;background:rgba(255,255,255,.58)}.compte-accueil[hidden]{display:none}.compte-identite{display:flex;align-items:center;gap:9px;min-width:0;width:100%}.compte-identite>span:last-child{min-width:0}.compte-identite strong{display:block;color:var(--nuit);overflow-wrap:anywhere}.compte-identite small{display:block;color:#536478;white-space:normal;overflow-wrap:anywhere}.compte-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(89,67,159,.24)}
-.compte-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;min-width:0}.compte-mini{display:flex;align-items:center;justify-content:center;min-width:0;min-height:40px;padding:8px 9px;border:1px solid rgba(89,67,159,.22);border-radius:10px;background:#fff;color:var(--violet-fonce);font:800 .76rem/1.2 "Nunito Sans",sans-serif;text-align:center;white-space:normal;overflow-wrap:anywhere;cursor:pointer}.compte-mini[hidden]{display:none}.compte-mini.primaire{background:var(--nuit);color:#fff}.compte-mini:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
+.compte-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;min-width:0}.compte-mini{display:flex;align-items:center;justify-content:center;min-width:0;min-height:40px;padding:8px 9px;border:1px solid rgba(89,67,159,.22);border-radius:10px;background:#fff;color:var(--violet-fonce);font:800 .76rem/1.2 "Nunito Sans",sans-serif;text-align:center;white-space:normal;overflow-wrap:anywhere;cursor:pointer}.compte-mini[hidden]{display:none}.compte-actions .btn-double{grid-column:span 2}.compte-mini.primaire{background:var(--nuit);color:#fff}.compte-mini:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
 .compte-mini{position:relative}
 .pastille-notif{position:absolute;top:-7px;right:-7px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#0084ff;color:#fff;font:800 .72rem/22px "Nunito Sans",sans-serif;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.35);pointer-events:none}
 .pastille-notif[hidden]{display:none}
@@ -4315,7 +4316,7 @@ function erreurReseau(code, repliFr, repliEn) {
             <button id="btn-nouvelle" class="gros-bouton bouton-primaire" data-fr="Nouvelle partie" data-en="New game">Nouvelle partie</button>
             <button id="btn-rejoindre" class="gros-bouton bouton-secondaire" data-fr="Rejoindre une partie" data-en="Join a game">Rejoindre une partie</button>
           </div>
-          <div id="compte-accueil" class="compte-accueil" aria-live="polite"><div id="compte-identite" class="compte-identite"><span class="avatar-dragon" aria-hidden="true">🔑</span><span><strong data-fr="Compte optionnel" data-en="Optional account">Compte optionnel</strong><small data-fr="Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes." data-en="Achievements, the friends leaderboard, and the Daily Challenge are for signed-in accounts.">Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes.</small></span></div><div class="compte-actions"><button id="btn-connexion" class="compte-mini primaire" type="button" data-fr="Se connecter avec Google" data-en="Sign in with Google">Se connecter avec Google</button><button id="btn-dragondex-invite" class="compte-mini" type="button" data-fr="Aperçu du Dragondex" data-en="Dragondex preview">Aperçu du Dragondex</button><button id="btn-profil" class="compte-mini" type="button" data-fr="Mon profil" data-en="My profile" hidden>Mon profil</button><button id="btn-succes" class="compte-mini" type="button" data-fr="Succès" data-en="Achievements" hidden>Succès</button><button id="btn-classement" class="compte-mini" type="button" data-fr="Classement amis" data-en="Friends leaderboard" hidden>Classement amis</button><button id="btn-amis" class="compte-mini" type="button" data-fr="Mes amis" data-en="My friends" hidden>Mes amis<span id="pastille-amis" class="pastille-notif" hidden></span></button><button id="btn-equipe" class="compte-mini" type="button" data-fr="Équipe 2v2" data-en="2v2 Team" hidden>Équipe 2v2</button><button id="btn-deconnexion" class="compte-mini" type="button" data-fr="Déconnexion" data-en="Sign out" hidden>Déconnexion</button></div></div>
+          <div id="compte-accueil" class="compte-accueil" aria-live="polite"><div id="compte-identite" class="compte-identite"><span class="avatar-dragon" aria-hidden="true">🔑</span><span><strong data-fr="Compte optionnel" data-en="Optional account">Compte optionnel</strong><small data-fr="Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes." data-en="Achievements, the friends leaderboard, and the Daily Challenge are for signed-in accounts.">Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes.</small></span></div><div class="compte-actions"><button id="btn-connexion" class="compte-mini primaire" type="button" data-fr="Se connecter avec Google" data-en="Sign in with Google">Se connecter avec Google</button><button id="btn-dragondex-invite" class="compte-mini" type="button" data-fr="Aperçu du Dragondex" data-en="Dragondex preview">Aperçu du Dragondex</button><button id="btn-profil" class="compte-mini" type="button" data-fr="Mon profil" data-en="My profile" hidden>Mon profil</button><button id="btn-succes" class="compte-mini" type="button" data-fr="Succès" data-en="Achievements" hidden>Succès</button><button id="btn-classement" class="compte-mini" type="button" data-fr="Classement amis" data-en="Friends leaderboard" hidden>Classement amis</button><button id="btn-amis" class="compte-mini" type="button" data-fr="Mes amis" data-en="My friends" hidden>Mes amis<span id="pastille-amis" class="pastille-notif" hidden></span></button><button id="btn-deconnexion" class="compte-mini btn-double" type="button" data-fr="Déconnexion" data-en="Sign out" hidden>Déconnexion</button></div></div>
           <p class="accueil-accessibilite" aria-label="7 ans et plus"><strong>7+</strong></p>
         </div>
         <div class="chaos-scene" aria-hidden="true">
@@ -4863,8 +4864,8 @@ const Compte = {
   },
   arreterEcouteAmis(){this.amisPresenceRefs.forEach((ref)=>ref.off());this.amisPresenceRefs=[];},
   rendre(){
-    const identite=$("compte-identite"), connexion=$("btn-connexion"), apercu=$("btn-dragondex-invite"), profil=$("btn-profil"), succes=$("btn-succes"), classement=$("btn-classement"), amis=$("btn-amis"), equipe=$("btn-equipe"), deconnexion=$("btn-deconnexion"), defi=$("btn-defi"); if(!identite||!connexion)return;
-    const connecte=Boolean(this.user); connexion.hidden=connecte; if(apercu)apercu.hidden=connecte; profil.hidden=succes.hidden=classement.hidden=amis.hidden=equipe.hidden=deconnexion.hidden=!connecte; if(defi)defi.hidden=!connecte;
+    const identite=$("compte-identite"), connexion=$("btn-connexion"), apercu=$("btn-dragondex-invite"), profil=$("btn-profil"), succes=$("btn-succes"), classement=$("btn-classement"), amis=$("btn-amis"), deconnexion=$("btn-deconnexion"), defi=$("btn-defi"); if(!identite||!connexion)return;
+    const connecte=Boolean(this.user); connexion.hidden=connecte; if(apercu)apercu.hidden=connecte; profil.hidden=succes.hidden=classement.hidden=amis.hidden=deconnexion.hidden=!connecte; if(defi)defi.hidden=!connecte;
     if(!connecte){ identite.innerHTML='<span class="avatar-dragon" aria-hidden="true">🔑</span><span><strong>'+L("Compte optionnel","Optional account")+'</strong><small>'+L("Les succès, le classement entre amis et le Défi du jour sont réservés aux comptes.","Achievements, the friends leaderboard, and the Daily Challenge are for signed-in accounts.")+'</small></span>'; return; }
     identite.innerHTML=avatarHTML(Compte.couleurDragon())+'<span><strong>'+echapper(this.nomDresseur())+'</strong><small>'+L("Progression sauvegardée","Progress saved")+'</small></span>';
     const partageSalon=document.getElementById("salon-partage");
@@ -6731,7 +6732,7 @@ function initAccueil() {
   });
   $("btn-deconnexion").addEventListener("click",async()=>{await Compte.deconnexion();toast(L("Compte déconnecté.","Signed out."));});
   $("btn-dragondex-invite").addEventListener("click",ouvrirApercuDragondex);
-  $("btn-profil").addEventListener("click",ouvrirProfilDresseur); $("btn-succes").addEventListener("click",ouvrirSucces); $("btn-classement").addEventListener("click",ouvrirClassement); $("btn-amis").addEventListener("click",ouvrirAmis); $("btn-equipe").addEventListener("click",ouvrirModeEquipe); Compte.init(); Maintenance.init();
+  $("btn-profil").addEventListener("click",ouvrirProfilDresseur); $("btn-succes").addEventListener("click",ouvrirSucces); $("btn-classement").addEventListener("click",ouvrirClassement); $("btn-amis").addEventListener("click",ouvrirAmis); Compte.init(); Maintenance.init();
   /* Le bouton "Tutoriel avec Pyros" de l'accueil est supprimé (plan 2026-10-18) :
      le tutoriel est désormais proposé par la fenêtre pop-up Pyros. */
   planifierPopupTutorielInvite();
@@ -7194,8 +7195,9 @@ function ouvrirNouvellePartie(enLigneOK) {
     "<h3>" + L("Nouvelle partie", "New game") + "</h3>" +
     "<p>" + L("Comment veux-tu jouer ?", "How would you like to play?") + "</p>" +
     '<button id="modal-solo" class="gros-bouton bouton-primaire">' + L("Jouer en solo contre des bots", "Play solo against bots") + '</button>' +
-    '<button id="modal-creer-salle" class="gros-bouton bouton-secondaire">' + L("Créer une salle en ligne", "Create an online room") + '</button>' +
+    '<button id="modal-creer-salle" class="gros-bouton bouton-nuit">' + L("Créer une salle en ligne", "Create an online room") + '</button>' +
     '<button id="modal-jouer-local" class="gros-bouton bouton-secondaire">' + L("Jouer en local sur le même téléphone", "Pass and play on this phone") + '</button>' +
+    (Compte.uid() ? '<button id="modal-equipe-2v2" class="gros-bouton bouton-nuit">' + L("Équipe 2v2", "2v2 Team") + '</button>' : "") +
     '<button class="bouton-retour" onclick="fermerModal()">' + L("Retour", "Back") + '</button>'
   );
   $("modal-solo").addEventListener("click", () => {
@@ -7214,6 +7216,13 @@ function ouvrirNouvellePartie(enLigneOK) {
     preparerConfigLocale();
     afficherEcran("local");
   });
+  const btnEquipe2v2 = $("modal-equipe-2v2");
+  if (btnEquipe2v2) {
+    btnEquipe2v2.addEventListener("click", () => {
+      fermerModal();
+      ouvrirModeEquipe();
+    });
+  }
 }
 
 function ouvrirConfigSolo() {
