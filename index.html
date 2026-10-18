@@ -1641,6 +1641,14 @@ function appliquerLangue(langue) {
   if (age) age.setAttribute("aria-label", L("7 ans et plus", "Ages 7 and up"));
   const fermerAnniversaire=document.getElementById("anniversaire-fermer");
   if(fermerAnniversaire)fermerAnniversaire.setAttribute("aria-label",L("Fermer","Close"));
+  /* Bouton X du tutoriel Pyros : le visuel reste « ✕ » (pas de data-fr/data-en),
+     mais le nom accessible et l'infobulle suivent la langue. */
+  const quitterTutoDefis=document.getElementById("btn-quitter-tuto-defis");
+  if(quitterTutoDefis){
+    const labelQuitterTuto=L("Quitter le tutoriel","Quit tutorial");
+    quitterTutoDefis.setAttribute("aria-label",labelQuitterTuto);
+    quitterTutoDefis.title=labelQuitterTuto;
+  }
   const son = document.getElementById("btn-son");
   if (son) {
     son.setAttribute("aria-label", L("Ouvrir le menu", "Open menu"));
@@ -4292,7 +4300,7 @@ function erreurReseau(code, repliFr, repliEn) {
   </div>
   <div id="app">
     <!-- Bouton quitter du tutoriel Pyros (défis) : visible uniquement pendant le tutoriel -->
-    <button id="btn-quitter-tuto-defis" class="btn-quitter-tuto" type="button" hidden data-fr="Quitter le tutoriel" data-en="Quit tutorial" aria-label="Quitter le tutoriel">✕</button>
+    <button id="btn-quitter-tuto-defis" class="btn-quitter-tuto" type="button" hidden aria-label="Quitter le tutoriel" title="Quitter le tutoriel">✕</button>
 
     <!-- ================= ACCUEIL ================= -->
     <section id="ecran-accueil" class="ecran">
@@ -7048,7 +7056,7 @@ function texteDefiPyros() {
   };
   if (T.etape === 2) return {
     titre: L("Défi 2 — Carte spéciale", "Challenge 2 — Special card"),
-    texte: L("Bravo ! Maintenant, joue ta carte Magie « Pluie d'Écailles » : défausse 1 carte de ta main, puis pioche 2 cartes. Ensuite, termine ton tour !", "Well done! Now play your Magic card \"Scale Rain\": discard 1 card from your hand, then draw 2 cards. Then end your turn!"),
+    texte: L("Bravo ! Maintenant, joue ta carte Magie « Pluie d'Écailles » : défausse 1 carte de ta main, puis pioche 2 cartes. Ensuite, termine ton tour !", "Well done! Now play your Magic card \"Scale Shower\": discard 1 card from your hand, then draw 2 cards. Then end your turn!"),
   };
   if (T.etape === 3 && !T.sabotageJoue) return {
     titre: L("Défi 3 — Rugir", "Challenge 3 — Roar"),
@@ -7111,8 +7119,13 @@ function terminerDefisTutoriel() {
     '<button id="tuto-retour-accueil" class="bouton-retour" type="button">' + L("Retour à l'accueil", "Back to home") + '</button>' +
     '</div>'
   );
+  /* La finale est une modale hors phases de jeu : rendreModales() ne doit pas
+     la refermer (elle se termine par fermerModal() quand aucune phase n'en
+     demande une). Le drapeau est levé jusqu'au choix du joueur. */
+  UI._finaleTutoAffichee = true;
   const nettoyerEtAccueil = function() {
     fermerModal();
+    UI._finaleTutoAffichee = false;
     UI.tutoDefis = null;
     UI.tutoriel = false;
     UI.etat = null;
@@ -9432,6 +9445,9 @@ function choixExpireAleatoire(etat) {
 }
 
 function rendreModales() {
+  /* Finale du tutoriel Pyros : la modale de félicitations est ouverte hors
+     phases de jeu — ne pas la refermer (elle se ferme au choix du joueur). */
+  if (typeof UI !== "undefined" && UI._finaleTutoAffichee) return;
   const etat = UI.etat;
   if (!etat) { fermerModal(); return; }
   if(etat.phase!=="reponse"&&UI._riposteInterval){window.clearInterval(UI._riposteInterval);UI._riposteInterval=null;UI._riposteCadreId=null;}
