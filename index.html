@@ -8635,10 +8635,15 @@ function rendreTout() {
   if (etat.phase !== "terminee") UI.victoireAffichee = false;
   if (etat.phase === "terminee") {
     // Laisse 2,5 s pour voir le coup final (ex. vol via Dragon au Cœur Ardent)
-    // avant d'afficher l'écran de victoire.
+    // avant d'afficher l'écran de victoire — sauf quand c'est nous qui gagnons :
+    // on sait déjà qu'on est rendu à 8 dragons, pas besoin d'attendre.
     if (!UI.victoireAffichee) {
       UI.victoireAffichee = true;
-      setTimeout(() => { if (UI.etat && UI.etat.phase === "terminee") afficherVictoire(); }, 2500);
+      const moiGagnant = etat.equipes2v2
+        ? etat.joueurs[UI.monIdx] && etat.joueurs[UI.monIdx].equipe === etat.equipeGagnante
+        : UI.monIdx === etat.gagnant;
+      if (moiGagnant) afficherVictoire();
+      else setTimeout(() => { if (UI.etat && UI.etat.phase === "terminee") afficherVictoire(); }, 2500);
     }
     return;
   }
