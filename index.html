@@ -9038,7 +9038,8 @@ function carteJoueurPlateauHTML(etat,j,i,indicateurZoom) {
     (valeur === LICORNES_POUR_GAGNER - 1 ? '<span class="badge badge-balle-match">' + L("Balle de match", "Match point") + '</span>' : "") +
     '<div class="reaction-live" data-reaction-pour="' + i + '" aria-live="polite"></div>' +
     (j.protege ? '<span class="badge badge-protege">🛡️ ' + G(j,"Protégé","Protégée","Sous protection","Protected") + '</span>' : "") +
-    (bonus ? '<div class="rangee-bonus">' + bonus + "</div>" : "") +
+    (bonus ? '<div class="rangee-bonus">' + '<span style="font-size:13px;color:var(--texte-doux)">' + L("Bonus / Sabotages : ", "Upgrades / Sabotages: ") + '</span>' + bonus + "</div>" : "") +
+    '<div style="font-size:13px;color:var(--texte-doux);margin-top:6px">' + L("Repaire : ", "Lair: ") + '</div>' +
     '<div class="mini-ecurie">' + (minis || "<em>" + L("repaire vide", "empty lair") + "</em>") + "</div></div>";
 }
 
@@ -9077,8 +9078,9 @@ function rendreMonEcurie() {
     '<span class="badge compte-main">' + moi.main.length + " " + L(moi.main.length === 1 ? "carte" : "cartes", moi.main.length === 1 ? "card" : "cards") + '</span> ' +
     '<span id="compte-licornes" class="badge">' + valeurMoi + '/' + LICORNES_POUR_GAGNER + ' ' + L("dragons", "dragons") + '</span>' +
     (valeurMoi === LICORNES_POUR_GAGNER - 1 ? ' <span class="badge badge-balle-match">' + L("Balle de match", "Match point") + "</span>" : "");
-  $("mon-ecurie").innerHTML = moi.ecurie.map((c) => carteHTML(c, { mini: true, interactive: true, classeMini: classeArriveeVolee(etat, UI.monIdx, c.uid), anniversaire: moi.anniversaireAujourdhui && moi.anniversaireDate===dateLocaleISO() })).join("") ||
-    "<em>" + L("Ton repaire est vide... pour l'instant ! ✦", "Your lair is empty... for now! ✦") + "</em>";
+  $("mon-ecurie").innerHTML = '<span style="flex-basis:100%;font-size:13px;color:var(--texte-doux)">' + L("Repaire : ", "Lair: ") + '</span>' +
+    (moi.ecurie.map((c) => carteHTML(c, { mini: true, interactive: true, classeMini: classeArriveeVolee(etat, UI.monIdx, c.uid), anniversaire: moi.anniversaireAujourdhui && moi.anniversaireDate===dateLocaleISO() })).join("") ||
+    "<em>" + L("Ton repaire est vide... pour l'instant ! ✦", "Your lair is empty... for now! ✦") + "</em>");
   const bonus = moi.ameliorations.map((c) => carteHTML(c, { mini: true, interactive: true, classeMini: "bonus" })).join("") +
                 moi.sabotages.map((c) => carteHTML(c, { mini: true, interactive: true, classeMini: "malus" })).join("");
   $("mes-bonus").innerHTML = bonus
