@@ -1319,8 +1319,8 @@ const DEFINITIONS_CARTES = [
   },
   {
     id: "licorne-givre", nom: "Dragon des Givres", type: "licorne", emoji: "❄️", couleur: "bleu",
-    texte: "Quand il entre dans ton repaire : gèle le dragon le plus puissant dans la main d'un adversaire. Il ne peut pas être joué pendant 2 tours.",
-    effet: { kind: "geler-main", declencheur: "entree" }, exemplaires: 2,
+    texte: "Quand il entre dans ton repaire : choisis un dragon dans le repaire d'un adversaire. Il est gelé pendant 2 tours et ne compte pas dans son repaire.",
+    effet: { kind: "geler-repaire", declencheur: "entree", cible: "licorne-adverse-non-gelee" }, exemplaires: 2,
   },
 
   // -------------------------- DRAGONS MYTHIQUES (x10) ---------------------
@@ -1480,7 +1480,7 @@ let LANGUE = "fr";
 const CARTES_EN = {
   "bebe-licorne": { nom: "Baby Dragon", texte: "A tiny ball of scales. Its sneezes already throw sparks." },
   "licorne-classique": { nom: "Ember Dragon", texte: "Sacrifice this dragon: draw 2 cards." },
-  "licorne-givre": { nom: "Frost Dragon", texte: "Silent and majestic, it freezes the air around its treasure." },
+  "licorne-givre": { nom: "Frost Dragon", texte: "When it enters your lair: choose a dragon in an opponent's lair. It is frozen for 2 turns and doesn't count in its lair." },
   "licorne-arc-en-ciel": { nom: "Prismatic Dragon", texte: "When it enters your lair: draw 2 cards." },
   "licorne-ninja": { nom: "Shadow Dragon", texte: "When it enters your lair: destroy an opponent's Upgrade or a Sabotage in play." },
   "licorne-cupidon": { nom: "Blazing Heart Dragon", texte: "When it enters your lair: steal one NON-mythic dragon from an opponent." },
@@ -2447,8 +2447,8 @@ const MESSAGES_JOURNAL = {
     en: (p) => "🔥 " + p.nom + " sacrifices an Ember Dragon and draws 2 cards.",
   },
   freeze: {
-    fr: (p) => "❄️ " + p.nom + " gèle « " + nomCarteJournal(p.defId) + " » dans la main de " + p.cible + " pour 2 tours.",
-    en: (p) => p.nom + " freezes a card in " + p.cible + " hand for 2 turns.",
+    fr: (p) => "❄️ " + p.nom + " gèle « " + nomCarteJournal(p.defId) + " » dans le repaire de " + p.cible + " pour 2 tours.",
+    en: (p) => p.nom + " freezes " + nomCarteJournal(p.defId) + " in " + p.cible + "'s lair for 2 turns.",
   },
   pack_roar: {
     fr: (p) => "📣 " + p.nom + " rugit avec sa meute : ses cartes sont inarrêtables pendant ses 2 prochains tours.",
@@ -2850,10 +2850,17 @@ function faireExpirerEgideApresTour(etat, idxActif) {
 function appliquerFinTour(etat) {
   // Chaque tour terminé consomme une charge de l’Égide du joueur actif.
   faireExpirerEgideApresTour(etat, etat.tour);
-  // Le gel fond : chaque tour terminé réduit le gel des cartes en main du joueur actif.
+  // Le gel fond : chaque tour terminé réduit le gel des cartes en main et
+  // des dragons du repaire du joueur actif.
   const joueurActif = etat.joueurs[etat.tour];
   if (joueurActif) {
     joueurActif.main.forEach((carte) => {
+      if (Number.isInteger(carte.toursGeles) && carte.toursGeles > 0) {
+        carte.toursGeles -= 1;
+        if (carte.toursGeles === 0) delete carte.toursGeles;
+      }
+    });
+    joueurActif.ecurie.forEach((carte) => {
       if (Number.isInteger(carte.toursGeles) && carte.toursGeles > 0) {
         carte.toursGeles -= 1;
         if (carte.toursGeles === 0) delete carte.toursGeles;
@@ -2891,8 +2898,9 @@ function terminerTransitionEffets(etat) {
 /* ------------------------------ Victoire ---------------------------- */
 
 function valeurEcurie(etat, idxJoueur) {
+  // Un dragon gelé ne compte pas dans son repaire tant que le gel dure.
   return etat.joueurs[idxJoueur].ecurie.reduce(
-    (total, inst) => total + (defCarte(inst).valeur || 1), 0);
+    (total, inst) => total + (Number.isInteger(inst.toursGeles) && inst.toursGeles > 0 ? 0 : (defCarte(inst).valeur || 1)), 0);
 }
 
 function verifierVictoire(etat) {
@@ -2981,7 +2989,7 @@ function raisonCarteNonJouable(etat, idxJoueur, instance) {
 /* La carte a-t-elle besoin d'une cible choisie par le joueur ? */
 function cibleRequise(def) {
   const c = def.effet && def.effet.cible;
-  return ["licorne-adverse", "licorne-adverse-non-magique", "echange", "adversaire", "bonus-en-jeu", "main-adverse", "sabotage-en-jeu", "bebe-adverse"].includes(c);
+  return ["licorne-adverse", "licorne-adverse-non-magique", "licorne-adverse-non-gelee", "echange", "adversaire", "bonus-en-jeu", "main-adverse", "sabotage-en-jeu", "bebe-adverse"].includes(c);
 }
 
 /* Liste les cibles valides pour une carte. */
@@ -3004,6 +3012,16 @@ function ciblesValides(etat, idxJoueur, def) {
         const hostile = def.effet.kind === "detruire" || def.effet.kind === "voler";
         if (hostile && def.effet.kind === "detruire" && !peutDetruire(etat, i, inst)) continue;
         if (hostile && def.effet.kind === "voler" && !peutVoler(etat, i, inst)) continue;
+        resultat.options.push({ joueur: i, uid: inst.uid, nom: d.nom, emoji: d.emoji, couleur: couleurDragonDe(inst) });
+      }
+    }
+  } else if (cible === "licorne-adverse-non-gelee") {
+    // Dragon des Givres : un dragon déjà gelé ne peut pas être regelé.
+    for (const i of adversaires) {
+      for (const inst of etat.joueurs[i].ecurie) {
+        const d = defCarte(inst);
+        if (!estLicorne(d.type)) continue;
+        if (Number.isInteger(inst.toursGeles) && inst.toursGeles > 0) continue;
         resultat.options.push({ joueur: i, uid: inst.uid, nom: d.nom, emoji: d.emoji, couleur: couleurDragonDe(inst) });
       }
     }
@@ -3575,25 +3593,17 @@ function appliquerEffet(etat, parIdx, def, cibles) {
       break;
     }
 
-    case "geler-main": {
-      // Le Dragon des Givres gèle automatiquement le dragon le plus puissant
-      // dans la main adverse (sans révéler toute la main).
-      let meilleure = null;
-      let meilleureValeur = -1;
-      let victimeIdx = -1;
-      for (let i = 0; i < etat.joueurs.length; i++) {
-        if (i === parIdx || etat.joueurs[i].equipe === joueur.equipe) continue;
-        for (const inst of etat.joueurs[i].main) {
-          const d = defCarte(inst);
-          if (!d || !estLicorne(d.type)) continue;
-          const v = (typeof valeurStrategiqueCarte === "function") ? valeurStrategiqueCarte(inst) : 0;
-          if (v > meilleureValeur) { meilleureValeur = v; meilleure = inst; victimeIdx = i; }
-        }
-      }
-      if (!meilleure) break;
-      meilleure.toursGeles = 2;
-      const victime = etat.joueurs[victimeIdx];
-      journal(etat, "freeze", { nom: joueur.nom, cible: victime.nom, defId: defCarte(meilleure).id });
+    case "geler-repaire": {
+      // Le Dragon des Givres gèle le dragon choisi dans le repaire adverse :
+      // il ne compte plus pendant 2 tours, puis il dégèle.
+      const t = cibles;
+      if (!t) break;
+      const victime = etat.joueurs[t.joueur];
+      if (!victime) break;
+      const inst = victime.ecurie.find((c) => c.uid === t.uid);
+      if (!inst) break;
+      inst.toursGeles = 2;
+      journal(etat, "freeze", { nom: joueur.nom, cible: victime.nom, defId: defCarte(inst).id });
       break;
     }
 
@@ -8214,6 +8224,16 @@ function choixBotPour(def, idxBot) {
       const cb = UI.etat.joueurs[b.joueur].ecurie.find((c) => c.uid === b.uid);
       return valeurStrategiqueCarte(cb) - valeurStrategiqueCarte(ca);
     }), profil.meilleureCible);
+    /* Pacte des Deux Antres : un échange dragonneau contre dragonneau ne change
+       rien, sauf si le dragonneau reçu donne le bonus météo (couleur favorisée
+       et bonus encore disponible ce tour-ci). Sinon, le bot garde la carte
+       pour un moment plus utile. */
+    const instMienne = UI.etat.joueurs[idxBot].ecurie.find((c) => c.uid === mienne.uid);
+    const instAdverse = UI.etat.joueurs[adverse.joueur].ecurie.find((c) => c.uid === adverse.uid);
+    if (instMienne && instAdverse && defCarte(instMienne).type === "bebe" && defCarte(instAdverse).type === "bebe") {
+      const meteo = meteoParId(UI.etat.meteo);
+      if (!meteo || adverse.couleur !== meteo.couleur || UI.etat.meteoBonusUtilise) return { valide: false };
+    }
     return { valide: true, cibles: { mienne: mienne.uid, adverse } };
   }
   if (!disponibles.options.length) return { valide: false };
@@ -8238,6 +8258,18 @@ function choixBotPour(def, idxBot) {
     );
     if (!valides.length) return { valide: false };
     const triees = valides.slice().sort((a, b) => valeurEcurie(UI.etat, b.joueur) - valeurEcurie(UI.etat, a.joueur));
+    return { valide: true, cibles: choisirOptionBot(triees, profil.meilleureCible) };
+  }
+  /* Dragon des Givres : le bot gèle le dragon qui fait le plus mal — d'abord
+     le repaire le plus avancé (un adversaire à 7 redescend à 6, voire 5 si le
+     dragon gelé vaut double), puis le dragon de plus forte valeur. */
+  if (def.effet && def.effet.kind === "geler-repaire") {
+    const valeurDragon = (o) => {
+      const inst = UI.etat.joueurs[o.joueur].ecurie.find((c) => c.uid === o.uid);
+      return inst ? (defCarte(inst).valeur || 1) : 1;
+    };
+    const triees = disponibles.options.slice().sort((a, b) =>
+      (valeurEcurie(UI.etat, b.joueur) * 10 + valeurDragon(b)) - (valeurEcurie(UI.etat, a.joueur) * 10 + valeurDragon(a)));
     return { valide: true, cibles: choisirOptionBot(triees, profil.meilleureCible) };
   }
   const optionsTriees = disponibles.options.slice().sort((a, b) => {
