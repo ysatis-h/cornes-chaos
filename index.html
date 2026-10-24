@@ -7263,10 +7263,9 @@ function ouvrirNouvellePartie(enLigneOK) {
   ouvrirModal(
     "<h3>" + L("Nouvelle partie", "New game") + "</h3>" +
     "<p>" + L("Comment veux-tu jouer ?", "How would you like to play?") + "</p>" +
-    '<button id="modal-solo" class="gros-bouton bouton-primaire">' + L("Jouer en solo contre des bots", "Play solo against bots") + '</button>' +
-    '<button id="modal-creer-salle" class="gros-bouton bouton-nuit">' + L("Créer une salle en ligne", "Create an online room") + '</button>' +
-    '<button id="modal-jouer-local" class="gros-bouton bouton-primaire">' + L("Jouer en local sur le même téléphone", "Pass and play on this phone") + '</button>' +
-    (Compte.uid() ? '<button id="modal-equipe-2v2" class="gros-bouton bouton-nuit">' + L("Équipe 2v2", "2v2 Team") + '</button>' : "") +
+    '<button id="modal-solo" class="gros-bouton bouton-nuit">' + L("Jouer en solo", "Play solo") + '</button>' +
+    '<button id="modal-creer-salle" class="gros-bouton bouton-primaire">' + L("Jouer entre amis", "Play with friends") + '</button>' +
+    (Compte.uid() ? '<button id="modal-equipe-2v2" class="gros-bouton bouton-nuit">' + L("Jouer en équipe 2v2", "Play in a 2v2 team") + '</button>' : "") +
     '<button class="bouton-retour" onclick="fermerModal()">' + L("Retour", "Back") + '</button>'
   );
   $("modal-solo").addEventListener("click", () => {
@@ -7274,16 +7273,11 @@ function ouvrirNouvellePartie(enLigneOK) {
   });
   $("modal-creer-salle").addEventListener("click", () => {
     if (!enLigneOK) {
-      toast(L("💫 Le mode en ligne arrive bientôt ! Essaie le mode local ✦", "💫 Online play is coming soon! Try pass-and-play ✦"));
+      toast(L("💫 Le mode en ligne arrive bientôt ! ✦", "💫 Online play is coming soon! ✦"));
       return;
     }
     fermerModal();
     demanderPseudo(L("Créer une salle", "Create a room"), (pseudo, couleur, themePreferee) => creerSalleEnLigne(pseudo, couleur, themePreferee));
-  });
-  $("modal-jouer-local").addEventListener("click", () => {
-    fermerModal();
-    preparerConfigLocale();
-    afficherEcran("local");
   });
   const btnEquipe2v2 = $("modal-equipe-2v2");
   if (btnEquipe2v2) {
