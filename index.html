@@ -1447,7 +1447,7 @@ const DEFINITIONS_CARTES = [
   {
     id: "nuage-grognon", nom: "Nuage de Cendres", type: "sabotage", emoji: "🌫️",
     texte: "La prochaine carte Magie jouée par la cible est annulée. Le Nuage se dissipe ensuite.",
-    effet: { kind: "passif", passif: "contre-prochaine-magie", cible: "adversaire" }, exemplaires: 3,
+    effet: { kind: "passif", passif: "contre-prochaine-magie", cible: "adversaire" }, dependDe: ["magie"], exemplaires: 3,
   },
   {
     id: "boue-collante", nom: "Marais Engloutissant", type: "sabotage", emoji: "🟤",
@@ -2173,6 +2173,9 @@ function construirePioche(defiId) {
   const defi = defiParId(defiId);
   for (const def of toutesLesDefinitions()) {
     if (defi && defi.typesBannis && defi.typesBannis.includes(def.type)) continue;
+    // Une carte dont l'effet dépend d'un type banni est retirée aussi :
+    // sans carte Magie dans le paquet, le Nuage de Cendres serait une carte morte.
+    if (defi && defi.typesBannis && def.dependDe && def.dependDe.some((type) => defi.typesBannis.includes(type))) continue;
     const exemplaires = def.exemplaires + (def.saison && definitionsSaisonnieresActives().some((active) => active.id === def.id) ? 1 : 0);
     for (let i = 0; i < exemplaires; i++) {
       const instance = { uid: uidCourt(), defId: def.id };
