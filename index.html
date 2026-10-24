@@ -5409,7 +5409,7 @@ function typeSonJournal(message) {
     const sonsParCle = {
       super_roar: "rugissement", roar: "rugissement", roar_cancels: "rugissement",
       bonus_turn_now: "feu", bonus_later: "feu", bonus_later_can_play: "feu",
-      marsh: "marais", everyone_discard: "vent", breath_choices: "vent", breath_discard: "impact", ash_fade: "vent", ash_blocked: "annulation", win: "victoire", team_win: "victoire",
+      marsh: "marais", everyone_discard: "vent", breath_choices: "vent", breath_discard: "impact", ash_fade: "vent", ash_blocked: "annulation",
       baby_enters: "eclosion", aegis_one: "bouclier", aegis_fade: "bouclier",
       protect: "bouclier", resist: "bouclier", steal: "envol", trade: "envol",
       sabotage: "sabotage", mirror_discard: "sabotage", mirror_break: "sabotage", destroy: "impact",
@@ -5424,7 +5424,6 @@ function typeSonJournal(message) {
   if (/Tornade de Flammes|Élixir de vie/.test(message)) return "feu";
   if (/Marais Engloutissant|SPLAF/.test(message)) return "marais";
   if (/Souffle du Grand Dragon|Nuage de Cendres/.test(message)) return "vent";
-  if (/gagne avec/.test(message)) return "victoire";
   if (/Bébé Dragon/.test(message) && /accueille/.test(message)) return "eclosion";
   if (/rejoue|rejouera/.test(message)) return "feu";
   if (/Égide|protège|résiste/.test(message)) return "bouclier";
@@ -9917,6 +9916,10 @@ function afficherVictoire() {
   $("journal-fin").open = false;
   $("btn-rejouer").disabled = false;
   mettreAJourBoutonsFleches();
+  // Le son de victoire appartient à l'écran : il joue ici, en même temps
+  // que l'image — pas au moment où la partie se termine (le journal
+  // déclenchait le son 2,5 s avant l'écran quand l'adversaire gagnait).
+  Sons.jouer("victoire");
   afficherEcran("victoire");
   fermerModal();
 }
