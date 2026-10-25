@@ -8755,6 +8755,18 @@ function notifierTourMultijoueur() {
   UI._etaitMonTour = estMaintenant;
 }
 
+/* Au centre du plateau, on va à l'essentiel : la phrase d'entrée
+   (« Quand il entre dans ton repaire : ») est retirée du texte affiché,
+   pour que l'effet lui-même tienne dans les 2 lignes. En découverte
+   (tutoriel), le texte complet est gardé pour apprendre la carte. */
+function texteCentreCarte(def) {
+  const texte = texteCarte(def);
+  const prefixe = enAnglais() ? "When it enters your lair: " : "Quand il entre dans ton repaire : ";
+  if (!texte.startsWith(prefixe)) return texte;
+  const reste = texte.slice(prefixe.length);
+  return reste.charAt(0).toUpperCase() + reste.slice(1);
+}
+
 function rendreCarteJoueeCentre() {
   const zone = $("carte-jouee-centre");
   if (!zone || !UI.etat) return;
@@ -8793,7 +8805,7 @@ function rendreCarteJoueeCentre() {
   }
   zone.classList.toggle("nouvelle-decouverte", nouvelleDecouverte);
   zone.innerHTML = carte && auteur
-    ? '<span class="apercu-centre-texte">' + (nouvelleDecouverte ? '<strong>' + L("Nouvelle carte à découvrir", "New card to discover") + '</strong><br>' : '') + echapper(auteur.nom) + L(" joue", " plays") + '</span>' + carteHTML(carte)
+    ? '<span class="apercu-centre-texte">' + (nouvelleDecouverte ? '<strong>' + L("Nouvelle carte à découvrir", "New card to discover") + '</strong><br>' : '') + echapper(auteur.nom) + L(" joue", " plays") + '</span>' + carteHTML(carte, nouvelleDecouverte ? {} : { texteCourt: texteCentreCarte(defCarte(carte)) })
     : "";
 }
 
