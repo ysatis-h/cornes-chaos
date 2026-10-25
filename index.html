@@ -2967,6 +2967,9 @@ function peutJouer(etat, idxJoueur, instance) {
     if (etape === 1 && def.type !== "bebe") return false;
     if (etape === 2) return false;
     if (etape === 3 && def.id !== "pluie-etoiles") return false;
+    if (etape === 4 && def.id !== "fer-a-cheval") return false;
+    if (etape === 5 && !UI.tutoDefis.nuagePose && def.id !== "nuage-grognon") return false;
+    if (etape === 5 && UI.tutoDefis.nuagePose) return false;
   }
   return true;
 }
@@ -2977,6 +2980,9 @@ function raisonCarteNonJouable(etat, idxJoueur, instance) {
     if (UI.tutoDefis.etape === 1) return L("Le tutoriel te demande de jouer ton Bébé Dragon.", "The tutorial asks you to play your Baby Dragon.");
     if (UI.tutoDefis.etape === 2) return L("Termine ton tour pour que Pyros joue son sabotage.", "End your turn so Pyros can play his sabotage.");
     if (UI.tutoDefis.etape === 3) return L("Le tutoriel te demande de jouer ta carte Magie « Pluie d'Écailles ».", "The tutorial asks you to play your Magic card \"Scale Shower\".");
+    if (UI.tutoDefis.etape === 4) return L("Le tutoriel te demande de jouer ton bonus « Trésor Chanceux ».", "The tutorial asks you to play your Bonus \"Lucky Treasure\".");
+    if (UI.tutoDefis.etape === 5 && !UI.tutoDefis.nuagePose) return L("Le tutoriel te demande de jouer ton sabotage « Nuage de Cendres » sur Pyros.", "The tutorial asks you to play your Sabotage \"Ash Cloud\" on Pyros.");
+    if (UI.tutoDefis.etape === 5) return L("Termine ton tour pour que Pyros joue sa carte Magie.", "End your turn so Pyros can play his Magic card.");
   }
   if (Number.isInteger(instance.toursGeles) && instance.toursGeles > 0) return L("Cette carte est gelée pour encore " + instance.toursGeles + " tour" + (instance.toursGeles > 1 ? "s" : "") + ".", "This card is frozen for " + instance.toursGeles + " more turn" + (instance.toursGeles > 1 ? "s" : "") + ".");
   if (def.type === "riposte") return L("Cette carte se joue seulement en réponse à une carte adverse.", "This card can only be played in response to an opponent’s card.");
@@ -5019,7 +5025,7 @@ function sauvegarderSession() {
     langue: LANGUE,
     tutoriel: Boolean(UI.tutoriel),
     /* Tutoriel Pyros (défis) : l'étape survit à un rafraîchissement de l'onglet. */
-    tutoDefis: (UI.tutoDefis && !UI.tutoDefis.termine) ? { etape: UI.tutoDefis.etape, ecurieDebut: UI.tutoDefis.ecurieDebut, magiesDefausseDebut: UI.tutoDefis.magiesDefausseDebut, sabotageJoue: Boolean(UI.tutoDefis.sabotageJoue), sabotageUid: UI.tutoDefis.sabotageUid || null } : null,
+    tutoDefis: (UI.tutoDefis && !UI.tutoDefis.termine) ? { etape: UI.tutoDefis.etape, ecurieDebut: UI.tutoDefis.ecurieDebut, magiesDefausseDebut: UI.tutoDefis.magiesDefausseDebut, sabotageJoue: Boolean(UI.tutoDefis.sabotageJoue), sabotageUid: UI.tutoDefis.sabotageUid || null, ameliorationsDebut: UI.tutoDefis.ameliorationsDebut, nuagePose: Boolean(UI.tutoDefis.nuagePose), nuageUid: UI.tutoDefis.nuageUid || null } : null,
     cartesVuesTutoriel: UI.tutoriel ? Array.from(UI._cartesVuesTutoriel).filter((id) => definitionParId(id)).slice(0, 80) : [],
     net: UI.mode === "online" ? {
       code: Net.code, pid: Net.pid, pseudo: Net.pseudo,
@@ -5043,7 +5049,7 @@ function restaurerSession() {
   /* Tutoriel Pyros (défis) : restaure l'étape après un rafraîchissement. */
   if (reprise.tutoDefis && UI.tutoriel) {
     const td = reprise.tutoDefis;
-    UI.tutoDefis = { etape: Number.isInteger(td.etape) ? td.etape : 1, ecurieDebut: Number.isInteger(td.ecurieDebut) ? td.ecurieDebut : 0, magiesDefausseDebut: Number.isInteger(td.magiesDefausseDebut) ? td.magiesDefausseDebut : 0, sabotageJoue: td.sabotageJoue === true, sabotageUid: td.sabotageUid || null, termine: false };
+    UI.tutoDefis = { etape: Number.isInteger(td.etape) ? td.etape : 1, ecurieDebut: Number.isInteger(td.ecurieDebut) ? td.ecurieDebut : 0, magiesDefausseDebut: Number.isInteger(td.magiesDefausseDebut) ? td.magiesDefausseDebut : 0, sabotageJoue: td.sabotageJoue === true, sabotageUid: td.sabotageUid || null, ameliorationsDebut: Number.isInteger(td.ameliorationsDebut) ? td.ameliorationsDebut : 0, nuagePose: td.nuagePose === true, nuageUid: td.nuageUid || null, termine: false };
     UI._tutorielRugissementVu = true;
   } else {
     UI.tutoDefis = null;
@@ -7080,8 +7086,11 @@ function demarrerTutorielDefis() {
     donnerCarteTutoriel(etat, 0, "bebe-licorne", { couleurDragon: COULEURS_AVATAR[0] }).uid,
     donnerCarteTutoriel(etat, 0, "pluie-etoiles").uid,
     donnerCarteTutoriel(etat, 0, "riposte").uid,
+    donnerCarteTutoriel(etat, 0, "fer-a-cheval").uid,
+    donnerCarteTutoriel(etat, 0, "nuage-grognon").uid,
     donnerCarteTutoriel(etat, 1, "nuage-grognon").uid,
     donnerCarteTutoriel(etat, 1, "nuage-grognon").uid,
+    donnerCarteTutoriel(etat, 1, "tornade-paillettes").uid,
   ]);
   // Mains de 7 cartes pile, comme une vraie partie : les cartes de leçon
   // remplacent des cartes au hasard au lieu de s'ajouter aux 7 distribuées.
@@ -7098,7 +7107,7 @@ function demarrerTutorielDefis() {
   etat.tour = 0;
   etat.tourCommenceLe = Date.now();
   etat.tourPauseLe = Date.now();
-  UI.tutoDefis = { etape: 1, ecurieDebut: etat.joueurs[0].ecurie.length, magiesDefausseDebut: 0, sabotageJoue: false, sabotageUid: null, termine: false };
+  UI.tutoDefis = { etape: 1, ecurieDebut: etat.joueurs[0].ecurie.length, magiesDefausseDebut: 0, sabotageJoue: false, sabotageUid: null, ameliorationsDebut: 0, nuagePose: false, nuageUid: null, termine: false };
   UI.tutoDefis.magiesDefausseDebut = compterMagiesDefausse(etat);
   UI._tutorielRugissementVu = true; // guidage du rugissement géré par Pyros (défis), pas la modale générique
   reinitialiserSonsJournal(etat);
@@ -7130,6 +7139,20 @@ function jouerTourPyrosDefis(etat, idxBot) {
       return;
     }
   }
+  // Défi 5 (démonstration) : Pyros joue une Magie, que le Nuage d'Ysa annule.
+  if (!etat.carteJouee && T.etape === 5 && T.nuagePose) {
+    const mag = etat.joueurs[idxBot].main.find(function(c) { return c.defId === "tornade-paillettes"; });
+    if (mag) {
+      let cibles = { joueur: 0 };
+      try {
+        const choix = choixBotPour(defCarte(mag), idxBot);
+        if (choix && choix.valide && choix.cibles) cibles = choix.cibles;
+      } catch (e) {}
+      jouerCarte(etat, idxBot, mag.uid, cibles);
+      rendreTout();
+      return;
+    }
+  }
   if (!etat.carteJouee) {
     if (passerTour(etat, idxBot)) apresActionTour();
     else rendreTout();
@@ -7157,7 +7180,19 @@ function texteDefiPyros() {
   };
   if (T.etape === 3) return {
     titre: L("Défi 3 — Carte spéciale", "Challenge 3 — Special card"),
-    texte: L("Bravo ! Dernier défi : joue ta carte Magie « Pluie d'Écailles » : défausse 1 carte de ta main, puis pioche 2 cartes. Ensuite, termine ton tour !", "Well done! Last challenge: play your Magic card \"Scale Shower\": discard 1 card from your hand, then draw 2 cards. Then end your turn!"),
+    texte: L("Bravo ! Joue ta carte Magie « Pluie d'Écailles » : défausse 1 carte de ta main, puis pioche 2 cartes. Ensuite, termine ton tour !", "Well done! Play your Magic card \"Scale Shower\": discard 1 card from your hand, then draw 2 cards. Then end your turn!"),
+  };
+  if (T.etape === 4) return {
+    titre: L("Défi 4 — Bonus", "Challenge 4 — Bonus"),
+    texte: L("Quatrième défi : joue ton bonus « Trésor Chanceux » : il te fera piocher 1 carte de plus au début de chacun de tes tours. Ensuite, termine ton tour !", "Fourth challenge: play your Bonus \"Lucky Treasure\": it will let you draw 1 extra card at the start of each of your turns. Then end your turn!"),
+  };
+  if (T.etape === 5 && !T.nuagePose) return {
+    titre: L("Défi 5 — Sabotage", "Challenge 5 — Sabotage"),
+    texte: L("Dernier défi : joue ton sabotage « Nuage de Cendres » sur Pyros : la prochaine carte Magie qu'il jouera sera annulée. Ensuite, termine ton tour !", "Last challenge: play your Sabotage \"Ash Cloud\" on Pyros: the next Magic card he plays will be cancelled. Then end your turn!"),
+  };
+  if (T.etape === 5) return {
+    titre: L("Défi 5 — Sabotage", "Challenge 5 — Sabotage"),
+    texte: L("Ton Nuage est posé sur Pyros ! Termine ton tour : il va jouer une carte Magie, et tu vas voir ton Nuage l'annuler.", "Your Ash Cloud is on Pyros! End your turn: he's about to play a Magic card, and you'll see your Ash Cloud cancel it."),
   };
   return null;
 }
@@ -7191,7 +7226,15 @@ function verifierDefisTutoriel() {
     }
   } else if (T.etape === 3) {
     const magiesJouees = compterMagiesDefausse(etat) > T.magiesDefausseDebut;
-    if (magiesJouees && etat.phase === "jeu" && !etat.choix && !etat.pending) { terminerDefisTutoriel(); }
+    if (magiesJouees && etat.phase === "jeu" && !etat.choix && !etat.pending) { T.etape = 4; rendreTout(); }
+  } else if (T.etape === 4) {
+    const amelioDebut = Number.isInteger(T.ameliorationsDebut) ? T.ameliorationsDebut : 0;
+    if (joueur.ameliorations.length > amelioDebut) { T.etape = 5; rendreTout(); }
+  } else if (T.etape === 5 && !T.nuagePose) {
+    const nuage = etat.joueurs[1].sabotages.find(function(c) { return c.defId === "nuage-grognon"; });
+    if (nuage) { T.nuagePose = true; T.nuageUid = nuage.uid; rendreTout(); }
+  } else if (T.etape === 5 && T.nuagePose && T.nuageUid && etat.phase === "jeu" && !etat.pending) {
+    if (etat.defausse.some(function(c) { return c.uid === T.nuageUid; })) { terminerDefisTutoriel(); }
   }
 }
 
@@ -7200,14 +7243,14 @@ function terminerDefisTutoriel() {
   const T = UI.tutoDefis;
   if (!T || T.termine) return;
   T.termine = true;
-  T.etape = 4;
+  T.etape = 6; // marque de fin (les défis sont les étapes 1 à 5)
   TutorielPyros.marquerTutorielTermine();
   const btnX = $("btn-quitter-tuto-defis");
   if (btnX) btnX.hidden = true;
   ouvrirModal(
     '<div class="popup-pyros">' +
     '<h3>🔥 ' + L("Tu es prêt !", "You're ready!") + '</h3>' +
-    '<p>' + L("Bravo, Dresseur ! Tu sais invoquer des dragons, jouer des cartes spéciales et rugir pour te défendre. En vraie partie, le premier repaire à 8 dragons gagne. À toi de jouer !", "Well done, Trainer! You can summon dragons, play special cards, and roar to defend yourself. In a real game, the first lair with 8 dragons wins. Your turn!") + '</p>' +
+    '<p>' + L("Bravo, Dresseur ! Tu sais invoquer des dragons, jouer des cartes spéciales, poser des bonus, attaquer avec des sabotages et rugir pour te défendre. En vraie partie, le premier repaire à 8 dragons gagne. À toi de jouer !", "Well done, Trainer! You can summon dragons, play special cards, place bonuses, attack with sabotages, and roar to defend yourself. In a real game, the first lair with 8 dragons wins. Your turn!") + '</p>' +
     '<button id="tuto-jouer-vrai" class="gros-bouton bouton-primaire" type="button">' + L("Jouer pour vrai !", "Play for real!") + '</button>' +
     '<button id="tuto-retour-accueil" class="bouton-retour" type="button">' + L("Retour à l'accueil", "Back to home") + '</button>' +
     '</div>'
@@ -9180,6 +9223,8 @@ function carteDemandeeTutoriel(inst) {
   const def = defCarte(inst);
   if (T.etape === 1) return def.type === "bebe";
   if (T.etape === 3) return def.id === "pluie-etoiles";
+  if (T.etape === 4) return def.id === "fer-a-cheval";
+  if (T.etape === 5 && !T.nuagePose) return def.id === "nuage-grognon";
   return false;
 }
 
