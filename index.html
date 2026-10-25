@@ -2966,8 +2966,8 @@ function peutJouer(etat, idxJoueur, instance) {
     const etape = UI.tutoDefis.etape;
     if (etape === 1 && def.type !== "bebe") return false;
     if (etape === 2) return false;
-    if (etape === 3 && def.id !== "pluie-etoiles") return false;
-    if (etape === 4 && def.id !== "fer-a-cheval") return false;
+    if (etape === 3 && def.id !== "fer-a-cheval") return false;
+    if (etape === 4 && def.id !== "pluie-etoiles") return false;
     if (etape === 5 && !UI.tutoDefis.nuagePose && def.id !== "nuage-grognon") return false;
     if (etape === 5 && UI.tutoDefis.nuagePose) return false;
   }
@@ -2979,8 +2979,8 @@ function raisonCarteNonJouable(etat, idxJoueur, instance) {
   if (typeof UI !== "undefined" && UI.tutoDefis && !UI.tutoDefis.termine && idxJoueur === UI.monIdx) {
     if (UI.tutoDefis.etape === 1) return L("Le tutoriel te demande de jouer ton Bébé Dragon.", "The tutorial asks you to play your Baby Dragon.");
     if (UI.tutoDefis.etape === 2) return L("Termine ton tour pour que Pyros joue son sabotage.", "End your turn so Pyros can play his sabotage.");
-    if (UI.tutoDefis.etape === 3) return L("Le tutoriel te demande de jouer ta carte Magie « Pluie d'Écailles ».", "The tutorial asks you to play your Magic card \"Scale Shower\".");
-    if (UI.tutoDefis.etape === 4) return L("Le tutoriel te demande de jouer ton bonus « Trésor Chanceux ».", "The tutorial asks you to play your Bonus \"Lucky Treasure\".");
+    if (UI.tutoDefis.etape === 3) return L("Le tutoriel te demande de jouer ton bonus « Trésor Chanceux ».", "The tutorial asks you to play your Bonus \"Lucky Treasure\".");
+    if (UI.tutoDefis.etape === 4) return L("Le tutoriel te demande de jouer ta carte Magie « Pluie d'Écailles ».", "The tutorial asks you to play your Magic card \"Scale Shower\".");
     if (UI.tutoDefis.etape === 5 && !UI.tutoDefis.nuagePose) return L("Le tutoriel te demande de jouer ton sabotage « Nuage de Cendres » sur Pyros.", "The tutorial asks you to play your Sabotage \"Ash Cloud\" on Pyros.");
     if (UI.tutoDefis.etape === 5) return L("Termine ton tour pour que Pyros joue sa carte Magie.", "End your turn so Pyros can play his Magic card.");
   }
@@ -7179,12 +7179,12 @@ function texteDefiPyros() {
     texte: L("Oh non, mon Nuage de Cendres te vise ! Vite : joue ton Rugissement pour l'annuler. Prends ton temps, il n'y a pas de chrono !", "Oh no, my Ash Cloud is targeting you! Quick: play your Roar to cancel it. Take your time, there's no timer!"),
   };
   if (T.etape === 3) return {
-    titre: L("Défi 3 — Carte spéciale", "Challenge 3 — Special card"),
-    texte: L("Bravo ! Joue ta carte Magie « Pluie d'Écailles » : défausse 1 carte de ta main, puis pioche 2 cartes. Ensuite, termine ton tour !", "Well done! Play your Magic card \"Scale Shower\": discard 1 card from your hand, then draw 2 cards. Then end your turn!"),
+    titre: L("Défi 3 — Bonus", "Challenge 3 — Bonus"),
+    texte: L("Troisième défi : joue ton bonus « Trésor Chanceux » : il te fera piocher 1 carte de plus au début de chacun de tes tours. Ensuite, termine ton tour !", "Third challenge: play your Bonus \"Lucky Treasure\": it will let you draw 1 extra card at the start of each of your turns. Then end your turn!"),
   };
   if (T.etape === 4) return {
-    titre: L("Défi 4 — Bonus", "Challenge 4 — Bonus"),
-    texte: L("Quatrième défi : joue ton bonus « Trésor Chanceux » : il te fera piocher 1 carte de plus au début de chacun de tes tours. Ensuite, termine ton tour !", "Fourth challenge: play your Bonus \"Lucky Treasure\": it will let you draw 1 extra card at the start of each of your turns. Then end your turn!"),
+    titre: L("Défi 4 — Carte spéciale", "Challenge 4 — Special card"),
+    texte: L("Bravo ! Joue ta carte Magie « Pluie d'Écailles » : défausse 1 carte de ta main, puis pioche 2 cartes. Ensuite, termine ton tour !", "Well done! Play your Magic card \"Scale Shower\": discard 1 card from your hand, then draw 2 cards. Then end your turn!"),
   };
   if (T.etape === 5 && !T.nuagePose) return {
     titre: L("Défi 5 — Sabotage", "Challenge 5 — Sabotage"),
@@ -7225,11 +7225,16 @@ function verifierDefisTutoriel() {
       rendreTout();
     }
   } else if (T.etape === 3) {
-    const magiesJouees = compterMagiesDefausse(etat) > T.magiesDefausseDebut;
-    if (magiesJouees && etat.phase === "jeu" && !etat.choix && !etat.pending) { T.etape = 4; rendreTout(); }
-  } else if (T.etape === 4) {
     const amelioDebut = Number.isInteger(T.ameliorationsDebut) ? T.ameliorationsDebut : 0;
-    if (joueur.ameliorations.length > amelioDebut) { T.etape = 5; rendreTout(); }
+    if (joueur.ameliorations.length > amelioDebut) { T.etape = 4; rendreTout(); }
+  } else if (T.etape === 4) {
+    const magiesJouees = compterMagiesDefausse(etat) > T.magiesDefausseDebut;
+    if (magiesJouees && etat.phase === "jeu" && !etat.choix && !etat.pending) {
+      // Si la Pluie a défaussé le Nuage de la leçon suivante, on en redonne un :
+      // l'étape 5 doit toujours être jouable, quoi qu'elle ait défaussé.
+      if (!joueur.main.some(function(c) { return c.defId === "nuage-grognon"; })) donnerCarteTutoriel(etat, 0, "nuage-grognon");
+      T.etape = 5; rendreTout();
+    }
   } else if (T.etape === 5 && !T.nuagePose) {
     const nuage = etat.joueurs[1].sabotages.find(function(c) { return c.defId === "nuage-grognon"; });
     if (nuage) { T.nuagePose = true; T.nuageUid = nuage.uid; rendreTout(); }
@@ -9222,8 +9227,8 @@ function carteDemandeeTutoriel(inst) {
   if (!T || T.termine) return false;
   const def = defCarte(inst);
   if (T.etape === 1) return def.type === "bebe";
-  if (T.etape === 3) return def.id === "pluie-etoiles";
-  if (T.etape === 4) return def.id === "fer-a-cheval";
+  if (T.etape === 3) return def.id === "fer-a-cheval";
+  if (T.etape === 4) return def.id === "pluie-etoiles";
   if (T.etape === 5 && !T.nuagePose) return def.id === "nuage-grognon";
   return false;
 }
