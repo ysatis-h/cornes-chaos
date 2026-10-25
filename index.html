@@ -6025,7 +6025,9 @@ function carteHTML(instance, options) {
   const styleArt = styleIllustration(instance);
   const motif = "motif-" + (hachageVisuel(instance.defId) % 6);
   if (options.mini) {
-    const duree = def.id === "arc-en-ciel-protecteur" && Number.isInteger(instance.toursRestants)
+    const duree = options.dureeTexte
+      ? '<span class="mini-duree" title="' + L("Tours protégés restants", "Protected turns remaining") + '">' + echapper(options.dureeTexte) + '</span>'
+      : def.id === "arc-en-ciel-protecteur" && Number.isInteger(instance.toursRestants)
       ? '<span class="mini-duree" title="' + L("Tours de protection restants", "Turns of protection remaining") + '">' + instance.toursRestants + ' ' + L(instance.toursRestants > 1 ? "tours" : "tour", instance.toursRestants > 1 ? "turns" : "turn") + '</span>'
       : def.id === "miroir-fele"
       ? (() => { const etatCourant = (typeof UI !== "undefined" && UI.etat) || null;
@@ -9048,10 +9050,22 @@ function rendreInfoSession() {
   info.classList.remove("cachee");
 }
 
+/* Rappel visuel du Rugissement de meute : tant que la protection est active,
+   une mini-carte reste affichée dans la zone Bonus, avec le décompte des
+   tours protégés restants. Purement visuel : la vraie carte est à la défausse,
+   ce rappel n'est ni ciblable ni destructible. */
+function rappelMeuteHTML(joueur) {
+  const charges = joueur && joueur.protectionRugissement;
+  if (!charges) return "";
+  const c = Number.isInteger(charges) ? charges : 1;
+  const texte = c >= 3 ? L("2 tours", "2 turns") : c === 2 ? L("1 tour", "1 turn") : L("Dernier tour", "Last turn");
+  return carteHTML({ defId: "rugissement-meute", uid: "rappel-meute" }, { mini: true, classeMini: "bonus", dureeTexte: texte });
+}
+
 function carteJoueurPlateauHTML(etat,j,i,indicateurZoom) {
   const valeur = valeurEcurie(etat, i);
   const minis = j.ecurie.map((c) => carteHTML(c, { mini: true, interactive: true, indicateurZoom, classeMini: classeArriveeVolee(etat, i, c.uid), anniversaire: j.anniversaireAujourdhui && j.anniversaireDate===dateLocaleISO() })).join("");
-  const bonus = j.ameliorations.map((c) => carteHTML(c, { mini: true, interactive: true, indicateurZoom, classeMini: "bonus" })).join("") + j.sabotages.map((c) => carteHTML(c, { mini: true, interactive: true, indicateurZoom, classeMini: "malus" })).join("");
+  const bonus = j.ameliorations.map((c) => carteHTML(c, { mini: true, interactive: true, indicateurZoom, classeMini: "bonus" })).join("") + j.sabotages.map((c) => carteHTML(c, { mini: true, interactive: true, indicateurZoom, classeMini: "malus" })).join("") + rappelMeuteHTML(j);
   return '<div class="carte-adversaire' + (j.ameliorations.some((c)=>c.defId==="arc-en-ciel-protecteur") ? ' repaire-egide' : '') + '" data-joueur-index="' + i + '">' +
     '<div class="effet-repaire" data-effet-pour="' + i + '" aria-hidden="true"></div>' +
     '<div class="nom nom-avec-avatar">' + avatarHTML(j.couleurAvatar) + '<span>' + nomJoueurHTML(j) + '</span></div>' +
@@ -9104,7 +9118,7 @@ function rendreMonEcurie() {
     (moi.ecurie.map((c) => carteHTML(c, { mini: true, interactive: true, classeMini: classeArriveeVolee(etat, UI.monIdx, c.uid), anniversaire: moi.anniversaireAujourdhui && moi.anniversaireDate===dateLocaleISO() })).join("") ||
     "<em>" + L("Ton repaire est vide... pour l'instant ! ✦", "Your lair is empty... for now! ✦") + "</em>");
   const bonus = moi.ameliorations.map((c) => carteHTML(c, { mini: true, interactive: true, classeMini: "bonus" })).join("") +
-                moi.sabotages.map((c) => carteHTML(c, { mini: true, interactive: true, classeMini: "malus" })).join("");
+                moi.sabotages.map((c) => carteHTML(c, { mini: true, interactive: true, classeMini: "malus" })).join("") + rappelMeuteHTML(moi);
   $("mes-bonus").innerHTML = bonus
     ? '<span style="font-size:13px;color:var(--texte-doux)">' + L("Bonus / Sabotages : ", "Upgrades / Sabotages: ") + '</span>' + bonus
     : "";
