@@ -9330,12 +9330,17 @@ function traduireJournal(message) {
     const entree = normaliserEntreeJournal(message);
     if (!entree) return "";
     const modele = MESSAGES_JOURNAL[entree.cle];
-    return modele[LANGUE](entree.params || {});
+    // Noms courts au journal, comme au centre : « Cyber » plutôt que « Cyber · Bot 2 ».
+    // Affichage seulement : les noms stockés et synchronisés ne changent pas.
+    const params = { ...(entree.params || {}) };
+    ["nom", "cible", "adversaire"].forEach((cle) => { if (params[cle]) params[cle] = nomCourtDresseur(params[cle]); });
+    if (Array.isArray(params.ordre)) params.ordre = params.ordre.map((r) => ({ ...r, nom: nomCourtDresseur(r.nom) }));
+    return modele[LANGUE](params);
   }
   // Compatibilité avec le journal textuel des parties créées avant cette version.
   // Les anciens journaux pouvaient contenir les deux emojis dragon Unicode :
   // ils sont neutralisés avant affichage, quelle que soit la langue choisie.
-  const messageNettoye = String(message || "").replace(/\uD83D\uDC09|\uD83D\uDC32/g, "✦");
+  const messageNettoye = String(message || "").replace(/\uD83D\uDC09|\uD83D\uDC32/g, "✦").replace(/ · Bot \d+/g, "");
   if (!enAnglais()) return messageNettoye;
   let m = messageNettoye;
   const regles = [
