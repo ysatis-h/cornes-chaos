@@ -2072,7 +2072,7 @@ function normaliserEtat(etat) {
     const dcj = etat.derniereCarteJouee;
     const defIdDcj = String(dcj.defId || "").replace(/[^a-z0-9_-]/gi, "").slice(0, 48);
     etat.derniereCarteJouee = (definitionParId(defIdDcj) && Number.isInteger(dcj.parIdx))
-      ? { uid: String(dcj.uid || "").replace(/[^a-z0-9_-]/gi, "").slice(0, 32), defId: defIdDcj, parIdx: dcj.parIdx, t: Math.max(0, Number(dcj.t) || 0) }
+      ? { uid: String(dcj.uid || "").replace(/[^a-z0-9_-]/gi, "").slice(0, 32), defId: defIdDcj, parIdx: dcj.parIdx, cibleIdx: Number.isInteger(dcj.cibleIdx) ? dcj.cibleIdx : null, t: Math.max(0, Number(dcj.t) || 0) }
       : null;
   }
   if (etat.choix) {
@@ -3135,7 +3135,7 @@ function jouerCarte(etat, idxJoueur, uidCarte, cibles) {
   etat.carteJouee = true; // une seule carte jouée par tour
   etat.derniereCarteContree = false;
   // Pour l'affichage central (comme les bots) : tous les joueurs voient la carte jouée.
-  etat.derniereCarteJouee = { uid: instance.uid, defId: def.id, parIdx: idxJoueur, t: Date.now() };
+  etat.derniereCarteJouee = { uid: instance.uid, defId: def.id, parIdx: idxJoueur, cibleIdx: cibleAttaque(def, cibles, idxJoueur), t: Date.now() };
 
   // Nuage de Cendres reste visible sur le territoire ciblé jusqu'à ce que ce
   // Dresseur joue une Magie. Il annule alors cette carte et se dissipe.
@@ -8473,7 +8473,7 @@ function planifierBot() {
           const defAnnoncee = defCarte(action.carte);
           const nouvelleDecouverte = Boolean(UI.tutoriel && defAnnoncee && !UI._cartesVuesTutoriel.has(defAnnoncee.id));
           if (nouvelleDecouverte) UI._cartesVuesTutoriel.add(defAnnoncee.id);
-          UI._botAnnonce = { idx: idxBot, pid: bot.pid, carteUid: action.carte.uid, nouvelleDecouverte };
+          UI._botAnnonce = { idx: idxBot, pid: bot.pid, carteUid: action.carte.uid, cibleIdx: defAnnoncee.id === "licorne-farceuse" ? null : cibleAttaque(defAnnoncee, action.choix.cibles, idxBot), nouvelleDecouverte };
           rendreCarteJoueeCentre();
           rendreActions();
           UI._botPlanifieLe = Date.now();
@@ -8747,11 +8747,19 @@ function texteCentreCarte(def) {
   return reste.charAt(0).toUpperCase() + reste.slice(1);
 }
 
+/* Nom court pour l'affichage central : les bots ont déjà chacun un nom unique
+   (Pyros, Cyber, Spark), le suffixe « · Bot N » ne fait que prendre de la place. */
+function nomCourtDresseur(nom) {
+  return String(nom || "").replace(/ · Bot \d+$/, "");
+}
+
 function rendreCarteJoueeCentre() {
   const zone = $("carte-jouee-centre");
   if (!zone || !UI.etat) return;
   let carte = null;
   let auteur = null;
+  let auteurIdx = null;
+  let cibleIdx = null;
   let nouvelleDecouverte = false;
   // Dès qu’une carte est réellement en réponse, cet état fait autorité sur
   // l’aperçu transitoire du bot.
@@ -8760,6 +8768,8 @@ function rendreCarteJoueeCentre() {
     if (cadre && cadre.parIdx !== UI.monIdx) {
       carte = cadre.carte;
       auteur = UI.etat.joueurs[cadre.parIdx];
+      auteurIdx = cadre.parIdx;
+      cibleIdx = cibleAttaque(defCarte(cadre.carte), cadre.cibles, cadre.parIdx);
     }
   } else if (UI._botAnnonce && UI.etat.phase === "jeu") {
     const annonce = UI._botAnnonce;
@@ -8769,6 +8779,8 @@ function rendreCarteJoueeCentre() {
       if (carteAnnoncee) {
         carte = carteAnnoncee;
         auteur = joueurAnnonce;
+        auteurIdx = annonce.idx;
+        cibleIdx = Number.isInteger(annonce.cibleIdx) ? annonce.cibleIdx : null;
         nouvelleDecouverte = Boolean(UI.tutoriel && annonce.nouvelleDecouverte);
       }
     }
@@ -8780,12 +8792,21 @@ function rendreCarteJoueeCentre() {
       if (auteurDcj) {
         carte = { uid: dcj.uid, defId: dcj.defId };
         auteur = auteurDcj;
+        auteurIdx = dcj.parIdx;
+        cibleIdx = Number.isInteger(dcj.cibleIdx) ? dcj.cibleIdx : null;
       }
     }
   }
+  // La cible visée, quand la carte attaque quelqu'un d'autre : « Cyber vise Ysatis ».
+  const cible = auteur && Number.isInteger(cibleIdx) && cibleIdx !== auteurIdx ? UI.etat.joueurs[cibleIdx] : null;
+  const texteAction = auteur
+    ? (cible
+      ? echapper(nomCourtDresseur(auteur.nom)) + L(" vise ", " targets ") + echapper(nomCourtDresseur(cible.nom))
+      : echapper(nomCourtDresseur(auteur.nom)) + L(" joue", " plays"))
+    : "";
   zone.classList.toggle("nouvelle-decouverte", nouvelleDecouverte);
   zone.innerHTML = carte && auteur
-    ? '<span class="apercu-centre-texte">' + (nouvelleDecouverte ? '<strong>' + L("Nouvelle carte à découvrir", "New card to discover") + '</strong><br>' : '') + echapper(auteur.nom) + L(" joue", " plays") + '</span>' + carteHTML(carte, nouvelleDecouverte ? {} : { texteCourt: texteCentreCarte(defCarte(carte)) })
+    ? '<span class="apercu-centre-texte">' + (nouvelleDecouverte ? '<strong>' + L("Nouvelle carte à découvrir", "New card to discover") + '</strong><br>' : '') + texteAction + '</span>' + carteHTML(carte, nouvelleDecouverte ? {} : { texteCourt: texteCentreCarte(defCarte(carte)) })
     : "";
 }
 
