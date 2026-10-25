@@ -2124,7 +2124,6 @@ function normaliserEtat(etat) {
   etat.equipeGagnante = Number.isInteger(etat.equipeGagnante) ? Math.max(0, Math.min(1, etat.equipeGagnante)) : null;
   etat.gameId = String(etat.gameId || uidCourt()).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 64) || uidCourt();
   etat.dragonsRencontres = enTableau(etat.dragonsRencontres).filter((id)=>{const def=definitionParId(id);return def&&estLicorne(def.type);}).slice(0,50);
-  etat.meteoBonusUtilise = Boolean(etat.meteoBonusUtilise);
   etat.meteo = meteoParId(etat.meteo) ? etat.meteo : null;
   etat.tirageThemesChoisis = Boolean(etat.tirageThemesChoisis);
   etat.themePlateau = THEMES_PLATEAU.some((theme) => theme.id === etat.themePlateau) ? etat.themePlateau : tirerThemePlateau();
@@ -2258,7 +2257,6 @@ function nouvellePartie(participants, options) {
     equipes2v2: Boolean(reglages.equipes2v2 && joueurs.length === 4),
     equipeGagnante: null,
     dragonsRencontres: [],
-    meteoBonusUtilise: false,
     meteo: tirerMeteo(),
     modeEclair: Boolean(reglages.modeEclair),
     difficulteBot: difficulteBotValide(reglages.difficulteBot) ? reglages.difficulteBot : "normal",
@@ -2371,8 +2369,8 @@ const MESSAGES_JOURNAL = {
     en: () => "🎲 Each Trainer rolls the die: the lowest result will go first.",
   },
   weather_start: {
-    fr: (p) => { const m=meteoParId(p.code); return m ? m.icone+" Météo du repaire : "+m.fr+". Chaque Dresseur pioche 1 carte quand son premier dragon "+nomCouleurDragon(m.couleur).toLowerCase()+" entre dans son repaire pendant le tour." : ""; },
-    en: (p) => { const m=meteoParId(p.code); return m ? m.icone+" Lair Weather: "+m.en+". Each Trainer draws 1 card when their first "+nomCouleurDragon(m.couleur)+" dragon enters their lair during the turn." : ""; },
+    fr: (p) => { const m=meteoParId(p.code); return m ? m.icone+" Météo du repaire : "+m.fr+". Chaque Dresseur pioche 1 carte par dragon "+nomCouleurDragon(m.couleur).toLowerCase()+" qui entre dans son repaire pendant le tour." : ""; },
+    en: (p) => { const m=meteoParId(p.code); return m ? m.icone+" Lair Weather: "+m.en+". Each Trainer draws 1 card per "+nomCouleurDragon(m.couleur)+" dragon that enters their lair during the turn." : ""; },
   },
   weather_bonus: {
     fr: (p) => { const m=meteoParId(p.code); return (m?m.icone:"✦")+" La météo renforce le dragon de "+p.nom+" : pioche 1 carte !"; },
@@ -2792,7 +2790,6 @@ function debutTour(etat) {
 
   etat.phase = "jeu";
   etat.carteJouee = false; // nouveau tour → on peut rejouer une carte
-  etat.meteoBonusUtilise = false;
   etat.derniereCarteContree = false;
   etat.tourCommenceLe = Date.now();
   etat.numeroTour += 1;
@@ -3327,15 +3324,14 @@ function terminerReponse(etat) {
 /* ------------------------- Application des cartes -------------------- */
 
 /* Fait entrer une licorne dans l'écurie (avec piège Boue Collante). */
-/* Bonus météo : le premier dragon de la couleur favorisée qui entre dans le
-   repaire pendant le tour du Dresseur fait piocher 1 carte (une fois par tour). */
+/* Bonus météo : chaque dragon de la couleur favorisée qui entre dans le
+   repaire pendant le tour du Dresseur fait piocher 1 carte. */
 function traiterEntreeDragon(etat, idxJoueur, instance) {
   if (!etat || idxJoueur !== etat.tour) return;
   const couleur = couleurDragonDe(instance);
   if (!couleur) return;
   const meteo = meteoParId(etat.meteo);
-  if (meteo && meteo.couleur === couleur && !etat.meteoBonusUtilise) {
-    etat.meteoBonusUtilise = true;
+  if (meteo && meteo.couleur === couleur) {
     piocherCartes(etat, idxJoueur, 1);
     journal(etat, "weather_bonus", { nom: etat.joueurs[idxJoueur].nom, code: meteo.id });
   }
@@ -5700,7 +5696,7 @@ function ouvrirInstructions() {
         '<p><strong>Golden Dragon:</strong> its Golden Purification is unstoppable — no one can roar against it.</p>' +
         '<p><strong>Pack Roar:</strong> your cards cannot be cancelled by a Roar during your next 2 turns.</p>' +
         '<h4>Weather bonus</h4>' +
-        '<ul><li>Each game favors one color. On your turn, your first dragon of that color to enter your lair draws 1 card (once per turn).</li></ul>' +
+        '<ul><li>Each game favors one color. On your turn, every dragon of that color to enter your lair draws 1 card.</li></ul>' +
         '<h4>Modes</h4>' +
         '<ul>' +
           '<li><strong>Tutorial:</strong> learn with Pyros. <strong>Play solo:</strong> vs 1-3 bots.</li>' +
@@ -5737,7 +5733,7 @@ function ouvrirInstructions() {
         '<p><strong>Dragon Doré :</strong> sa Purification dorée est inarrêtable — personne ne peut rugir contre elle.</p>' +
         '<p><strong>Rugissement de meute :</strong> tes cartes ne peuvent pas être annulées par un Rugissement pendant tes 2 prochains tours.</p>' +
         '<h4>Bonus météo</h4>' +
-        '<ul><li>À chaque partie, la météo favorise une couleur. À ton tour, ton premier dragon de cette couleur qui entre dans ton repaire te fait piocher 1 carte (une fois par tour).</li></ul>' +
+        '<ul><li>À chaque partie, la météo favorise une couleur. À ton tour, chaque dragon de cette couleur qui entre dans ton repaire te fait piocher 1 carte.</li></ul>' +
         '<h4>Modes</h4>' +
         '<ul>' +
           '<li><strong>Tutoriel :</strong> apprends avec Pyros. <strong>Jouer en solo :</strong> contre 1 à 3 bots.</li>' +
@@ -8211,7 +8207,7 @@ function choixBotPour(def, idxBot) {
     const instAdverse = UI.etat.joueurs[adverse.joueur].ecurie.find((c) => c.uid === adverse.uid);
     if (instMienne && instAdverse && defCarte(instMienne).type === "bebe" && defCarte(instAdverse).type === "bebe") {
       const meteo = meteoParId(UI.etat.meteo);
-      if (!meteo || adverse.couleur !== meteo.couleur || UI.etat.meteoBonusUtilise) return { valide: false };
+      if (!meteo || adverse.couleur !== meteo.couleur) return { valide: false };
     }
     return { valide: true, cibles: { mienne: mienne.uid, adverse } };
   }
@@ -8294,7 +8290,7 @@ function scoreActionBot(option, idxBot) {
     score += 14;
     const couleur = couleurDragonDe(option.carte);
     const meteo = meteoParId(UI.etat.meteo);
-    if (meteo && couleur === meteo.couleur && !UI.etat.meteoBonusUtilise) score += 4;
+    if (meteo && couleur === meteo.couleur) score += 4;
   }
   if (def.id === "appel-bebes") score += 12;
   if (def.id === "potion-energie") score += 9;
@@ -8709,7 +8705,7 @@ function rendreThemePlateau() {
   }
   if (meteo) {
     const nomMeteo = enAnglais() ? meteo.en : meteo.fr;
-    const effetMeteo = L("Premier dragon "+nomCouleurDragon(meteo.couleur).toLowerCase()+" de chaque Dresseur : pioche +1", "Each Trainer’s first "+nomCouleurDragon(meteo.couleur)+" dragon: draw +1");
+    const effetMeteo = L("Chaque dragon "+nomCouleurDragon(meteo.couleur).toLowerCase()+" : pioche +1", "Every "+nomCouleurDragon(meteo.couleur)+" dragon: draw +1");
     html += '<span class="badge-meteo" style="--meteo-couleur:'+COULEURS_DRAGON_HEX[meteo.couleur]+'">'+meteo.icone+' '+L("Météo · ","Weather · ")+echapper(nomMeteo)+' · '+echapper(nomCouleurDragon(meteo.couleur))+'<span class="badge-meteo-effet">'+echapper(effetMeteo)+'</span></span>';
   }
   if (UI.etat.equipes2v2) html += '<span class="badge-theme">' + L("Équipe 2v2 · 8 dans un repaire", "2v2 Team · 8 in one lair") + '</span>';
