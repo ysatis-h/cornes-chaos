@@ -7091,6 +7091,8 @@ function demarrerTutorielDefis() {
     donnerCarteTutoriel(etat, 1, "nuage-grognon").uid,
     donnerCarteTutoriel(etat, 1, "nuage-grognon").uid,
     donnerCarteTutoriel(etat, 1, "tornade-paillettes").uid,
+    donnerCarteTutoriel(etat, 1, "bebe-licorne").uid,
+    donnerCarteTutoriel(etat, 1, "bebe-licorne").uid,
   ]);
   // Mains de 7 cartes pile, comme une vraie partie : les cartes de leçon
   // remplacent des cartes au hasard au lieu de s'ajouter aux 7 distribuées.
@@ -7149,6 +7151,16 @@ function jouerTourPyrosDefis(etat, idxBot) {
         if (choix && choix.valide && choix.cibles) cibles = choix.cibles;
       } catch (e) {}
       jouerCarte(etat, idxBot, mag.uid, cibles);
+      rendreTout();
+      return;
+    }
+  }
+  // Tours libres de Pyros (entre les défis 3-4 et 4-5) : il joue un Bébé
+  // Dragon, sans effet, pour que son repaire progresse comme dans une vraie partie.
+  if (!etat.carteJouee && (T.etape === 4 || (T.etape === 5 && !T.nuagePose))) {
+    const bebe = etat.joueurs[idxBot].main.find(function(c) { return c.defId === "bebe-licorne"; });
+    if (bebe) {
+      jouerCarte(etat, idxBot, bebe.uid);
       rendreTout();
       return;
     }
