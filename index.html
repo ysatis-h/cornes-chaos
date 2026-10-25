@@ -369,6 +369,7 @@ html, body {
 .carte-gelee .carte-illustration::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(173,216,230,.45),rgba(135,206,235,.55));pointer-events:none;border-radius:inherit}
 .badge-gele{position:absolute;top:6px;right:6px;z-index:2;background:rgba(135,206,235,.92);color:#0b3d62;font-weight:800;font-size:.78rem;padding:2px 8px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .carte-non-jouable { opacity: 0.55; }
+.carte-tutoriel { outline: 3px solid var(--rose-fonce); outline-offset: 2px; animation: pulse 1.6s ease-in-out infinite; }
 
 /* ------------------------------- Modales --------------------------- */
 .modal-cachee { display: none; }
@@ -2959,11 +2960,24 @@ function peutJouer(etat, idxJoueur, instance) {
   if (def.type === "riposte") return false; // seulement en réponse
   // L'Appel reste en main tant qu'il n'y a aucun Dragonneau à aller chercher.
   if (def.id === "appel-bebes" && !bebeAdverseDisponible(etat, idxJoueur)) return false;
+  // Tutoriel en défis : seule la carte demandée par l'étape peut être jouée.
+  // Étape 2 (rugir) : aucun jeu normal, il faut terminer son tour pour que Pyros joue.
+  if (typeof UI !== "undefined" && UI.tutoDefis && !UI.tutoDefis.termine && idxJoueur === UI.monIdx) {
+    const etape = UI.tutoDefis.etape;
+    if (etape === 1 && def.type !== "bebe") return false;
+    if (etape === 2) return false;
+    if (etape === 3 && def.id !== "pluie-etoiles") return false;
+  }
   return true;
 }
 
 function raisonCarteNonJouable(etat, idxJoueur, instance) {
   const def = defCarte(instance);
+  if (typeof UI !== "undefined" && UI.tutoDefis && !UI.tutoDefis.termine && idxJoueur === UI.monIdx) {
+    if (UI.tutoDefis.etape === 1) return L("Le tutoriel te demande de jouer ton Bébé Dragon.", "The tutorial asks you to play your Baby Dragon.");
+    if (UI.tutoDefis.etape === 2) return L("Termine ton tour pour que Pyros joue son sabotage.", "End your turn so Pyros can play his sabotage.");
+    if (UI.tutoDefis.etape === 3) return L("Le tutoriel te demande de jouer ta carte Magie « Pluie d'Écailles ».", "The tutorial asks you to play your Magic card \"Scale Shower\".");
+  }
   if (Number.isInteger(instance.toursGeles) && instance.toursGeles > 0) return L("Cette carte est gelée pour encore " + instance.toursGeles + " tour" + (instance.toursGeles > 1 ? "s" : "") + ".", "This card is frozen for " + instance.toursGeles + " more turn" + (instance.toursGeles > 1 ? "s" : "") + ".");
   if (def.type === "riposte") return L("Cette carte se joue seulement en réponse à une carte adverse.", "This card can only be played in response to an opponent’s card.");
   if (def.id === "appel-bebes" && !bebeAdverseDisponible(etat, idxJoueur)) return L("Aucun adversaire n'a de Bébé Dragon dans son repaire. Cette carte demeure dans ta main.", "No opponent has a Baby Dragon in their lair. This card stays in your hand.");
@@ -6049,6 +6063,7 @@ function carteHTML(instance, options) {
   const classes = ["carte", typeInfo.classe];
   if (options.selectionnee) classes.push("carte-selectionnee");
   if (options.nonJouable) classes.push("carte-non-jouable");
+  if (options.tutorielDemande) classes.push("carte-tutoriel");
   const gele = Number.isInteger(instance.toursGeles) && instance.toursGeles > 0;
   if (gele) classes.push("carte-gelee");
   if (options.compacte) classes.push("carte-main");
@@ -7061,11 +7076,23 @@ function demarrerTutorielDefis() {
   }
   etat.joueurs[1].main = mainPyrosSansRiposte;
   // Mains truquées pour les 3 défis.
-  donnerCarteTutoriel(etat, 0, "bebe-licorne", { couleurDragon: COULEURS_AVATAR[0] });
-  donnerCarteTutoriel(etat, 0, "pluie-etoiles");
-  donnerCarteTutoriel(etat, 0, "riposte");
-  donnerCarteTutoriel(etat, 1, "nuage-grognon");
-  donnerCarteTutoriel(etat, 1, "nuage-grognon");
+  const lecons = new Set([
+    donnerCarteTutoriel(etat, 0, "bebe-licorne", { couleurDragon: COULEURS_AVATAR[0] }).uid,
+    donnerCarteTutoriel(etat, 0, "pluie-etoiles").uid,
+    donnerCarteTutoriel(etat, 0, "riposte").uid,
+    donnerCarteTutoriel(etat, 1, "nuage-grognon").uid,
+    donnerCarteTutoriel(etat, 1, "nuage-grognon").uid,
+  ]);
+  // Mains de 7 cartes pile, comme une vraie partie : les cartes de leçon
+  // remplacent des cartes au hasard au lieu de s'ajouter aux 7 distribuées.
+  for (const joueur of etat.joueurs) {
+    while (joueur.main.length > 7) {
+      const idx = joueur.main.findIndex((c) => !lecons.has(c.uid));
+      if (idx < 0) break;
+      etat.pioche.push(joueur.main.splice(idx, 1)[0]);
+    }
+    while (joueur.main.length < 7 && etat.pioche.length > 0) joueur.main.push(etat.pioche.pop());
+  }
   // Pas de lancer de dé : le joueur commence, phase de jeu directe.
   etat.phase = "jeu";
   etat.tour = 0;
@@ -7088,7 +7115,7 @@ function compterMagiesDefausse(etat) {
 function jouerTourPyrosDefis(etat, idxBot) {
   const T = UI.tutoDefis;
   if (!T || T.termine || etat.phase !== "jeu" || etat.tour !== idxBot) { rendreTout(); return; }
-  if (!etat.carteJouee && T.etape === 3 && !T.sabotageJoue) {
+  if (!etat.carteJouee && T.etape === 2 && !T.sabotageJoue) {
     const sab = etat.joueurs[idxBot].main.find(function(c) { return c.defId === "nuage-grognon"; });
     if (sab) {
       let cibles = { joueur: 0 };
@@ -7120,17 +7147,17 @@ function texteDefiPyros() {
     titre: L("Défi 1 — Invoquer", "Challenge 1 — Summon"),
     texte: L("Bienvenue, Dresseur ! Pour gagner une vraie partie, il faut 8 dragons dans ton repaire. Pour commencer, joue ton Bébé Dragon : touche-le dans ta main pour lire sa carte, puis joue-le !", "Welcome, Trainer! To win a real game, you need 8 dragons in your lair. Let's start: play your Baby Dragon — tap it in your hand to read its card, then play it!"),
   };
-  if (T.etape === 2) return {
-    titre: L("Défi 2 — Carte spéciale", "Challenge 2 — Special card"),
-    texte: L("Bravo ! Maintenant, joue ta carte Magie « Pluie d'Écailles » : défausse 1 carte de ta main, puis pioche 2 cartes. Ensuite, termine ton tour !", "Well done! Now play your Magic card \"Scale Shower\": discard 1 card from your hand, then draw 2 cards. Then end your turn!"),
+  if (T.etape === 2 && !T.sabotageJoue) return {
+    titre: L("Défi 2 — Rugir", "Challenge 2 — Roar"),
+    texte: L("Deuxième défi : à mon tour, je vais jouer un sabotage contre toi, juste pour t'entraîner. Quand ça arrive, joue ton Rugissement pour l'annuler ! Termine ton tour pour que je joue.", "Second challenge: on my turn, I'll play a sabotage on you, just for practice. When it happens, play your Roar to cancel it! End your turn so I can play."),
   };
-  if (T.etape === 3 && !T.sabotageJoue) return {
-    titre: L("Défi 3 — Rugir", "Challenge 3 — Roar"),
-    texte: L("Dernier défi : à mon tour, je vais jouer un sabotage contre toi, juste pour t'entraîner. Quand ça arrive, joue ton Rugissement pour l'annuler ! Termine ton tour pour que je joue.", "Last challenge: on my turn, I'll play a sabotage on you, just for practice. When it happens, play your Roar to cancel it! End your turn so I can play."),
+  if (T.etape === 2) return {
+    titre: L("Défi 2 — Rugir", "Challenge 2 — Roar"),
+    texte: L("Oh non, mon Nuage de Cendres te vise ! Vite : joue ton Rugissement pour l'annuler. Prends ton temps, il n'y a pas de chrono !", "Oh no, my Ash Cloud is targeting you! Quick: play your Roar to cancel it. Take your time, there's no timer!"),
   };
   if (T.etape === 3) return {
-    titre: L("Défi 3 — Rugir", "Challenge 3 — Roar"),
-    texte: L("Oh non, mon Nuage de Cendres te vise ! Vite : joue ton Rugissement pour l'annuler. Prends ton temps, il n'y a pas de chrono !", "Oh no, my Ash Cloud is targeting you! Quick: play your Roar to cancel it. Take your time, there's no timer!"),
+    titre: L("Défi 3 — Carte spéciale", "Challenge 3 — Special card"),
+    texte: L("Bravo ! Dernier défi : joue ta carte Magie « Pluie d'Écailles » : défausse 1 carte de ta main, puis pioche 2 cartes. Ensuite, termine ton tour !", "Well done! Last challenge: play your Magic card \"Scale Shower\": discard 1 card from your hand, then draw 2 cards. Then end your turn!"),
   };
   return null;
 }
@@ -7145,13 +7172,10 @@ function verifierDefisTutoriel() {
   const joueur = etat.joueurs[0];
   if (T.etape === 1) {
     if (joueur.ecurie.length > T.ecurieDebut) { T.etape = 2; rendreTout(); }
-  } else if (T.etape === 2) {
-    const magiesJouees = compterMagiesDefausse(etat) > T.magiesDefausseDebut;
-    if (magiesJouees && etat.phase === "jeu" && !etat.choix && !etat.pending) { T.etape = 3; rendreTout(); }
-  } else if (T.etape === 3 && T.sabotageJoue && T.sabotageUid && etat.phase === "jeu" && !etat.pending) {
+  } else if (T.etape === 2 && T.sabotageJoue && T.sabotageUid && etat.phase === "jeu" && !etat.pending) {
     const annule = etat.defausse.some(function(c) { return c.uid === T.sabotageUid; });
     const enPlace = joueur.sabotages.some(function(c) { return c.uid === T.sabotageUid; });
-    if (annule) { terminerDefisTutoriel(); }
+    if (annule) { T.etape = 3; rendreTout(); }
     else if (enPlace) {
       // Le joueur a laissé passer : Pyros réessaie au prochain tour, sans punition.
       T.sabotageJoue = false;
@@ -7165,6 +7189,9 @@ function verifierDefisTutoriel() {
       donnerCarteTutoriel(etat, 1, "nuage-grognon");
       rendreTout();
     }
+  } else if (T.etape === 3) {
+    const magiesJouees = compterMagiesDefausse(etat) > T.magiesDefausseDebut;
+    if (magiesJouees && etat.phase === "jeu" && !etat.choix && !etat.pending) { terminerDefisTutoriel(); }
   }
 }
 
@@ -9146,6 +9173,16 @@ function rendreMonEcurie() {
   activerLectureCartesEnJeu($("zone-moi"));
 }
 
+/* Carte demandée par l'étape en cours du tutoriel en défis (mise en évidence). */
+function carteDemandeeTutoriel(inst) {
+  const T = (typeof UI !== "undefined") ? UI.tutoDefis : null;
+  if (!T || T.termine) return false;
+  const def = defCarte(inst);
+  if (T.etape === 1) return def.type === "bebe";
+  if (T.etape === 3) return def.id === "pluie-etoiles";
+  return false;
+}
+
 function rendreMain() {
   const etat = UI.etat;
   // En local, on cache la main pendant une réponse Hennissement
@@ -9162,6 +9199,7 @@ function rendreMain() {
       compacte: true,
       selectionnee: UI.selectionUid === inst.uid,
       nonJouable: !jouable,
+      tutorielDemande: carteDemandeeTutoriel(inst),
       interactive: true,
       ariaLabel: L("Agrandir la carte ", "Enlarge the card ") + nomCarte(def),
     });
