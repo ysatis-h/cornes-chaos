@@ -7937,7 +7937,9 @@ function demarrerWatchdog() {
     const age = Date.now() - (cadre.t || 0);
     const acteur = etat.pending.pile[0].parIdx;
     const responsable = UI.monIdx === acteur || (UI.monIdx === 0 && age > 45000);
-    if (age > 25000 && responsable) {
+    // Tutoriel en défis, étape Rugir : le rugissement est obligatoire, on ne
+    // laisse jamais passer à sa place (même après 45 s).
+    if (age > 25000 && responsable && !(UI.tutoDefis && !UI.tutoDefis.termine && UI.tutoDefis.etape === 2)) {
       const r = repondantActuel(etat);
       if (r !== null && r !== undefined) {
         repondre(etat, r, null);
@@ -9771,18 +9773,22 @@ function ouvrirModalReponse(cadre, rIdx) {
   const expireLe=delaiRiposte?(Number(cadre.t)||Date.now())+delaiRiposte:0;
   const secondesInitiales=Math.max(0,Math.ceil((expireLe-Date.now())/1000));
 
-  let html = "<h3>✦ " + L("Veux-tu rugir ?", "Do you want to roar?") + (delaiRiposte?' <span id="compte-riposte" class="compte-riposte" aria-label="'+echapper(L("secondes restantes","seconds remaining"))+'">'+secondesInitiales+'</span>':'') + "</h3>" +
+  // Tutoriel en défis, étape Rugir : le rugissement est obligatoire — laisser
+  // passer ne ferait que recommencer la leçon en boucle (et bloquer ses tours).
+  const rugirObligatoire = (typeof UI !== "undefined" && UI.tutoDefis && !UI.tutoDefis.termine && UI.tutoDefis.etape === 2 && hennissements.length > 0);
+  let html = "<h3>✦ " + (rugirObligatoire ? L("À toi de rugir !", "Your turn to roar!") : L("Veux-tu rugir ?", "Do you want to roar?")) + (delaiRiposte?' <span id="compte-riposte" class="compte-riposte" aria-label="'+echapper(L("secondes restantes","seconds remaining"))+'">'+secondesInitiales+'</span>':'') + "</h3>" +
     "<p><strong>" + echapper(auteur) + "</strong> " + L("joue :", "plays:") + "</p>" +
     '<div class="apercu-carte">' + carteHTML(cadre.carte) + "</div>" +
-    '<div class="effet-imminent"><strong>' + L("Si tu laisses passer, c'est ", "If you let it through, ") + echapper(nomCourtDresseur(auteur)) + L(" qui en profitera :", " will benefit:") + '</strong><span>' +
-      echapper(descriptionEffetEnAttente(etat, cadre)) + '</span></div>' +
-    "<p>" + echapper(repondant.nom) + L(", joue un Rugissement pour annuler cette carte, ou laisse l’effet se résoudre.", ", play a Roar to cancel this card, or let its effect resolve.") + "</p>" +
+    (rugirObligatoire ? "" : '<div class="effet-imminent"><strong>' + L("Si tu laisses passer, c'est ", "If you let it through, ") + echapper(nomCourtDresseur(auteur)) + L(" qui en profitera :", " will benefit:") + '</strong><span>' +
+      echapper(descriptionEffetEnAttente(etat, cadre)) + '</span></div>') +
+    "<p>" + echapper(repondant.nom) + (rugirObligatoire ? L(", joue ton Rugissement pour annuler cette carte.", ", play your Roar to cancel this card.") : L(", joue un Rugissement pour annuler cette carte, ou laisse l’effet se résoudre.", ", play a Roar to cancel this card, or let its effect resolve.")) + "</p>" +
     '<div class="liste-cibles">';
   if (hennissements.length > 0) {
     const libelle = L("✦ RUGIR !", "✦ ROAR!");
     html += '<button class="gros-bouton bouton-primaire bouton-hennir" data-uid="' + hennissements[0].uid + '">' + libelle + "</button>";
   }
-  html += '<button id="modal-passer-rep" class="gros-bouton bouton-secondaire">' + L("Laisser passer", "Let it through") + '</button></div>';
+  if (!rugirObligatoire) html += '<button id="modal-passer-rep" class="gros-bouton bouton-secondaire">' + L("Laisser passer", "Let it through") + '</button>';
+  html += '</div>';
   ouvrirModal(html);
 
   const traiter = (uid) => {
@@ -9805,7 +9811,8 @@ function ouvrirModalReponse(cadre, rIdx) {
   $("modal-contenu").querySelectorAll(".bouton-hennir").forEach((btn) => {
     btn.addEventListener("click", () => traiter(btn.dataset.uid));
   });
-  $("modal-passer-rep").addEventListener("click", () => traiter(null));
+  const btnPasserRep = $("modal-passer-rep");
+  if (btnPasserRep) btnPasserRep.addEventListener("click", () => traiter(null));
   if(delaiRiposte){
     if(UI._riposteInterval)window.clearInterval(UI._riposteInterval);
     UI._riposteCadreId=String(cadre.carte.uid)+":"+rIdx+":"+String(cadre.t||"");
