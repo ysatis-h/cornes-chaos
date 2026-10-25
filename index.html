@@ -8503,7 +8503,7 @@ function rendreResultatFinalDes() {
   if(!etat||!tirage||!tirage.ordreFinal)return;
   const ordre=tirage.ordreFinal;
   const gagnant=ordre[0];
-  const resultats=ordre.map((r,index)=>'<div class="de-resultat"><span>'+(index===0?'✦ ':'')+echapper(r.nom)+'</span><strong>'+r.valeur+'</strong></div>').join("");
+  const resultats=ordre.map((r,index)=>'<div class="de-resultat"><span>'+(index+1)+'. '+echapper(r.nom)+'</span><strong>'+r.valeur+'</strong></div>').join("");
   ouvrirModal('<h3>'+L("Le dé a choisi !","The die has chosen!")+'</h3><div class="de-scene"><div class="de-visuel" aria-hidden="true">'+gagnant.valeur+'</div><p><strong>'+echapper(gagnant.nom)+'</strong> '+L("commence la partie.","starts the game.")+'</p><div class="de-resultats">'+resultats+'</div></div>');
   $("bandeau-tour").innerHTML='<span>'+L("Ordre déterminé","Order decided")+'</span>';
   rendreScoresPartie();
@@ -9686,7 +9686,7 @@ function ouvrirModalReponse(cadre, rIdx) {
   let html = "<h3>✦ " + L("Veux-tu rugir ?", "Do you want to roar?") + (delaiRiposte?' <span id="compte-riposte" class="compte-riposte" aria-label="'+echapper(L("secondes restantes","seconds remaining"))+'">'+secondesInitiales+'</span>':'') + "</h3>" +
     "<p><strong>" + echapper(auteur) + "</strong> " + L("joue :", "plays:") + "</p>" +
     '<div class="apercu-carte">' + carteHTML(cadre.carte) + "</div>" +
-    '<div class="effet-imminent"><strong>' + L("Si tu laisses passer", "If you let it through") + '</strong><span>' +
+    '<div class="effet-imminent"><strong>' + L("Si tu laisses passer, c'est ", "If you let it through, ") + echapper(nomCourtDresseur(auteur)) + L(" qui en profitera :", " will benefit:") + '</strong><span>' +
       echapper(descriptionEffetEnAttente(etat, cadre)) + '</span></div>' +
     "<p>" + echapper(repondant.nom) + L(", joue un Rugissement pour annuler cette carte, ou laisse l’effet se résoudre.", ", play a Roar to cancel this card, or let its effect resolve.") + "</p>" +
     '<div class="liste-cibles">';
