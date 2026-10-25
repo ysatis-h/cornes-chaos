@@ -474,7 +474,7 @@ body{min-width:0}
 .carte{width:100%;min-width:0;min-height:188px;border-radius:17px;scroll-snap-align:none;text-align:left;align-items:flex-start;padding:11px}
 .carte-emoji{align-self:center}
 .carte-type{left:10px;right:auto}
-/* La couleur utile aux combos reste un simple repère, sans recolorer le cadre. */
+/* La couleur reste un simple repère (utile pour la météo), sans recolorer le cadre. */
 .couleur-dragon-point{position:absolute;z-index:3;top:9px;left:9px;width:8px;height:8px;border-radius:50%;background:var(--couleur-dragon);box-shadow:0 0 0 1px rgba(20,37,61,.32),0 1px 2px rgba(20,37,61,.18)}
 .carte-main>.couleur-dragon-point{top:5px;left:5px;width:7px;height:7px}
 .carte-zoom>.couleur-dragon-point{top:13px;left:13px;width:10px;height:10px}
@@ -1766,7 +1766,7 @@ const METEOS_REPAIRE = [
 ];
 function meteoParId(id){return METEOS_REPAIRE.find((meteo)=>meteo.id===id)||null;}
 function tirerMeteo(){return METEOS_REPAIRE[Math.floor(Math.random()*METEOS_REPAIRE.length)].id;}
-const TYPES_EFFETS_VISUELS = ["pluie-etoiles","tornade-paillettes","lasso-magique","grand-menage","echange-royal","potion-energie","flamme-purificatrice","appel-bebes","rugissement-meute","arc-en-ciel-protecteur","fer-a-cheval","clochette-magique","boue-collante","miroir-fele","combo-couleur"];
+const TYPES_EFFETS_VISUELS = ["pluie-etoiles","tornade-paillettes","lasso-magique","grand-menage","echange-royal","potion-energie","flamme-purificatrice","appel-bebes","rugissement-meute","arc-en-ciel-protecteur","fer-a-cheval","clochette-magique","boue-collante","miroir-fele"];
 function ajouterEffetVisuel(etat,type,parIdx,details){
   if(!etat||!TYPES_EFFETS_VISUELS.includes(type))return;
   const maintenant=Date.now();
@@ -2124,8 +2124,6 @@ function normaliserEtat(etat) {
   etat.equipeGagnante = Number.isInteger(etat.equipeGagnante) ? Math.max(0, Math.min(1, etat.equipeGagnante)) : null;
   etat.gameId = String(etat.gameId || uidCourt()).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 64) || uidCourt();
   etat.dragonsRencontres = enTableau(etat.dragonsRencontres).filter((id)=>{const def=definitionParId(id);return def&&estLicorne(def.type);}).slice(0,50);
-  etat.couleursEntreesTour = enTableau(etat.couleursEntreesTour).filter((id)=>IDS_COULEURS_DRAGON.includes(id)).slice(0,16);
-  etat.combosDeclenchesTour = enTableau(etat.combosDeclenchesTour).filter((id)=>IDS_COULEURS_DRAGON.includes(id)).slice(0,7);
   etat.meteoBonusUtilise = Boolean(etat.meteoBonusUtilise);
   etat.meteo = meteoParId(etat.meteo) ? etat.meteo : null;
   etat.tirageThemesChoisis = Boolean(etat.tirageThemesChoisis);
@@ -2260,8 +2258,6 @@ function nouvellePartie(participants, options) {
     equipes2v2: Boolean(reglages.equipes2v2 && joueurs.length === 4),
     equipeGagnante: null,
     dragonsRencontres: [],
-    couleursEntreesTour: [],
-    combosDeclenchesTour: [],
     meteoBonusUtilise: false,
     meteo: tirerMeteo(),
     modeEclair: Boolean(reglages.modeEclair),
@@ -2377,10 +2373,6 @@ const MESSAGES_JOURNAL = {
   weather_start: {
     fr: (p) => { const m=meteoParId(p.code); return m ? m.icone+" Météo du repaire : "+m.fr+". Chaque Dresseur pioche 1 carte quand son premier dragon "+nomCouleurDragon(m.couleur).toLowerCase()+" entre dans son repaire pendant le tour." : ""; },
     en: (p) => { const m=meteoParId(p.code); return m ? m.icone+" Lair Weather: "+m.en+". Each Trainer draws 1 card when their first "+nomCouleurDragon(m.couleur)+" dragon enters their lair during the turn." : ""; },
-  },
-  color_combo: {
-    fr: (p) => "◇ Combo "+nomCouleurDragon(p.code)+" de "+p.nom+" : pioche 1 carte !",
-    en: (p) => "◇ "+p.nom+" makes a "+nomCouleurDragon(p.code)+" combo: draw 1 card!",
   },
   weather_bonus: {
     fr: (p) => { const m=meteoParId(p.code); return (m?m.icone:"✦")+" La météo renforce le dragon de "+p.nom+" : pioche 1 carte !"; },
@@ -2800,8 +2792,6 @@ function debutTour(etat) {
 
   etat.phase = "jeu";
   etat.carteJouee = false; // nouveau tour → on peut rejouer une carte
-  etat.couleursEntreesTour = [];
-  etat.combosDeclenchesTour = [];
   etat.meteoBonusUtilise = false;
   etat.derniereCarteContree = false;
   etat.tourCommenceLe = Date.now();
@@ -3337,23 +3327,12 @@ function terminerReponse(etat) {
 /* ------------------------- Application des cartes -------------------- */
 
 /* Fait entrer une licorne dans l'écurie (avec piège Boue Collante). */
+/* Bonus météo : le premier dragon de la couleur favorisée qui entre dans le
+   repaire pendant le tour du Dresseur fait piocher 1 carte (une fois par tour). */
 function traiterEntreeDragon(etat, idxJoueur, instance) {
   if (!etat || idxJoueur !== etat.tour) return;
   const couleur = couleurDragonDe(instance);
   if (!couleur) return;
-  etat.couleursEntreesTour = enTableau(etat.couleursEntreesTour);
-  etat.combosDeclenchesTour = enTableau(etat.combosDeclenchesTour);
-  const deja = etat.couleursEntreesTour.filter((id) => id === couleur).length;
-  // Les Dragons Jumeaux comptent comme deux dragons : leurs deux entrées de
-  // même couleur doivent donc pouvoir déclencher le combo à elles seules.
-  const quantite = Math.max(1, Number(defCarte(instance).valeur) || 1);
-  for (let i = 0; i < quantite; i++) etat.couleursEntreesTour.push(couleur);
-  if (deja < 2 && deja + quantite >= 2 && !etat.combosDeclenchesTour.includes(couleur)) {
-    etat.combosDeclenchesTour.push(couleur);
-    piocherCartes(etat, idxJoueur, 1);
-    ajouterEffetVisuel(etat, "combo-couleur", idxJoueur, { couleur });
-    journal(etat, "color_combo", { nom: etat.joueurs[idxJoueur].nom, code: couleur });
-  }
   const meteo = meteoParId(etat.meteo);
   if (meteo && meteo.couleur === couleur && !etat.meteoBonusUtilise) {
     etat.meteoBonusUtilise = true;
@@ -5469,7 +5448,7 @@ function synchroniserSons(etat) {
   const nouveaux = nouvellesEntrees.map(typeSonJournal).filter(Boolean).slice(-4);
   nouveaux.forEach((type, i) => Sons.jouer(type, i * 0.18));
   nouvellesEntrees
-    .filter((entree) => entree && typeof entree === "object" && ["color_combo", "weather_bonus", "player_forfeit", "steal", "trade"].includes(entree.cle))
+    .filter((entree) => entree && typeof entree === "object" && ["weather_bonus", "player_forfeit", "steal", "trade"].includes(entree.cle))
     .forEach((entree, i) => window.setTimeout(() => {
       if (UI.etat !== etat) return;
       if (["steal", "trade"].includes(entree.cle)) toastJournal(entree, 4600);
@@ -5720,8 +5699,8 @@ function ouvrirInstructions() {
         '<p>A Roar cancels the card just played (one Roar max per card). If an attack targets you, only you may roar. Effect-less dragons cannot be roared — except at Match point.</p>' +
         '<p><strong>Golden Dragon:</strong> its Golden Purification is unstoppable — no one can roar against it.</p>' +
         '<p><strong>Pack Roar:</strong> your cards cannot be cancelled by a Roar during your next 2 turns.</p>' +
-        '<h4>Weather & combos</h4>' +
-        '<ul><li>Random Lair Weather each game: draw 1 card when your first dragon of the favored color arrives.</li><li>2 dragons of the same color in one turn = draw 1 card (once per color per turn).</li></ul>' +
+        '<h4>Weather bonus</h4>' +
+        '<ul><li>Each game favors one color. On your turn, your first dragon of that color to enter your lair draws 1 card (once per turn).</li></ul>' +
         '<h4>Modes</h4>' +
         '<ul>' +
           '<li><strong>Tutorial:</strong> learn with Pyros. <strong>Play solo:</strong> vs 1-3 bots.</li>' +
@@ -5757,8 +5736,8 @@ function ouvrirInstructions() {
         '<p>Un Rugissement annule la carte qui vient d’être jouée (un seul par carte). Si une attaque te vise, seul toi peux rugir. Les dragons sans effet ne peuvent pas être contrés — sauf en Balle de match.</p>' +
         '<p><strong>Dragon Doré :</strong> sa Purification dorée est inarrêtable — personne ne peut rugir contre elle.</p>' +
         '<p><strong>Rugissement de meute :</strong> tes cartes ne peuvent pas être annulées par un Rugissement pendant tes 2 prochains tours.</p>' +
-        '<h4>Météo et combos</h4>' +
-        '<ul><li>Météo du repaire aléatoire : pioche 1 carte quand ton premier dragon de la couleur favorisée arrive.</li><li>2 dragons de la même couleur en un tour = pioche 1 carte (une fois par couleur par tour).</li></ul>' +
+        '<h4>Bonus météo</h4>' +
+        '<ul><li>À chaque partie, la météo favorise une couleur. À ton tour, ton premier dragon de cette couleur qui entre dans ton repaire te fait piocher 1 carte (une fois par tour).</li></ul>' +
         '<h4>Modes</h4>' +
         '<ul>' +
           '<li><strong>Tutoriel :</strong> apprends avec Pyros. <strong>Jouer en solo :</strong> contre 1 à 3 bots.</li>' +
@@ -8316,7 +8295,6 @@ function scoreActionBot(option, idxBot) {
     const couleur = couleurDragonDe(option.carte);
     const meteo = meteoParId(UI.etat.meteo);
     if (meteo && couleur === meteo.couleur && !UI.etat.meteoBonusUtilise) score += 4;
-    if (couleur && enTableau(UI.etat.couleursEntreesTour).includes(couleur) && !enTableau(UI.etat.combosDeclenchesTour).includes(couleur)) score += 6;
   }
   if (def.id === "appel-bebes") score += 12;
   if (def.id === "potion-energie") score += 9;
@@ -8592,7 +8570,6 @@ function synchroniserDragonDoreTire(etat) {
 }
 
 function libelleEffetVisuel(effet){
-  if(effet.type==="combo-couleur")return L("Fusion "+nomCouleurDragon(effet.couleur)+" — combo arc-en-ciel !",nomCouleurDragon(effet.couleur)+" merge — rainbow combo!");
   const def=definitionParId(effet.type);
   return def?nomCarte(def):L("Magie draconique","Dragon magic");
 }
@@ -8617,7 +8594,6 @@ function contenuEffetVisuel(effet){
     case "clochette-magique": return '<i class="onde"></i><i class="onde o2"></i><b class="cloche">🔔</b>';
     case "boue-collante": return '<i class="marais"></i>'+dragonGraphiqueEffet("dragon-effet","licorne-classique","marais");
     case "miroir-fele": return '<i class="miroir"></i><b class="fissure f1"></b>'+(effet.niveau>1?'<b class="fissure f2"></b>':'')+(effet.niveau>2?'<b class="fissure f3"></b>':'');
-    case "combo-couleur": return '<i class="arc-combo"></i><b class="combo-carte c1"></b><b class="combo-carte c2"></b>';
     default:return "";
   }
 }
