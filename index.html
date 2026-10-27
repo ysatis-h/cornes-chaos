@@ -367,7 +367,11 @@ html, body {
 @keyframes pulse { 50% { outline-color: var(--violet-fonce); } }
 .carte-gelee{position:relative}
 .carte-gelee .carte-illustration::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(173,216,230,.45),rgba(135,206,235,.55));pointer-events:none;border-radius:inherit}
-.badge-gele{position:absolute;top:6px;right:6px;z-index:2;background:rgba(135,206,235,.92);color:#0b3d62;font-weight:800;font-size:.78rem;padding:2px 8px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.badge-gele{position:absolute;top:6px;right:6px;z-index:3;background:rgba(135,206,235,.92);color:#0b3d62;font-weight:800;font-size:.78rem;padding:2px 8px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.flocon-gele{position:absolute;inset:0;z-index:2;display:grid;place-items:center;pointer-events:none}
+.flocon-gele svg{width:78%;height:78%;filter:drop-shadow(0 2px 6px rgba(11,61,98,.35));opacity:.96}
+.carte-mini .flocon-gele{inset:auto;top:2px;left:50%;transform:translateX(-50%);width:46px;height:44px}
+.carte-mini .flocon-gele svg{width:100%;height:100%}
 .carte-non-jouable { opacity: 0.55; }
 .carte-tutoriel { outline: 3px solid var(--rose-fonce); outline-offset: 2px; animation: pulse 1.6s ease-in-out infinite; }
 
@@ -5542,14 +5546,21 @@ function afficherToastElement(el, duree) {
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(() => el.classList.add("toast-cachee"), duree || 2600);
 }
+// Affichage sans emoji, pour le journal et le rectangle du bas seulement :
+// les emojis des cartes elles-mêmes ne sont pas touchés.
+function sansEmoji(texte) {
+  return String(texte || "")
+    .replace(/(?:[#*0-9]\uFE0F?\u20E3)|(?:\p{Regional_Indicator}{2})|[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\uFE0E\uFE0F\u200D\u2600-\u27BF\u2B00-\u2BFF]/gu, "")
+    .replace(/\s{2,}/g, " ").trim();
+}
 function toast(message, duree) {
   const el = $("toast");
-  el.textContent = message;
+  el.textContent = sansEmoji(message);
   afficherToastElement(el, duree);
 }
 function toastJournal(entree, duree) {
   const el = $("toast");
-  el.innerHTML = rendreEntreeJournalHTML(entree);
+  el.innerHTML = sansEmoji(rendreEntreeJournalHTML(entree));
   afficherToastElement(el, duree);
 }
 
@@ -6033,6 +6044,7 @@ function activerPalettes(racine) {
   });
 }
 
+const FLOCON_GELE_SVG = '<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#eaf7ff" stroke-width="7" stroke-linecap="round"><line x1="50" y1="6" x2="50" y2="94"/><line x1="12" y1="28" x2="88" y2="72"/><line x1="88" y1="28" x2="12" y2="72"/></g><g fill="#eaf7ff"><circle cx="50" cy="6" r="5"/><circle cx="50" cy="94" r="5"/><circle cx="12" cy="28" r="5"/><circle cx="88" cy="72" r="5"/><circle cx="88" cy="28" r="5"/><circle cx="12" cy="72" r="5"/><circle cx="50" cy="50" r="9"/></g></svg>';
 function carteHTML(instance, options) {
   options = options || {};
   const def = defCarte(instance);
@@ -6059,9 +6071,11 @@ function carteHTML(instance, options) {
       ? ' data-uid="' + instance.uid + '" role="button" tabindex="0" aria-label="' + L("Lire l’effet de ", "Read the effect of ") + nomAffiche + '"'
       : "";
     const chapeau=options.anniversaire&&estLicorne(def.type)?'<span class="chapeau-fete" aria-hidden="true"></span>':'';
+    const geleMini = Number.isInteger(instance.toursGeles) && instance.toursGeles > 0;
     return (
       '<div class="carte-mini ' + (options.classeMini || "") + (options.interactive ? ' carte-mini-interactive' : '') + (chapeau ? ' avec-chapeau' : '') + '" style="' + styleArt + '" title="' + nomAffiche + '"' + miniInteractif + '>' +
       pointCouleur + chapeau + illustrationDragonHTML(def) +
+      (geleMini ? '<div class="flocon-gele" aria-hidden="true">' + FLOCON_GELE_SVG + '</div>' : "") +
       '<div class="mini-nom">' + nomAffiche.split(" ")[0] + "</div>" + duree +
       "</div>"
     );
@@ -6079,7 +6093,7 @@ function carteHTML(instance, options) {
   return (
     '<div class="' + classes.join(" ") + '" data-uid="' + instance.uid + '"' + interactif + '>' +
     pointCouleur + '<div class="carte-illustration ' + motif + '" style="' + styleArt + '">' +
-    illustrationDragonHTML(def) + "</div>" +
+    illustrationDragonHTML(def) + (gele ? '<div class="flocon-gele" aria-hidden="true">' + FLOCON_GELE_SVG + '</div>' : "") + "</div>" +
     (gele ? '<div class="badge-gele" aria-hidden="true">❄️ ' + instance.toursGeles + '</div>' : "") +
     '<div class="carte-nom">' + nomAffiche + "</div>" +
     '<div class="carte-texte">' + texteAffiche + "</div>" +
@@ -9437,7 +9451,7 @@ function traduireJournal(message) {
     const params = { ...(entree.params || {}) };
     ["nom", "cible", "adversaire"].forEach((cle) => { if (params[cle]) params[cle] = nomCourtDresseur(params[cle]); });
     if (Array.isArray(params.ordre)) params.ordre = params.ordre.map((r) => ({ ...r, nom: nomCourtDresseur(r.nom) }));
-    return modele[LANGUE](params);
+    return sansEmoji(modele[LANGUE](params));
   }
   // Compatibilité avec le journal textuel des parties créées avant cette version.
   // Les anciens journaux pouvaient contenir les deux emojis dragon Unicode :
@@ -9501,7 +9515,7 @@ function traduireJournal(message) {
     }
   }
   DEFINITIONS_CARTES.forEach((def) => { m = m.split(def.nom).join(nomCarte(def)); });
-  return m;
+  return sansEmoji(m);
 }
 
 function rendreEntreeJournalHTML(message) {
