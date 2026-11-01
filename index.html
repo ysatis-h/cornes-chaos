@@ -1296,6 +1296,14 @@ body.mode-immersif #ecran-jeu .zone-actions .gros-bouton{margin:4px auto;padding
 body.mode-2v2 #ecran-jeu .zone-adversaires{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:350px){body.mode-2v2 #ecran-jeu .zone-adversaires{grid-template-columns:1fr}}
 
+
+/* ===== Responsive 2026-11-01 : bureau centre et plafonne, mobile anti-debordement ===== */
+#app{margin-inline:auto}
+.modal-contenu{width:100%;max-width:640px;margin-inline:auto}
+@media (min-width:1280px){body.mode-immersif #ecran-jeu{max-width:1200px;margin-inline:auto}}
+.ami-identite strong{overflow-wrap:anywhere}
+.badge-couleur-cible{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.classement-identite,.classement-nom-ligne,.score-partie{min-width:0}
 </style>
   <!-- Configuration Firebase officielle du projet -->
   <script src="assets/firebase-config.js"></script>
