@@ -5074,15 +5074,41 @@ function sauvegarderSession() {
     } : null,
   };
   try { history.replaceState({ cornChaos: reprise }, document.title); } catch (e) { /* historique indisponible */ }
+  /* Copie durable (parties locales seulement) : retrouver sa partie après
+     avoir fermé l'application, pas seulement après un rafraîchissement. */
+  try {
+    if (UI.mode === "local" && UI.etat.phase !== "terminee") {
+      window.localStorage.setItem("cornes-chaos-partie-locale", JSON.stringify(reprise));
+    } else {
+      window.localStorage.removeItem("cornes-chaos-partie-locale");
+    }
+  } catch (e) { /* stockage indisponible ou plein : la reprise par rafraîchissement reste active */ }
 }
 
 function effacerSession() {
   try { history.replaceState({}, document.title); } catch (e) { /* historique indisponible */ }
+  try { window.localStorage.removeItem("cornes-chaos-partie-locale"); } catch (e) { /* stockage indisponible */ }
 }
 
 function restaurerSession() {
-  const reprise = history.state && history.state.cornChaos;
+  let reprise = history.state && history.state.cornChaos;
+  let depuisStockage = false;
+  if (!reprise) {
+    try {
+      const brute = window.localStorage.getItem("cornes-chaos-partie-locale");
+      if (brute) { reprise = JSON.parse(brute); depuisStockage = true; }
+    } catch (e) { reprise = null; }
+  }
   if (!reprise || reprise.version !== 2 || !reprise.etat) return false;
+  if (depuisStockage && reprise.mode === "online") return false;
+  if (depuisStockage) {
+    let valide = false;
+    try { valide = integriteEtatValide(reprise.etat); } catch (e) { valide = false; }
+    if (!valide) {
+      try { window.localStorage.removeItem("cornes-chaos-partie-locale"); } catch (e) { /* stockage indisponible */ }
+      return false;
+    }
+  }
   UI.mode = reprise.mode === "online" ? "online" : "local";
   UI.etat = normaliserEtat(reprise.etat);
   UI.monIdx = Number.isInteger(reprise.monIdx) ? reprise.monIdx : 0;
@@ -5110,9 +5136,12 @@ function restaurerSession() {
     toast(L("Partie retrouvée après le rafraîchissement ✦", "Game restored after refresh ✦"));
     return true;
   }
+  if (depuisStockage && UI.etat.phase === "jeu" && Number.isFinite(UI.etat.tourCommenceLe) && !Number.isFinite(UI.etat.tourPauseLe) && Date.now() > UI.etat.tourCommenceLe + dureeTourMs(UI.etat)) {
+    UI.etat.tourCommenceLe = Date.now();
+  }
   reinitialiserSonsJournal(UI.etat);
   commencerTourLocal(true);
-  toast(L("Partie retrouvée après le rafraîchissement ✦", "Game restored after refresh ✦"));
+  toast(depuisStockage ? L("Partie retrouvée après la fermeture ✦", "Game restored after closing ✦") : L("Partie retrouvée après le rafraîchissement ✦", "Game restored after refresh ✦"));
   return true;
 }
 
