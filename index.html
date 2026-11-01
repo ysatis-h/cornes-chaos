@@ -895,6 +895,7 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 .reaction-live:empty{display:none}
 .reaction-live .reaction-bulle{display:inline-grid;grid-template-columns:auto auto;align-items:center;gap:6px;padding:5px 7px 5px 10px;border-radius:16px;background:rgba(255,255,255,.94);border:1px solid var(--ligne);box-shadow:0 7px 18px rgba(13,44,67,.16);animation:reaction-arrive .22s ease-out}
 .reaction-live .reaction-auteur{max-width:10ch;color:#3c315e;line-height:1.15;overflow-wrap:anywhere}
+.reaction-live .reaction-texte{max-width:24ch;color:#3c315e;font-weight:800;font-size:.8rem;line-height:1.25;overflow-wrap:anywhere}
 .reaction-live .autocollant-dragon{width:76px;height:67px}
 #zone-moi>.reaction-live{top:34px;right:auto;left:70px}
 @keyframes reaction-arrive{from{opacity:0;transform:scale(.72) rotate(-5deg)}to{opacity:1;transform:none}}
@@ -5540,11 +5541,79 @@ function synchroniserSons(etat) {
       if (["steal", "trade"].includes(entree.cle)) toastJournal(entree, 4600);
       else toast(traduireJournal(entree), entree.cle === "player_forfeit" ? 4800 : 2900);
     }, i * 3100));
+  traiterReactionsBots(nouvellesEntrees, etat);
   UI._journalSons = courant.slice();
 }
 
 function reinitialiserSonsJournal(etat) {
   UI._journalSons = enTableau(etat && etat.journal).slice();
+}
+
+/* Réactions des bots (parties locales, hors tutoriel) : de courtes répliques
+   de personnalité affichées dans leur bulle de réaction quand ils frappent,
+   encaissent un coup ou approchent de la victoire. */
+const REPLIQUES_BOTS = {
+  Pyros: {
+    inflige: [["Ça brûle, ça brûle !", "Feel the burn!"], ["Héhé... chaud devant !", "Hehe... coming in hot!"]],
+    subit: [["Aïe ! Tu vas me le payer !", "Ow! You will pay for that!"], ["Mes écailles ! Pas mes écailles !", "My scales! Not my scales!"]],
+    menace: [["Plus que quelques braises...", "Just a few more embers..."], ["Je sens la victoire d'ici !", "I can smell victory from here!"]],
+  },
+  Cyber: {
+    inflige: [["Cible acquise. Dommages optimaux.", "Target acquired. Optimal damage."], ["Probabilité de défaite adverse : en hausse.", "Opponent defeat probability: rising."]],
+    subit: [["Interférence inattendue. Je m'adapte.", "Unexpected interference. Adapting."], ["Erreur... recalcul en cours.", "Error... recalculating."]],
+    menace: [["Simulation terminée : je gagne.", "Simulation complete: I win."], ["Résultat prévisible.", "Predictable outcome."]],
+  },
+  Spark: {
+    inflige: [["ZAP ! Dans le mille !", "ZAP! Bullseye!"], ["T'as vu cette vitesse ?!", "Did you see that speed?!"]],
+    subit: [["Bzzzt... court-circuit !", "Bzzzt... short circuit!"], ["Aïe aïe aïe !", "Ow ow ow!"]],
+    menace: [["Je suis CHARGÉ à bloc !", "I am FULLY charged!"], ["Ça va pétiller !", "Sparks will fly!"]],
+  },
+  generique: {
+    inflige: [["Héhé !", "Hehe!"], ["Bien joué... de ma part.", "Well played... by me."]],
+    subit: [["Hé ! Pas juste !", "Hey! Not fair!"], ["Aïe !", "Ow!"]],
+    menace: [["Je m'approche de la victoire !", "Victory is getting closer!"], ["Plus que quelques dragons...", "Just a few more dragons..."]],
+  },
+};
+const CLES_ATTAQUE_BOT = ["sabotage", "freeze", "destroy", "steal", "steal_baby", "trade", "marsh"];
+function personnageBot(joueur) {
+  const base = String((joueur && joueur.nom) || "").split("·")[0].trim();
+  return REPLIQUES_BOTS[base] ? base : "generique";
+}
+function traiterReactionsBots(nouvellesEntrees, etat) {
+  if (UI.mode !== "local" || UI.tutoriel || !etat || etat.phase === "terminee") return;
+  if (UI._reactionGameId !== etat.gameId) { UI._reactionGameId = etat.gameId; UI._menacesBotVues = {}; UI._derniereRepliqueBot = 0; }
+  const maintenant = Date.now();
+  if (maintenant - (UI._derniereRepliqueBot || 0) < 5000) return;
+  const parNom = (nom) => etat.joueurs.findIndex((j) => j.nom === nom);
+  let choix = null;
+  for (const entree of nouvellesEntrees) {
+    if (!entree || typeof entree !== "object") continue;
+    const params = entree.params || {};
+    if (CLES_ATTAQUE_BOT.includes(entree.cle)) {
+      const idxActeur = parNom(params.nom);
+      const idxCible = parNom(params.cible || params.adversaire);
+      if (idxActeur >= 0 && etat.joueurs[idxActeur].estBot && idxCible >= 0 && !etat.joueurs[idxCible].estBot) choix = { idx: idxActeur, genre: "inflige", type: "rire" };
+      else if (idxCible >= 0 && etat.joueurs[idxCible].estBot && idxActeur >= 0 && !etat.joueurs[idxActeur].estBot) choix = { idx: idxCible, genre: "subit", type: "surprise" };
+      if (choix) break;
+    }
+    if (entree.cle === "dragon_enters" || entree.cle === "baby_enters") {
+      const idx = parNom(params.nom);
+      if (idx >= 0 && etat.joueurs[idx].estBot) {
+        const valeur = valeurEcurie(etat, idx);
+        const cleMenace = etat.joueurs[idx].pid + ":" + valeur;
+        if (valeur >= LICORNES_POUR_GAGNER - 2 && !(UI._menacesBotVues || {})[cleMenace]) {
+          UI._menacesBotVues[cleMenace] = true;
+          choix = { idx, genre: "menace", type: "feu" };
+        }
+      }
+      if (choix) break;
+    }
+  }
+  if (!choix || Math.random() > 0.85) return;
+  const lignes = REPLIQUES_BOTS[personnageBot(etat.joueurs[choix.idx])][choix.genre];
+  const ligne = lignes[Math.floor(Math.random() * lignes.length)];
+  UI._derniereRepliqueBot = maintenant;
+  etat.reaction = { type: choix.type, emoji: REACTIONS_RAPIDES[choix.type].emoji, parIdx: choix.idx, id: maintenant, texte: L(ligne[0], ligne[1]) };
 }
 
 /* Dans certains webviews de bureau, la barre de défilement répond au glisser,
@@ -9138,7 +9207,8 @@ function rendreReactions() {
   if (!zone) return;
 
   UI._reactionVue = id;
-  zone.innerHTML = '<span class="reaction-bulle"><span class="reaction-auteur">' + echapper(joueur.nom) + '</span>' + autocollantReactionHTML(type) + '</span>';
+  const texteReaction = typeof reaction.texte === "string" && reaction.texte ? '<span class="reaction-texte">' + echapper(reaction.texte) + '</span>' : autocollantReactionHTML(type);
+  zone.innerHTML = '<span class="reaction-bulle"><span class="reaction-auteur">' + echapper(joueur.nom) + '</span>' + texteReaction + '</span>';
   UI._reactionTimer = window.setTimeout(() => {
     if (UI._reactionVue !== id) return;
     effacerAffichageReactions();
