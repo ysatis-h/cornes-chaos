@@ -780,6 +780,7 @@ body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
 
 /* Tirage au sort et lecture des actions automatiques. */
 .de-scene{display:grid;gap:14px;justify-items:center;margin:8px 0 2px}
+.de-annonce{color:#b8860b}
 .de-visuel{display:grid;place-items:center;width:96px;height:96px;border:3px solid #59439f;border-radius:22px;background:linear-gradient(150deg,#8673cc 0%,#59439f 100%);color:var(--or);font:800 3.2rem/1 "Fredoka",sans-serif;box-shadow:7px 7px 0 var(--or)}
 .de-resultats{display:grid;gap:7px;width:100%;margin:8px 0;text-align:left}
 .de-resultat{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 11px;border:1.5px solid #b7a6e8;border-radius:11px;background:#fff}
@@ -8683,7 +8684,7 @@ function rendreResultatFinalDes() {
   const ordre=tirage.ordreFinal;
   const gagnant=ordre[0];
   const resultats=ordre.map((r,index)=>{const joueur=etat.joueurs.find((j)=>j.pid===r.pid);return '<div class="de-resultat'+(index===0?" premier":"")+'"><span>'+(joueur?avatarHTML(joueur.couleurAvatar):"")+(index+1)+'. '+echapper(r.nom)+'</span><strong>'+r.valeur+'</strong></div>';}).join("");
-  ouvrirModal('<h3>'+L("Le dé a choisi !","The die has chosen!")+'</h3><div class="de-scene"><div class="de-visuel" aria-hidden="true">'+gagnant.valeur+'</div><p><strong>'+echapper(gagnant.nom)+'</strong> '+L("commence la partie.","starts the game.")+'</p><div class="de-resultats">'+resultats+'</div></div>');
+  ouvrirModal('<h3>'+L("Le dé a choisi !","The die has chosen!")+'</h3><div class="de-scene"><div class="de-visuel" aria-hidden="true">'+gagnant.valeur+'</div><p class="de-annonce"><strong>'+echapper(gagnant.nom)+'</strong> '+L("commence la partie.","starts the game.")+'</p><div class="de-resultats">'+resultats+'</div></div>');
   $("bandeau-tour").innerHTML='<span>'+L("Ordre déterminé","Order decided")+'</span>';
   rendreScoresPartie();
   $("zone-adversaires").innerHTML="";
