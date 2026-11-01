@@ -1311,8 +1311,8 @@ const TYPES_CARTE = {
 const DEFINITIONS_CARTES = [
   // ---------------------------- DRAGONNEAUX (x14 : 2 par couleur) --------------------------
   {
-    id: "bebe-licorne", nom: "Bébé Dragon", type: "bebe", emoji: "🥚", couleur: "violet",
-    texte: "Une minuscule boule d'écailles. Ses éternuements font déjà des étincelles.",
+    id: "bebe-licorne", nom: "Dragonneau", type: "bebe", emoji: "🥚", couleur: "violet",
+    texte: "",
     effet: { kind: "aucun" }, exemplaires: 14,
   },
 
@@ -1382,7 +1382,7 @@ const DEFINITIONS_CARTES = [
 
   // ---------------------- DRAGONS SAISONNIERS ---------------------------
   { id: "dragon-neiges", nom: "Dragon des Neiges", type: "licorne", emoji: "❄️", couleur: "bleu", texte: "Quand il entre dans ton repaire : pioche 1 carte dans son sillage de flocons.", effet: { kind: "piocher", n: 1, declencheur: "entree" }, exemplaires: 0, saison: "hiver" },
-  { id: "dragon-bourgeons", nom: "Dragon des Bourgeons", type: "licorne", emoji: "🌸", couleur: "vert", texte: "Quand il entre dans ton repaire : cherche un Bébé Dragon dans la pioche et accueille-le.", effet: { kind: "chercher-bebe", declencheur: "entree" }, exemplaires: 0, saison: "printemps" },
+  { id: "dragon-bourgeons", nom: "Dragon des Bourgeons", type: "licorne", emoji: "🌸", couleur: "vert", texte: "Quand il entre dans ton repaire : cherche un Dragonneau dans la pioche et accueille-le.", effet: { kind: "chercher-bebe", declencheur: "entree" }, exemplaires: 0, saison: "printemps" },
   { id: "dragon-solaire", nom: "Dragon Solaire", type: "licorne", emoji: "☀️", couleur: "orange", texte: "Quand il entre dans ton repaire : protège ton territoire jusqu’à ton prochain tour.", effet: { kind: "proteger", declencheur: "entree" }, exemplaires: 0, saison: "ete" },
   { id: "dragon-brumes", nom: "Dragon des Brumes", type: "licorne", emoji: "🍂", couleur: "rouge", texte: "Quand il entre dans ton repaire : chaque adversaire défausse 1 carte au hasard.", effet: { kind: "defausser-adversaires", n: 1, declencheur: "entree" }, exemplaires: 0, saison: "automne" },
 
@@ -1427,7 +1427,7 @@ const DEFINITIONS_CARTES = [
   },
   {
     id: "appel-bebes", nom: "Appel des Dragonneaux", type: "magie", emoji: "🥚",
-    texte: "Vole un Bébé Dragon du repaire d'un adversaire et mets-le dans ta main.",
+    texte: "Vole un Dragonneau du repaire d'un adversaire et mets-le dans ta main.",
     effet: { kind: "voler-bebe-main", cible: "bebe-adverse" }, exemplaires: 2,
   },
 
@@ -1483,7 +1483,7 @@ const DEFINITIONS_CARTES = [
 /* ---------------------------- Français / English ------------------- */
 let LANGUE = "fr";
 const CARTES_EN = {
-  "bebe-licorne": { nom: "Baby Dragon", texte: "A tiny ball of scales. Its sneezes already throw sparks." },
+  "bebe-licorne": { nom: "Hatchling", texte: "" },
   "licorne-classique": { nom: "Ember Dragon", texte: "Sacrifice this dragon: draw 2 cards." },
   "licorne-givre": { nom: "Frost Dragon", texte: "When it enters your lair: choose a dragon in an opponent's lair. It is frozen for 2 turns and doesn't count in its lair." },
   "licorne-arc-en-ciel": { nom: "Prismatic Dragon", texte: "When it enters your lair: draw 2 cards." },
@@ -1497,7 +1497,7 @@ const CARTES_EN = {
   "licorne-fantome": { nom: "Ghost Dragon", texte: "This dragon cannot be destroyed. Even flames pass right through it." },
   "licorne-jumelle": { nom: "Twin Dragons", texte: "Count as 2 dragons toward victory. Twice the fire." },
   "dragon-neiges": { nom: "Snow Dragon", texte: "When it enters your lair: draw 1 card in its trail of snowflakes." },
-  "dragon-bourgeons": { nom: "Bud Dragon", texte: "When it enters your lair: find a Baby Dragon in the deck and welcome it." },
+  "dragon-bourgeons": { nom: "Bud Dragon", texte: "When it enters your lair: find a Hatchling in the deck and welcome it." },
   "dragon-solaire": { nom: "Solar Dragon", texte: "When it enters your lair: protect your territory until your next turn." },
   "dragon-brumes": { nom: "Mist Dragon", texte: "When it enters your lair: each opponent discards 1 random card." },
   "dragon-dore": { nom: "Golden Dragon", texte: "Ultra rare: when it enters your lair, its purifying light removes all enemy upgrades and all sabotages on your dragons." },
@@ -1508,7 +1508,7 @@ const CARTES_EN = {
   "echange-royal": { nom: "Pact of Two Lairs", texte: "Trade one of your dragons for an opponent’s dragon." },
   "potion-energie": { nom: "Life Elixir", texte: "Take another turn right after this one. This Elixir does not use the card play from your current turn." },
   "flamme-purificatrice": { nom: "Purifying Flame", texte: "Destroy a sabotage in play. Cannot be cancelled by Ash Cloud." },
-  "appel-bebes": { nom: "Call of the Hatchlings", texte: "Steal a Baby Dragon from an opponent's lair and put it in your hand." },
+  "appel-bebes": { nom: "Call of the Hatchlings", texte: "Steal a Hatchling from an opponent's lair and put it in your hand." },
   "arc-en-ciel-protecteur": { nom: "Prismatic Aegis", texte: "Your dragons cannot be destroyed during your next 2 turns." },
   "fer-a-cheval": { nom: "Lucky Treasure", texte: "Draw 1 extra card at the start of each of your turns." },
   "clochette-magique": { nom: "Lair Bell", texte: "When an opponent steals or destroys one of your dragons: draw 2 cards." },
@@ -1833,7 +1833,7 @@ const THEMES_PLATEAU = [
 ];
 const DEFIS_QUOTIDIENS = [
   { id: "sans-magie", fr: "Sans magie : les cartes Magie sont bannies de la pioche.", en: "No Magic: Magic cards are banned from the deck.", typesBannis: ["magie"] },
-  { id: "dragon-bonus", fr: "Double éclosion : chaque Dresseur commence avec 2 Bébés Dragons.", en: "Double Hatch: every Trainer starts with 2 Baby Dragons.", bebeBonus: true },
+  { id: "dragon-bonus", fr: "Double éclosion : chaque Dresseur commence avec 2 Dragonneaux.", en: "Double Hatch: every Trainer starts with 2 Hatchlings.", bebeBonus: true },
   { id: "sans-amelioration", fr: "Territoires sauvages : les Améliorations sont bannies de la pioche.", en: "Wild Territories: Upgrades are banned from the deck.", typesBannis: ["amelioration"] },
   { id: "sans-mythique", fr: "Dragons ordinaires : les Dragons Mythiques sont bannis de la pioche.", en: "Everyday Dragons: Mythic Dragons are banned from the deck.", typesBannis: ["magique"] },
   { id: "petite-main", fr: "Petite main : chaque Dresseur commence avec 5 cartes au lieu de 7.", en: "Small Hand: every Trainer starts with 5 cards instead of 7.", cartesDepart: 5 },
@@ -2159,8 +2159,9 @@ function integriteEtatValide(etat) {
     vus.add(carte.uid);
     comptes.set(carte.defId, (comptes.get(carte.defId) || 0) + 1);
   }
+  const compensation = etat.defiQuotidien === "sans-mythique" ? COMPENSATION_SANS_MYTHIQUE : {};
   for (const def of toutesLesDefinitions()) {
-    if ((comptes.get(def.id) || 0) > maximumExemplaires(def)) return false;
+    if ((comptes.get(def.id) || 0) > maximumExemplaires(def) + (compensation[def.id] || 0)) return false;
   }
   return cartes.length <= taillePaquetMaximum() && etat.tour >= 0 && etat.tour < etat.joueurs.length;
 }
@@ -2168,6 +2169,11 @@ function integriteEtatValide(etat) {
 const LICORNES_POUR_GAGNER = 8;
 
 /* --------------------------- Création de partie --------------------- */
+
+/* Défi « Dragons ordinaires » (sans-mythique) : exemplaires de remplacement
+   ajoutés au paquet pour compenser les 10 Dragons Mythiques bannis —
+   5 Dragonneaux et 5 dragons classiques (3 Braises, 2 Givres). */
+const COMPENSATION_SANS_MYTHIQUE = { "bebe-licorne": 5, "licorne-classique": 3, "licorne-givre": 2 };
 
 /* Construit le paquet complet à partir des définitions (cards.js). */
 function construirePioche(defiId) {
@@ -2187,6 +2193,22 @@ function construirePioche(defiId) {
         instance.couleurDragon = COULEURS_AVATAR[IDS_COULEURS_DRAGON.indexOf(couleursBebes[i % couleursBebes.length])];
       }
       pioche.push(instance);
+    }
+  }
+  // Défi « Dragons ordinaires » : on remplace les Mythiques bannis par des
+  // Dragonneaux et des dragons classiques, pour garder un paquet complet.
+  if (defi && defi.id === "sans-mythique") {
+    const couleursBebes = ["violet", "rose", "turquoise", "vert", "orange", "rouge", "bleu"];
+    const nbBebesBase = definitionParId("bebe-licorne").exemplaires;
+    for (let i = 0; i < COMPENSATION_SANS_MYTHIQUE["bebe-licorne"]; i++) {
+      const instance = { uid: uidCourt(), defId: "bebe-licorne" };
+      instance.couleurDragon = COULEURS_AVATAR[IDS_COULEURS_DRAGON.indexOf(couleursBebes[(nbBebesBase + i) % couleursBebes.length])];
+      pioche.push(instance);
+    }
+    const classiques = ["licorne-classique", "licorne-givre"];
+    const totalClassiques = COMPENSATION_SANS_MYTHIQUE["licorne-classique"] + COMPENSATION_SANS_MYTHIQUE["licorne-givre"];
+    for (let i = 0; i < totalClassiques; i++) {
+      pioche.push({ uid: uidCourt(), defId: classiques[i % classiques.length] });
     }
   }
   const dragonDore = definitionParId("dragon-dore");
@@ -2222,7 +2244,7 @@ function nouvellePartie(participants, options) {
     };
   });
 
-  // Chaque joueur commence avec un Bébé Dragon assorti à la teinte de son avatar.
+  // Chaque joueur commence avec un Dragonneau assorti à la teinte de son avatar.
   for (const joueur of joueurs) {
     const idx = pioche.findIndex((c) => c.defId === "bebe-licorne");
     if (idx >= 0) {
@@ -2231,7 +2253,7 @@ function nouvellePartie(participants, options) {
       joueur.ecurie.push(bebe);
     }
   }
-  // Le défi Double éclosion offre un deuxième Bébé Dragon à chaque Dresseur.
+  // Le défi Double éclosion offre un deuxième Dragonneau à chaque Dresseur.
   if (defi && defi.bebeBonus) {
     for (const joueur of joueurs) {
       const idx = pioche.findIndex((c) => c.defId === "bebe-licorne");
@@ -2454,12 +2476,12 @@ const MESSAGES_JOURNAL = {
     en: (p) => "✨ " + p.nom + " lets a card go in the rain.",
   },
   steal_baby: {
-    fr: (p) => "🥚 " + p.nom + " vole un Bébé Dragon du repaire de " + p.cible + ".",
-    en: (p) => "🥚 " + p.nom + " steals a Baby Dragon from " + p.cible + " lair.",
+    fr: (p) => "🥚 " + p.nom + " vole un Dragonneau du repaire de " + p.cible + ".",
+    en: (p) => "🥚 " + p.nom + " steals a Hatchling from " + p.cible + " lair.",
   },
   baby_hand: {
-    fr: (p) => "🥚 " + p.nom + " trouve un Bébé Dragon et le prend en main.",
-    en: (p) => "🥚 " + p.nom + " finds a Baby Dragon and takes it in hand.",
+    fr: (p) => "🥚 " + p.nom + " trouve un Dragonneau et le prend en main.",
+    en: (p) => "🥚 " + p.nom + " finds a Hatchling and takes it in hand.",
   },
   aegis_fade: {
     fr: (p) => "💨 L’Égide Prismatique de " + p.nom + " se dissipe après tes " + p.nb + " tours.",
@@ -2584,12 +2606,12 @@ const MESSAGES_JOURNAL = {
     en: (p) => "⚗️ " + p.nom + " will take another turn!",
   },
   baby_enters: {
-    fr: (p) => "🥚 " + p.nom + " accueille un Bébé Dragon !",
-    en: (p) => "🥚 " + p.nom + " welcomes a Baby Dragon!",
+    fr: (p) => "🥚 " + p.nom + " accueille un Dragonneau !",
+    en: (p) => "🥚 " + p.nom + " welcomes a Hatchling!",
   },
   baby_empty: {
-    fr: () => "🥚 Plus aucun Bébé Dragon dans la pioche…",
-    en: () => "🥚 No Baby Dragons remain in the deck…",
+    fr: () => "🥚 Plus aucun Dragonneau dans la pioche…",
+    en: () => "🥚 No Hatchlings remain in the deck…",
   },
   destroy_bonus: {
     fr: (p) => "🥷 " + p.nom + " détruit « " + nomCarteJournal(p.defId) + " » !",
@@ -2981,7 +3003,7 @@ function peutJouer(etat, idxJoueur, instance) {
 function raisonCarteNonJouable(etat, idxJoueur, instance) {
   const def = defCarte(instance);
   if (typeof UI !== "undefined" && UI.tutoDefis && !UI.tutoDefis.termine && idxJoueur === UI.monIdx) {
-    if (UI.tutoDefis.etape === 1) return L("Le tutoriel te demande de jouer ton Bébé Dragon.", "The tutorial asks you to play your Baby Dragon.");
+    if (UI.tutoDefis.etape === 1) return L("Le tutoriel te demande de jouer ton Dragonneau.", "The tutorial asks you to play your Hatchling.");
     if (UI.tutoDefis.etape === 2) return L("Termine ton tour pour que Pyros joue son sabotage.", "End your turn so Pyros can play his sabotage.");
     if (UI.tutoDefis.etape === 3) return L("Le tutoriel te demande de jouer ton bonus « Trésor Chanceux ».", "The tutorial asks you to play your Bonus \"Lucky Treasure\".");
     if (UI.tutoDefis.etape === 4) return L("Le tutoriel te demande de jouer ta carte Magie « Pluie d'Écailles ».", "The tutorial asks you to play your Magic card \"Scale Shower\".");
@@ -2990,7 +3012,7 @@ function raisonCarteNonJouable(etat, idxJoueur, instance) {
   }
   if (Number.isInteger(instance.toursGeles) && instance.toursGeles > 0) return L("Cette carte est gelée pour encore " + instance.toursGeles + " tour" + (instance.toursGeles > 1 ? "s" : "") + ".", "This card is frozen for " + instance.toursGeles + " more turn" + (instance.toursGeles > 1 ? "s" : "") + ".");
   if (def.type === "riposte") return L("Cette carte se joue seulement en réponse à une carte adverse.", "This card can only be played in response to an opponent’s card.");
-  if (def.id === "appel-bebes" && !bebeAdverseDisponible(etat, idxJoueur)) return L("Aucun adversaire n'a de Bébé Dragon dans son repaire. Cette carte demeure dans ta main.", "No opponent has a Baby Dragon in their lair. This card stays in your hand.");
+  if (def.id === "appel-bebes" && !bebeAdverseDisponible(etat, idxJoueur)) return L("Aucun adversaire n'a de Dragonneau dans son repaire. Cette carte demeure dans ta main.", "No opponent has a Hatchling in their lair. This card stays in your hand.");
   if (cibleRequise(def) && nbCiblesValides(etat, idxJoueur, def) === 0) return L("Aucune cible valide pour cette carte. Elle demeure dans ta main.", "No valid target for this card. It stays in your hand.");
   if (etat.carteJouee && etat.tour === idxJoueur) return L("Tu as déjà joué ta carte pour ce tour.", "You have already played your card this turn.");
   if (etat.tour !== idxJoueur) return L("Tu pourras la jouer à ton tour.", "You can play it on your turn.");
@@ -5433,7 +5455,7 @@ function typeSonJournal(message) {
   if (/Tornade de Flammes|Élixir de vie/.test(message)) return "feu";
   if (/Marais Engloutissant|SPLAF/.test(message)) return "marais";
   if (/Souffle du Grand Dragon|Nuage de Cendres/.test(message)) return "vent";
-  if (/Bébé Dragon/.test(message) && /accueille/.test(message)) return "eclosion";
+  if (/Dragonneau/.test(message) && /accueille/.test(message)) return "eclosion";
   if (/rejoue|rejouera/.test(message)) return "feu";
   if (/Égide|protège|résiste/.test(message)) return "bouclier";
   if (/vole|échange/.test(message)) return "envol";
@@ -5710,7 +5732,7 @@ function ouvrirInstructions() {
       '<div class="instructions-jeu">' +
         '<p class="objectif">First to gather 8 dragons in their lair wins. Games last 10-15 mins.</p>' +
         '<h4>Getting started</h4>' +
-        '<p>Each Trainer starts with a Baby Dragon and 7 cards. Lowest die roll goes first.</p>' +
+        '<p>Each Trainer starts with a Hatchling and 7 cards. Lowest die roll goes first.</p>' +
         '<h4>On your turn</h4>' +
         '<ul>' +
           '<li>Draw 1 card if you have fewer than 7. Play 1 card max, or pass.</li>' +
@@ -5718,7 +5740,7 @@ function ouvrirInstructions() {
         '</ul>' +
         '<h4>Card types</h4>' +
         '<ul>' +
-          '<li><strong>Dragon:</strong> goes to your lair and counts toward victory (8 dragons to win). Its power triggers on arrival, if it has one — Baby Dragons have none.</li>' +
+          '<li><strong>Dragon:</strong> goes to your lair and counts toward victory (8 dragons to win). Its power triggers on arrival, if it has one — Hatchlings have none.</li>' +
           '<li><strong>Magic:</strong> immediate effect, then the card goes to the discard pile.</li>' +
           '<li><strong>Upgrade:</strong> stays in your lair and helps you while it\'s there (for example, drawing an extra card or protecting you).</li>' +
           '<li><strong>Sabotage:</strong> placed on an opponent\'s territory to hinder them (for example, cancelling their next Magic or trapping their dragons).</li>' +
@@ -5750,7 +5772,7 @@ function ouvrirInstructions() {
       '<div class="instructions-jeu">' +
         '<p class="objectif">Premier à réunir 8 dragons dans son repaire gagne. Parties de 10-15 mins.</p>' +
         '<h4>Pour commencer</h4>' +
-        '<p>Chaque Dresseur reçoit un Bébé Dragon et 7 cartes. Le plus petit lancer de dé commence.</p>' +
+        '<p>Chaque Dresseur reçoit un Dragonneau et 7 cartes. Le plus petit lancer de dé commence.</p>' +
         '<h4>À ton tour</h4>' +
         '<ul>' +
           '<li>Pioche 1 carte si tu en as moins de 7. Joue 1 carte max, ou passe.</li>' +
@@ -5758,7 +5780,7 @@ function ouvrirInstructions() {
         '</ul>' +
         '<h4>Types de cartes</h4>' +
         '<ul>' +
-          '<li><strong>Dragon :</strong> va dans ton repaire et compte pour gagner (8 dragons pour gagner). Son pouvoir se déclenche en arrivant, s\'il en a un — les Bébés Dragons n\'en ont pas.</li>' +
+          '<li><strong>Dragon :</strong> va dans ton repaire et compte pour gagner (8 dragons pour gagner). Son pouvoir se déclenche en arrivant, s\'il en a un — les Dragonneaux n\'en ont pas.</li>' +
           '<li><strong>Magie :</strong> effet immédiat, puis la carte va à la défausse.</li>' +
           '<li><strong>Amélioration / Bonus :</strong> reste dans ton repaire et t\'aide tant qu\'elle y est (par exemple, piocher une carte de plus ou te protéger).</li>' +
           '<li><strong>Sabotage :</strong> se place sur le territoire d\'un adversaire pour le gêner (par exemple, annuler sa prochaine Magie ou piéger ses dragons).</li>' +
@@ -6044,7 +6066,7 @@ function activerPalettes(racine) {
   });
 }
 
-const FLOCON_GELE_SVG = '<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#eaf7ff" stroke-width="7" stroke-linecap="round"><line x1="50" y1="6" x2="50" y2="94"/><line x1="12" y1="28" x2="88" y2="72"/><line x1="88" y1="28" x2="12" y2="72"/></g><g fill="#eaf7ff"><circle cx="50" cy="6" r="5"/><circle cx="50" cy="94" r="5"/><circle cx="12" cy="28" r="5"/><circle cx="88" cy="72" r="5"/><circle cx="88" cy="28" r="5"/><circle cx="12" cy="72" r="5"/><circle cx="50" cy="50" r="9"/></g></svg>';
+const FLOCON_GELE_SVG = '<svg viewBox="0 0 100 100" aria-hidden="true">' + '<g fill="rgba(255,255,255,.75)" stroke="rgba(255,255,255,.75)" stroke-width="9.5" stroke-linecap="round"><g transform="rotate(0 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(60 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(120 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(180 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(240 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(300 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><circle cx="50" cy="50" r="6" stroke="none"/></g>' + '<g fill="#1f9bf0" stroke="#1f9bf0" stroke-width="5" stroke-linecap="round"><g transform="rotate(0 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(60 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(120 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(180 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(240 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><g transform="rotate(300 50 50)"><line x1="50" y1="50" x2="50" y2="8"/><line x1="50" y1="24" x2="39.5" y2="14.5"/><line x1="50" y1="24" x2="60.5" y2="14.5"/><line x1="50" y1="35" x2="43" y2="27.5"/><line x1="50" y1="35" x2="57" y2="27.5"/><circle cx="50" cy="8" r="3.4" stroke="none"/></g><circle cx="50" cy="50" r="4.6" stroke="none"/></g></svg>';
 function carteHTML(instance, options) {
   options = options || {};
   const def = defCarte(instance);
@@ -6096,7 +6118,7 @@ function carteHTML(instance, options) {
     illustrationDragonHTML(def) + (gele ? '<div class="flocon-gele" aria-hidden="true">' + FLOCON_GELE_SVG + '</div>' : "") + "</div>" +
     (gele ? '<div class="badge-gele" aria-hidden="true">❄️ ' + instance.toursGeles + '</div>' : "") +
     '<div class="carte-nom">' + nomAffiche + "</div>" +
-    '<div class="carte-texte">' + texteAffiche + "</div>" +
+    (texteAffiche ? '<div class="carte-texte">' + texteAffiche + "</div>" : "") +
     '<div class="carte-type">' + typeAffiche + "</div>" +
     "</div>"
   );
@@ -7194,7 +7216,7 @@ function texteDefiPyros() {
   if (!T || T.termine) return null;
   if (T.etape === 1) return {
     titre: L("Défi 1 — Invoquer", "Challenge 1 — Summon"),
-    texte: L("Bienvenue, Dresseur ! Pour gagner une vraie partie, il faut 8 dragons dans ton repaire. Pour commencer, joue ton Bébé Dragon : touche-le dans ta main pour lire sa carte, puis joue-le !", "Welcome, Trainer! To win a real game, you need 8 dragons in your lair. Let's start: play your Baby Dragon — tap it in your hand to read its card, then play it!"),
+    texte: L("Bienvenue, Dresseur ! Pour gagner une vraie partie, il faut 8 dragons dans ton repaire. Pour commencer, joue ton Dragonneau : touche-le dans ta main pour lire sa carte, puis joue-le !", "Welcome, Trainer! To win a real game, you need 8 dragons in your lair. Let's start: play your Hatchling — tap it in your hand to read its card, then play it!"),
   };
   if (T.etape === 2 && !T.sabotageJoue) return {
     titre: L("Défi 2 — Rugir", "Challenge 2 — Roar"),
@@ -9497,13 +9519,13 @@ function traduireJournal(message) {
     [/🛡️ (.+) protège son repaire jusqu'à son prochain tour\./, "🛡️ $1 protects their lair until their next turn."],
     [/⚗️ (.+) rejouera un tour, et peut encore jouer une carte maintenant !/, "⚗️ $1 will take another turn and may still play a card now!"],
     [/⚗️ (.+) rejouera un tour !/, "⚗️ $1 will take another turn!"],
-    [/🥚 (.+) accueille un Bébé Dragon !/, "🥚 $1 welcomes a Baby Dragon!"],
+    [/🥚 (.+) accueille un Dragonneau !/, "🥚 $1 welcomes a Hatchling!"],
     [/📚 (.+) choisit une carte parmi 3\./, "📚 $1 chooses 1 of 3 cards."],
     [/🔔 La Cloche du Repaire de (.+) tinte : \+2 cartes !/, "🔔 $1’s Lair Bell rings: +2 cards!"],
     [/💎 L’Égide Prismatique de (.+) résistera encore à 1 tour\./, "💎 $1’s Prismatic Aegis lasts for 1 more turn."],
     [/💨 L’Égide Prismatique de (.+) se dissipe après tes 2 tours\./, "💨 $1’s Prismatic Aegis fades after your 2 turns."],
     [/🌫️ Le Nuage de Cendres se dissipe au-dessus de (.+)\./, "🌫️ The Ash Cloud above $1 fades."],
-    [/🥚 Plus aucun Bébé Dragon dans la pioche\.\.\./, "🥚 No Baby Dragons remain in the deck..."],
+    [/🥚 Plus aucun Dragonneau dans la pioche\.\.\./, "🥚 No Hatchlings remain in the deck..."],
     [/🥷 (.+) détruit « (.+) » !/, "🥷 $1 destroys “$2”!"],
     [/⚗️ (.+) rejoue un tour !/, "⚗️ $1 takes another turn!"],
     [/🔄 Revanche dans la même salle (.+) !/, "🔄 Rematch in the same room $1!"]
@@ -10017,7 +10039,7 @@ function rendreDanseVictoire(joueur) {
   const carteDanse = dragonDepart || {
     uid: "danse-victoire",
     defId: "bebe-licorne",
-    nom: "Bébé Dragon",
+    nom: "Dragonneau",
     type: "bebe",
     effet: { kind: "aucun" },
     couleurDragon: couleurDepart,
