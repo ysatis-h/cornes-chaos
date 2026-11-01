@@ -356,7 +356,8 @@ html, body {
    une partie rapide : la nouvelle carte rayonne brièvement dans le repaire. */
 .carte-mini.arrivee-volee{z-index:2;animation:arrivee-volee-halo 1.15s ease-out 2}
 @keyframes arrivee-carte{0%{transform:rotateY(80deg) scale(.85);opacity:0}60%{opacity:1}100%{transform:rotateY(0) scale(1);opacity:1}}
-.carte.arrivee{animation:arrivee-carte .45s ease-out}
+.carte.arrivee{animation:arrivee-carte .7s ease-out}
+.carte.fraiche{box-shadow:0 0 0 2px rgba(244,200,92,.8),0 0 14px 3px rgba(244,200,92,.5)}
 @keyframes arrivee-mythique{0%{transform:rotateY(80deg) scale(.85);opacity:0;box-shadow:0 0 0 0 rgba(244,200,92,0)}55%{opacity:1;box-shadow:0 0 22px 6px rgba(244,200,92,.85)}100%{transform:rotateY(0) scale(1);opacity:1;box-shadow:0 0 10px 2px rgba(244,200,92,.45)}}
 .carte.arrivee-mythique{animation:arrivee-mythique .8s ease-out}
 @media (prefers-reduced-motion:reduce){.carte.arrivee,.carte.arrivee-mythique{animation:none}}
@@ -5608,24 +5609,24 @@ function reinitialiserSonsJournal(etat) {
    encaissent un coup ou approchent de la victoire. */
 const REPLIQUES_BOTS = {
   Pyros: {
-    inflige: [["Ça brûle, ça brûle !", "Feel the burn!"], ["Héhé... chaud devant !", "Hehe... coming in hot!"]],
-    subit: [["Aïe ! Tu vas me le payer !", "Ow! You will pay for that!"], ["Mes écailles ! Pas mes écailles !", "My scales! Not my scales!"]],
-    menace: [["Plus que quelques braises...", "Just a few more embers..."], ["Je sens la victoire d'ici !", "I can smell victory from here!"]],
+    inflige: [["Ça brûle, ça brûle !", "Feel the burn!"], ["Héhé... chaud devant !", "Hehe... coming in hot!"], ["Et ça, c'est gratuit !", "And that one's free!"]],
+    subit: [["Aïe ! Tu vas me le payer !", "Ow! You will pay for that!"], ["Mes écailles ! Pas mes écailles !", "My scales! Not my scales!"], ["Grr... la prochaine est pour moi !", "Grr... the next one's mine!"]],
+    menace: [["Plus que quelques braises...", "Just a few more embers..."], ["Je sens la victoire d'ici !", "I can smell victory from here!"], ["La braise devient brasier !", "The ember becomes a blaze!"]],
   },
   Cyber: {
-    inflige: [["Cible acquise. Dommages optimaux.", "Target acquired. Optimal damage."], ["Probabilité de défaite adverse : en hausse.", "Opponent defeat probability: rising."]],
-    subit: [["Interférence inattendue. Je m'adapte.", "Unexpected interference. Adapting."], ["Erreur... recalcul en cours.", "Error... recalculating."]],
-    menace: [["Simulation terminée : je gagne.", "Simulation complete: I win."], ["Résultat prévisible.", "Predictable outcome."]],
+    inflige: [["Cible acquise. Dommages optimaux.", "Target acquired. Optimal damage."], ["Probabilité de défaite adverse : en hausse.", "Opponent defeat probability: rising."], ["Efficacité : 98,6 %.", "Efficiency: 98.6%."]],
+    subit: [["Interférence inattendue. Je m'adapte.", "Unexpected interference. Adapting."], ["Erreur... recalcul en cours.", "Error... recalculating."], ["Données corrompues... restauration.", "Data corrupted... restoring."]],
+    menace: [["Simulation terminée : je gagne.", "Simulation complete: I win."], ["Résultat prévisible.", "Predictable outcome."], ["Victoire imminente : 92 %.", "Victory imminent: 92%."]],
   },
   Spark: {
-    inflige: [["ZAP ! Dans le mille !", "ZAP! Bullseye!"], ["T'as vu cette vitesse ?!", "Did you see that speed?!"]],
-    subit: [["Bzzzt... court-circuit !", "Bzzzt... short circuit!"], ["Aïe aïe aïe !", "Ow ow ow!"]],
-    menace: [["Je suis CHARGÉ à bloc !", "I am FULLY charged!"], ["Ça va pétiller !", "Sparks will fly!"]],
+    inflige: [["ZAP ! Dans le mille !", "ZAP! Bullseye!"], ["T'as vu cette vitesse ?!", "Did you see that speed?!"], ["Trop rapide pour toi !", "Too fast for you!"]],
+    subit: [["Bzzzt... court-circuit !", "Bzzzt... short circuit!"], ["Aïe aïe aïe !", "Ow ow ow!"], ["Je... redémarre...", "Re... rebooting..."]],
+    menace: [["Je suis CHARGÉ à bloc !", "I am FULLY charged!"], ["Ça va pétiller !", "Sparks will fly!"], ["Survoltage imminent !", "Overvoltage imminent!"]],
   },
   generique: {
-    inflige: [["Héhé !", "Hehe!"], ["Bien joué... de ma part.", "Well played... by me."]],
-    subit: [["Hé ! Pas juste !", "Hey! Not fair!"], ["Aïe !", "Ow!"]],
-    menace: [["Je m'approche de la victoire !", "Victory is getting closer!"], ["Plus que quelques dragons...", "Just a few more dragons..."]],
+    inflige: [["Héhé !", "Hehe!"], ["Bien joué... de ma part.", "Well played... by me."], ["À moi le beau jeu !", "My turn to shine!"]],
+    subit: [["Hé ! Pas juste !", "Hey! Not fair!"], ["Aïe !", "Ow!"], ["Tu t'en sors bien... pour l'instant.", "You're doing fine... for now."]],
+    menace: [["Je m'approche de la victoire !", "Victory is getting closer!"], ["Plus que quelques dragons...", "Just a few more dragons..."], ["La fin approche !", "The end is near!"]],
   },
 };
 const CLES_ATTAQUE_BOT = ["sabotage", "freeze", "destroy", "steal", "steal_baby", "trade", "marsh"];
@@ -5664,8 +5665,13 @@ function traiterReactionsBots(nouvellesEntrees, etat) {
     }
   }
   if (!choix || Math.random() > 0.85) return;
-  const lignes = REPLIQUES_BOTS[personnageBot(etat.joueurs[choix.idx])][choix.genre];
-  const ligne = lignes[Math.floor(Math.random() * lignes.length)];
+  const perso = personnageBot(etat.joueurs[choix.idx]);
+  const lignes = REPLIQUES_BOTS[perso][choix.genre];
+  const cleLigne = perso + ":" + choix.genre;
+  let choixLigne = Math.floor(Math.random() * lignes.length);
+  if (lignes.length > 1 && UI._derniereLigneBot === cleLigne + ":" + choixLigne) choixLigne = (choixLigne + 1) % lignes.length;
+  UI._derniereLigneBot = cleLigne + ":" + choixLigne;
+  const ligne = lignes[choixLigne];
   UI._derniereRepliqueBot = maintenant;
   etat.reaction = { type: choix.type, emoji: REACTIONS_RAPIDES[choix.type].emoji, parIdx: choix.idx, id: maintenant, texte: L(ligne[0], ligne[1]) };
 }
@@ -9253,7 +9259,8 @@ function rendreReactions() {
   // L’identifiant est aussi l’heure d’envoi. Ainsi, une réaction reçue après
   // une synchronisation ne peut jamais rester affichée plus de trois secondes.
   const id = Math.max(0, Number(reaction.id) || 0);
-  const restant = Math.min(3000, id + 3000 - Date.now());
+  const duree = reaction.texte ? 5200 : 3000;
+  const restant = Math.min(duree, id + duree - Date.now());
   if (restant <= 0) return;
 
   const joueur = UI.etat.joueurs[reaction.parIdx];
@@ -9505,15 +9512,19 @@ function rendreMain() {
   }
   const moi = etat.joueurs[UI.monIdx];
   const cleMain = (etat.gameId || "") + ":" + UI.monIdx;
-  if (UI._mainConnueCle !== cleMain) { UI._mainConnueCle = cleMain; UI._mainConnue = new Set(moi.main.map((c) => c.uid)); }
+  if (UI._mainConnueCle !== cleMain) { UI._mainConnueCle = cleMain; UI._mainConnue = new Set(moi.main.map((c) => c.uid)); UI._mainFraiche = new Set(); }
+  if (!(UI._mainFraiche instanceof Set)) UI._mainFraiche = new Set();
+  if (etat.actif !== UI.monIdx) UI._mainFraiche.clear();
   const fraiches = new Set();
   moi.main.forEach((inst) => { if (!UI._mainConnue.has(inst.uid)) fraiches.add(inst.uid); });
+  const uidsMain = new Set(moi.main.map((c) => c.uid));
+  UI._mainFraiche.forEach((uid) => { if (!uidsMain.has(uid)) UI._mainFraiche.delete(uid); });
   const main = moi.main.map((inst) => {
     const def = defCarte(inst);
     const jouable = estMonTour() && etat.phase === "jeu" && peutJouer(etat, UI.monIdx, inst);
     return carteHTML(inst, {
       compacte: true,
-      classe: fraiches.has(inst.uid) ? (def.type === "magique" || def.id === "dragon-dore" ? "arrivee-mythique" : "arrivee") : "",
+      classe: fraiches.has(inst.uid) ? (def.type === "magique" || def.id === "dragon-dore" ? "arrivee-mythique" : "arrivee") : (UI._mainFraiche.has(inst.uid) ? "fraiche" : ""),
       selectionnee: UI.selectionUid === inst.uid,
       nonJouable: !jouable,
       tutorielDemande: carteDemandeeTutoriel(inst),
@@ -9522,7 +9533,7 @@ function rendreMain() {
     });
   }).join("");
   $("ma-main").innerHTML = main || "<p><em>" + L("Main vide !", "Empty hand!") + "</em></p>";
-  fraiches.forEach((uid) => UI._mainConnue.add(uid));
+  fraiches.forEach((uid) => { UI._mainConnue.add(uid); UI._mainFraiche.add(uid); });
 
   $("ma-main").querySelectorAll(".carte").forEach((el) => {
     const ouvrir = () => ouvrirZoomCarte(el.dataset.uid);
