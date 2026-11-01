@@ -344,7 +344,7 @@ html, body {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   border:1px solid hsla(var(--art-hue,270),55%,45%,.25);border-top: 4px solid hsl(var(--art-hue,270) 55% 55%); cursor: default;
 }
-.carte-mini .mini-nom { font-size: 8px; font-weight: 700; color: var(--texte-doux); }
+.carte-mini .mini-nom { font-size: 7.5px; font-weight: 700; color: var(--texte-doux); max-width: 100%; white-space: nowrap; overflow: hidden; letter-spacing: -.04em; text-align: center; padding: 0 1px; box-sizing: border-box; }
 .carte-mini .dragon-dessin{width:40px;height:38px}.carte-mini .dragon-sceau{display:none}
 .carte-mini.bonus { border-top-color: #4ade80; }
 .carte-mini.malus { border-top-color: #fb923c; }
@@ -801,7 +801,7 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 .score-fin{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--ligne);border-radius:12px;background:var(--surface-2)}
 .score-fin.gagnant{border-color:var(--rose);box-shadow:inset 4px 0 0 var(--rose)}
 .score-rang{display:flex;align-items:center;gap:9px;min-width:0}
-.medaille-rang{width:29px;flex:0 0 29px;font-size:1.35rem;line-height:1;text-align:center}
+.medaille-rang{width:34px;flex:0 0 34px;line-height:1}.medaille-rang svg{width:100%;height:auto;display:block}
 .score-fin strong{font:800 1.05rem/1 "Fredoka",sans-serif;color:var(--violet-fonce);white-space:nowrap}
 .journal-fin{margin:16px 0;text-align:left}
 .journal-fin ul{max-height:210px}
@@ -6415,22 +6415,31 @@ function statistiquesClassement(stats) {
   };
 }
 
-/* Médaille du podium (1 = or, 2 = argent, 3 = bronze) portée par le dragon porte-bonheur. */
-function medailleSVG(rang) {
+/* Dessin de médaille, partagé par le podium du classement entre amis
+   et l'écran de fin de partie (or, argent, bronze, participation). */
+function dessinMedailleSVG(genre, contenu) {
   const styles = {
-    1: { fond: "#f6c453", bord: "#d9a62e", clair: "#ffe29a", texte: "#7a5410" },
-    2: { fond: "#ccd1d9", bord: "#a7aeba", clair: "#f2f4f7", texte: "#59616e" },
-    3: { fond: "#cf7f4a", bord: "#b06534", clair: "#f2b183", texte: "#6e3f16" },
+    or: { fond: "#f6c453", bord: "#d9a62e", clair: "#ffe29a", texte: "#7a5410" },
+    argent: { fond: "#ccd1d9", bord: "#a7aeba", clair: "#f2f4f7", texte: "#59616e" },
+    bronze: { fond: "#cf7f4a", bord: "#b06534", clair: "#f2b183", texte: "#6e3f16" },
+    participation: { fond: "#b9a5e0", bord: "#9575cd", clair: "#e6ddf7", texte: "#4a3480" },
   };
-  const s = styles[rang];
+  const s = styles[genre];
   if (!s) return "";
-  return '<span class="classement-medaille" aria-hidden="true"><svg viewBox="0 0 48 48">'
+  return '<svg viewBox="0 0 48 48" aria-hidden="true">'
     + '<polygon points="19,2 26,2 23.5,16 16.5,12" fill="#7b5ea7"/>'
     + '<polygon points="29,2 22,2 24.5,16 31.5,12" fill="#9575cd"/>'
     + '<circle cx="24" cy="30" r="14.5" fill="' + s.fond + '" stroke="' + s.bord + '" stroke-width="2"/>'
     + '<circle cx="24" cy="30" r="10.5" fill="' + s.clair + '"/>'
-    + '<text x="24" y="35.5" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="800" font-size="13" fill="' + s.texte + '">' + rang + '</text>'
-    + '</svg></span>';
+    + '<text x="24" y="35.5" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="800" font-size="13" fill="' + s.texte + '">' + contenu + '</text>'
+    + '</svg>';
+}
+
+/* Médaille du podium (1 = or, 2 = argent, 3 = bronze) portée par le dragon porte-bonheur. */
+function medailleSVG(rang) {
+  const genres = { 1: "or", 2: "argent", 3: "bronze" };
+  if (!genres[rang]) return "";
+  return '<span class="classement-medaille" aria-hidden="true">' + dessinMedailleSVG(genres[rang], String(rang)) + '</span>';
 }
 
 function podiumClassementHTML(rang) {
@@ -10133,16 +10142,16 @@ function afficherVictoire() {
     scorePrecedent = resultat.score;
   });
   const medailles = [
-    { icone: "🥇", nom: L("Médaille d’or", "Gold medal") },
-    { icone: "🥈", nom: L("Médaille d’argent", "Silver medal") },
-    { icone: "🥉", nom: L("Médaille de bronze", "Bronze medal") },
-    { icone: "🏅", nom: L("Médaille de participation", "Participation medal") }
+    { genre: "or", contenu: "1", nom: L("Médaille d’or", "Gold medal") },
+    { genre: "argent", contenu: "2", nom: L("Médaille d’argent", "Silver medal") },
+    { genre: "bronze", contenu: "3", nom: L("Médaille de bronze", "Bronze medal") },
+    { genre: "participation", contenu: "★", nom: L("Médaille de participation", "Participation medal") }
   ];
   $("scores-fin").innerHTML = classement.map((resultat) => {
     const medaille = medailles[Math.min(resultat.rangMedaille, medailles.length - 1)];
     const dragons = resultat.score + " " + (resultat.score === 1 ? L("dragon", "dragon") : L("dragons", "dragons"));
     return '<div class="score-fin ' + ((etat.equipes2v2 ? resultat.joueur.equipe === etat.equipeGagnante : resultat.i === etat.gagnant) ? "gagnant" : "") + '">' +
-      '<span class="score-rang"><span class="medaille-rang" role="img" aria-label="' + echapper(medaille.nom) + '" title="' + echapper(medaille.nom) + '">' + medaille.icone + '</span>' +
+      '<span class="score-rang"><span class="medaille-rang" role="img" aria-label="' + echapper(medaille.nom) + '" title="' + echapper(medaille.nom) + '">' + dessinMedailleSVG(medaille.genre, medaille.contenu) + '</span>' +
       '<span class="nom-avec-avatar">' + avatarHTML(resultat.joueur.couleurAvatar) + '<span>' + nomJoueurHTML(resultat.joueur) + '</span></span></span>' +
       '<span class="score-fin-actions"><strong>' + dragons + '</strong>' + boutonSignalementCibleHTML(resultat.joueur, "game_end") + '</span></div>';
   }).join("");
