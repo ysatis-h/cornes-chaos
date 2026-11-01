@@ -6128,7 +6128,9 @@ function carteHTML(instance, options) {
     pointCouleur + '<div class="carte-illustration ' + motif + '" style="' + styleArt + '">' +
     illustrationDragonHTML(def) + (gele ? '<div class="flocon-gele" aria-hidden="true">' + FLOCON_GELE_SVG + '</div>' : "") + "</div>" +
     (gele ? '<div class="badge-gele" aria-hidden="true">❄️ ' + instance.toursGeles + '</div>' : "") +
-    '<div class="carte-nom">' + nomAffiche + "</div>" +
+    // Dragonneau : le nom et le type sont identiques — on garde l'étiquette
+    // de type du bas et on retire le nom en double au-dessus.
+    (def.type === "bebe" ? "" : '<div class="carte-nom">' + nomAffiche + "</div>") +
     (texteAffiche ? '<div class="carte-texte">' + texteAffiche + "</div>" : "") +
     '<div class="carte-type">' + typeAffiche + "</div>" +
     "</div>"
