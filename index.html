@@ -806,6 +806,15 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 .badge-balle-match:before{content:"";display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#d64b2a;box-shadow:0 0 0 3px rgba(214,75,42,.15)}
 .scores-fin{display:grid;gap:8px;margin:18px 0;text-align:left}
 .score-fin{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1.5px solid #b7a6e8;border-radius:12px;background:#fff}
+.xp-barre{height:12px;border-radius:999px;background:#e3dcf7;overflow:hidden}
+.xp-barre>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#8673cc,#59439f)}
+.xp-fin{margin-top:10px;padding:10px 12px;border:1.5px solid #b7a6e8;border-radius:12px;background:#fff;text-align:left}
+.xp-fin-titre{font-family:Fredoka,sans-serif;font-weight:700;font-size:1.05rem;color:#59439f}
+.xp-fin .xp-barre{margin:7px 0 5px}
+.xp-fin-detail,.xp-profil-detail{color:#587083;font-size:.85rem;font-weight:700}
+.xp-profil{margin-top:12px;padding:12px;border:1.5px solid #b7a6e8;border-radius:12px;background:#f6f2ff;text-align:left}
+.xp-profil-titre{font-family:Fredoka,sans-serif;font-weight:700;color:#59439f;margin-bottom:7px}
+.xp-profil .xp-barre{margin-bottom:5px}
 .score-fin.gagnant{background:#fff8df;border-color:var(--or);box-shadow:inset 4px 0 0 var(--or),4px 4px 0 rgba(244,200,92,.45)}
 .score-rang{display:flex;align-items:center;gap:9px;min-width:0}
 .medaille-rang{width:34px;flex:0 0 34px;line-height:1}.medaille-rang svg{width:100%;height:auto;display:block}
@@ -4529,6 +4538,7 @@ function erreurReseau(code, repliFr, repliEn) {
         <div id="dragon-danse" class="dragon-danse" role="img" aria-label="Dragon gagnant qui danse"></div>
         <p id="victoire-texte"></p>
         <div id="moment-fort" class="moment-fort" aria-live="polite"></div>
+        <div id="xp-fin" class="xp-fin" hidden></div>
         <div id="scores-fin" class="scores-fin" aria-label="Scores finaux"></div>
         <details id="journal-fin" class="bloc-journal journal-fin">
           <summary data-fr="📜 Consulter le journal de la partie" data-en="📜 View the game log">📜 Consulter le journal de la partie</summary>
@@ -4958,6 +4968,7 @@ const Compte = {
     const uid=this.uid(); if(!uid||!this.db||!etat||etat.phase!=="terminee"||UI._profilSauve.has(etat.gameId))return;
     let idx=etat.joueurs.findIndex((j)=>j.accountUid===uid); if(idx<0&&UI.mode==="local")idx=UI.monIdx; if(idx<0||etat.joueurs[idx].estBot)return;
     UI._profilSauve.add(etat.gameId);
+    let gainCapture = 0, xpAvantCapture = 0;
     const gagne=etat.equipes2v2?etat.joueurs[idx].equipe===etat.equipeGagnante:idx===etat.gagnant;
     const dragonsMoi=etat.joueurs[idx].ecurie.filter((c)=>estLicorne(defCarte(c).type)).map((c)=>c.defId);
     const rencontres=new Set(dragonsMoi);
@@ -4965,10 +4976,11 @@ const Compte = {
       profil=profil||{}; profil.history=profil.history||{}; if(profil.history[etat.gameId])return profil;
       profil.history[etat.gameId]={won:gagne,team:Boolean(etat.equipes2v2),at:window.firebase.database.ServerValue.TIMESTAMP};
       const stats=profil.stats||{games:0,wins:0,currentStreak:0,bestStreak:0,dragonCounts:{}}; stats.games=(stats.games||0)+1; stats.wins=(stats.wins||0)+(gagne?1:0); stats.currentStreak=gagne?(stats.currentStreak||0)+1:0; stats.bestStreak=Math.max(stats.bestStreak||0,stats.currentStreak); stats.dragonCounts=stats.dragonCounts||{}; dragonsMoi.forEach((id)=>{stats.dragonCounts[id]=(stats.dragonCounts[id]||0)+1;}); const estSolo=etat.joueurs.filter((j)=>!j.estBot).length===1; if(estSolo){stats.soloGames=(stats.soloGames||0)+1;stats.soloWins=(stats.soloWins||0)+(gagne?1:0);}else{stats.multiplayerGames=(stats.multiplayerGames||0)+1;stats.multiplayerWins=(stats.multiplayerWins||0)+(gagne?1:0);} if(etat.equipes2v2){stats.teamGames=(stats.teamGames||0)+1;stats.teamWins=(stats.teamWins||0)+(gagne?1:0);profil.teams=profil.teams||{};profil.teams[etat.gameId]={won:gagne,side:etat.joueurs[idx].equipe,at:window.firebase.database.ServerValue.TIMESTAMP};} profil.stats=stats;
+      let defiNouveau=false;
       if(gagne&&etat.defiQuotidien&&etat.defiDate){
         const quotidien=profil.dailyChallenge||{currentStreak:0,bestStreak:0,totalWins:0,completed:{}};
         quotidien.completed=quotidien.completed||{};
-        if(!quotidien.completed[etat.defiDate]){
+        if(!quotidien.completed[etat.defiDate]){ defiNouveau=true;
           quotidien.currentStreak=quotidien.lastWinDate===dateISOAvant(etat.defiDate)?(Number(quotidien.currentStreak)||0)+1:1;
           quotidien.bestStreak=Math.max(Number(quotidien.bestStreak)||0,quotidien.currentStreak);
           quotidien.totalWins=(Number(quotidien.totalWins)||0)+1;
@@ -4977,8 +4989,10 @@ const Compte = {
         }
         profil.dailyChallenge=quotidien;
       }
+      if(!etat.tutoriel){ const gain=20+(gagne?30:0)+(defiNouveau?15:0); xpAvantCapture=Number(stats.xp)||0; stats.xp=xpAvantCapture+gain; gainCapture=gain; }
       profil.dragondex=profil.dragondex||{}; rencontres.forEach((id)=>{profil.dragondex[id]=true;}); profil.updatedAt=window.firebase.database.ServerValue.TIMESTAMP; return profil;
-    }); rencontres.forEach((id)=>{this.dragondexMemoire[id]=true;}); }catch(e){ UI._profilSauve.delete(etat.gameId); toast(L("La partie est terminée, mais la progression n’a pas encore pu être sauvegardée.","The game is over, but progress could not be saved yet."),4200); }
+    }); rencontres.forEach((id)=>{this.dragondexMemoire[id]=true;}); if(gainCapture>0){ const avant=niveauDepuisXp(xpAvantCapture), apres=niveauDepuisXp(xpAvantCapture+gainCapture); return { gain: gainCapture, niveauAvant: avant.niveau, niveauApres: apres.niveau, dansNiveau: apres.dansNiveau, cout: apres.cout, monte: apres.niveau > avant.niveau }; } return null; }catch(e){ UI._profilSauve.delete(etat.gameId); toast(L("La partie est terminée, mais la progression n’a pas encore pu être sauvegardée.","The game is over, but progress could not be saved yet."),4200); }
+    return null;
   }
 };
 
@@ -6455,6 +6469,8 @@ const Maintenance = {
 };
 function rendreProfilDresseur(profil){
   const stats=profil.stats||{}, parties=stats.games||0, victoires=stats.wins||0, taux=parties?Math.round(victoires/parties*100):0, comptes=stats.dragonCounts||{};
+  const xpTotal=Number(stats.xp)||0, nivXp=niveauDepuisXp(xpTotal), pctXp=nivXp.cout>0?Math.min(100,Math.round(nivXp.dansNiveau/nivXp.cout*100)):100;
+  const blocXpProfil='<div class="xp-profil"><div class="xp-profil-titre">'+L("Niveau ","Level ")+nivXp.niveau+' — '+echapper(titreNiveau(nivXp.niveau,profil))+'</div><div class="xp-barre"><span style="width:'+pctXp+'%"></span></div><div class="xp-profil-detail">'+nivXp.dansNiveau+'/'+nivXp.cout+' XP · '+L("plus que ","only ")+(nivXp.cout-nivXp.dansNiveau)+L(" XP avant le niveau "," XP to level ")+(nivXp.niveau+1)+' · '+xpTotal+L(" XP au total"," total XP")+'</div></div>';
   const prefere=Object.keys(comptes).filter((id)=>{const d=definitionParId(id);return d&&d.type==="magique";}).sort((a,b)=>(comptes[b]||0)-(comptes[a]||0))[0], nomPrefere=prefere&&definitionParId(prefere)?nomCarte(definitionParId(prefere)):L("À découvrir","To be discovered");
   const trouves=profil.dragondex||{}, nomPublic=profil.public&&(profil.public.trainerName||profil.public.displayName)||Compte.nomDresseur(), total=dragonsDragondex().length;
   const personnalisation=profil.profile||{}, genreChoisi=normaliserGenreDresseur(genreDresseurValide(personnalisation.genreDresseur)?personnalisation.genreDresseur:(profil.public&&genreDresseurValide(profil.public.genreDresseur)?profil.public.genreDresseur:""));
@@ -6463,7 +6479,7 @@ function rendreProfilDresseur(profil){
   const anniversaireVerrouille=Boolean(detailsDate.mois&&detailsDate.jour);
   const attributVerrou=anniversaireVerrouille?' disabled aria-disabled="true"':'';
   const sectionMaintenance=estAdmin()?'<div class="maintenance-admin"><h4>'+L("🔧 Maintenance du jeu","🔧 Game maintenance")+'</h4><small>'+L("Réservé à toi : planifie une maintenance pour prévenir tes joueurs à l’avance. Seule toi peux activer cet interrupteur.","Only for you: schedule maintenance to warn your players in advance. Only you can flip this switch.")+'</small><p class="maintenance-statut" id="maintenance-statut">'+L("Chargement…","Loading…")+'</p><div class="profil-champs"><div class="profil-champ"><label for="maintenance-message">'+L("Message","Message")+'</label><input id="maintenance-message" maxlength="120" autocomplete="off" placeholder="'+L("Ex. Mise à jour des dragons","E.g. Dragon update")+'"></div><div class="profil-champ"><label for="maintenance-debut">'+L("Début","Start")+'</label><input id="maintenance-debut" type="datetime-local"></div><div class="profil-champ"><label for="maintenance-fin">'+L("Fin","End")+'</label><input id="maintenance-fin" type="datetime-local"></div></div><div class="maintenance-actions"><button id="maintenance-activer" type="button" class="gros-bouton bouton-primaire">'+L("Activer la maintenance","Enable maintenance")+'</button><button id="maintenance-desactiver" type="button" class="gros-bouton bouton-secondaire">'+L("Désactiver","Disable")+'</button></div></div>':'';
-  ouvrirModal('<div data-profil-dragondex><h3>'+G(profil,"Profil de Dresseur","Profil de Dresseuse","Profil draconique","Trainer Profile")+'</h3><div class="profil-pseudo"><label for="profil-pseudo">'+G(profil,"Nom de Dresseur","Nom de Dresseuse","Nom de jeu","Trainer name")+'</label><small>'+L("Utilisé automatiquement dans toutes tes parties et visible par les autres Dresseurs. 20 caractères maximum.","Used automatically in all your games and visible to other Trainers. Up to 20 characters.")+'</small><input id="profil-pseudo" maxlength="20" autocomplete="off" value="'+echapper(nomPublic)+'"><button id="profil-enregistrer-pseudo" type="button" class="gros-bouton bouton-secondaire">'+G(profil,"Changer mon nom de Dresseur","Changer mon nom de Dresseuse","Changer mon nom de jeu","Change my Trainer name")+'</button></div><div class="profil-personnalisation"><h4>'+L("Personnalisation","Personalization")+'</h4><small>'+L("Ton genre adapte les textes français du jeu. Ta date d’anniversaire reste dans ton profil.","Your gender personalizes French game text. Your birthday stays in your profile.")+'</small><div class="profil-champs"><div class="profil-champ"><label for="profil-genre">'+G(profil,"Genre du Dresseur","Genre de la Dresseuse","Genre du profil","Trainer gender")+'</label><select id="profil-genre" required><option value="">'+L("Choisir…","Choose…")+'</option><option value="feminin" '+(genreChoisi==="feminin"?"selected":"")+'>'+L("Féminin","Female")+'</option><option value="masculin" '+(genreChoisi==="masculin"?"selected":"")+'>'+L("Masculin","Male")+'</option><option value="autre" '+(genreChoisi==="autre"?"selected":"")+'>'+L("Autre","Other")+'</option></select></div><div class="profil-champ"><label for="profil-anniversaire-jour">'+L("Date d’anniversaire","Birthday")+'</label><div class="profil-anniversaire-champs"><input id="profil-anniversaire-jour" type="number" min="1" max="31" inputmode="numeric" aria-label="'+L("Jour","Day")+'" placeholder="'+L("Jour","Day")+'" value="'+(detailsDate.jour||"")+'"'+attributVerrou+'><select id="profil-anniversaire-mois" aria-label="'+L("Mois","Month")+'"'+attributVerrou+'>'+optionsMoisAnniversaire(detailsDate.mois)+'</select></div><small class="profil-anniversaire-note">'+(anniversaireVerrouille?L("Jour et mois verrouillés. Pour les faire corriger, utilise « Signaler un bug ».","Day and month are locked. To have them corrected, use “Report a bug”."):L("Vérifie bien le jour et le mois : une confirmation sera demandée avant de les verrouiller.","Check the day and month carefully: you’ll be asked to confirm before they are locked."))+'</small></div><div class="profil-champ"><label>'+L("Couleur du dragon","Dragon color")+'</label>'+paletteCouleursHTML("profil-couleur",personnalisation.couleurDragon||COULEURS_AVATAR[0],L("7 couleurs du dragon","7 dragon colors"))+'</div></div><div id="profil-anniversaire-confirmation" class="profil-anniversaire-confirmation" hidden><p>'+L("Confirmer ton anniversaire : ","Confirm your birthday: ")+'<strong id="profil-anniversaire-resume"></strong>?</p><div class="actions-confirmation"><button id="profil-anniversaire-annuler" type="button" class="gros-bouton bouton-secondaire">'+L("Vérifier","Check again")+'</button><button id="profil-anniversaire-confirmer" type="button" class="gros-bouton bouton-primaire">'+L("Oui, verrouiller","Yes, lock it")+'</button></div></div><button id="profil-enregistrer-personnalisation" type="button" class="gros-bouton bouton-secondaire">'+L("Enregistrer mon profil","Save my profile")+'</button></div><div class="profil-grille"><div class="stat-profil"><strong>'+parties+'</strong><span>'+L("Parties jouées","Games played")+'</span></div><div class="stat-profil"><strong>'+taux+' %</strong><span>'+L("Taux de victoire","Win rate")+'</span></div><div class="stat-profil"><strong>'+(stats.currentStreak||0)+'</strong><span>'+L("Série actuelle","Current streak")+'</span></div><div class="stat-profil"><strong>'+(stats.bestStreak||0)+'</strong><span>'+L("Meilleure série","Best streak")+'</span></div><div class="stat-profil"><strong>'+(stats.teamWins||0)+'/'+(stats.teamGames||0)+'</strong><span>'+L("Victoires 2v2","2v2 wins")+'</span></div><div class="stat-profil"><strong>'+echapper(nomPrefere)+'</strong><span>'+L("Dragon porte-bonheur","Lucky dragon")+'</span></div></div><div class="dragondex-entete"><h3>'+L("Dragondex","Dragondex")+'</h3><span class="dragondex-compteur">'+compteurDragondex(trouves)+'/'+total+'</span></div><p class="dragondex-regle">'+L("Joue une carte dragon en partie — solo, en ligne ou dans le tutoriel — pour l’ajouter à ton Dragondex.","Play a dragon card in a solo, online, or tutorial game to add it to your Dragondex.")+'</p>'+filtresDragondexHTML()+'<div class="dragondex"></div><div class="profil-reinitialisation"><button id="profil-reinitialiser" type="button" class="gros-bouton bouton-reset-progression">'+L("Réinitialiser ma progression","Reset my progress")+'</button></div>'+sectionMaintenance+'<button id="profil-fermer" class="gros-bouton bouton-primaire">'+L("Retour au jeu","Back to game")+'</button></div>');
+  ouvrirModal('<div data-profil-dragondex><h3>'+G(profil,"Profil de Dresseur","Profil de Dresseuse","Profil draconique","Trainer Profile")+'</h3><div class="profil-pseudo"><label for="profil-pseudo">'+G(profil,"Nom de Dresseur","Nom de Dresseuse","Nom de jeu","Trainer name")+'</label><small>'+L("Utilisé automatiquement dans toutes tes parties et visible par les autres Dresseurs. 20 caractères maximum.","Used automatically in all your games and visible to other Trainers. Up to 20 characters.")+'</small><input id="profil-pseudo" maxlength="20" autocomplete="off" value="'+echapper(nomPublic)+'"><button id="profil-enregistrer-pseudo" type="button" class="gros-bouton bouton-secondaire">'+G(profil,"Changer mon nom de Dresseur","Changer mon nom de Dresseuse","Changer mon nom de jeu","Change my Trainer name")+'</button></div><div class="profil-personnalisation"><h4>'+L("Personnalisation","Personalization")+'</h4><small>'+L("Ton genre adapte les textes français du jeu. Ta date d’anniversaire reste dans ton profil.","Your gender personalizes French game text. Your birthday stays in your profile.")+'</small><div class="profil-champs"><div class="profil-champ"><label for="profil-genre">'+G(profil,"Genre du Dresseur","Genre de la Dresseuse","Genre du profil","Trainer gender")+'</label><select id="profil-genre" required><option value="">'+L("Choisir…","Choose…")+'</option><option value="feminin" '+(genreChoisi==="feminin"?"selected":"")+'>'+L("Féminin","Female")+'</option><option value="masculin" '+(genreChoisi==="masculin"?"selected":"")+'>'+L("Masculin","Male")+'</option><option value="autre" '+(genreChoisi==="autre"?"selected":"")+'>'+L("Autre","Other")+'</option></select></div><div class="profil-champ"><label for="profil-anniversaire-jour">'+L("Date d’anniversaire","Birthday")+'</label><div class="profil-anniversaire-champs"><input id="profil-anniversaire-jour" type="number" min="1" max="31" inputmode="numeric" aria-label="'+L("Jour","Day")+'" placeholder="'+L("Jour","Day")+'" value="'+(detailsDate.jour||"")+'"'+attributVerrou+'><select id="profil-anniversaire-mois" aria-label="'+L("Mois","Month")+'"'+attributVerrou+'>'+optionsMoisAnniversaire(detailsDate.mois)+'</select></div><small class="profil-anniversaire-note">'+(anniversaireVerrouille?L("Jour et mois verrouillés. Pour les faire corriger, utilise « Signaler un bug ».","Day and month are locked. To have them corrected, use “Report a bug”."):L("Vérifie bien le jour et le mois : une confirmation sera demandée avant de les verrouiller.","Check the day and month carefully: you’ll be asked to confirm before they are locked."))+'</small></div><div class="profil-champ"><label>'+L("Couleur du dragon","Dragon color")+'</label>'+paletteCouleursHTML("profil-couleur",personnalisation.couleurDragon||COULEURS_AVATAR[0],L("7 couleurs du dragon","7 dragon colors"))+'</div></div><div id="profil-anniversaire-confirmation" class="profil-anniversaire-confirmation" hidden><p>'+L("Confirmer ton anniversaire : ","Confirm your birthday: ")+'<strong id="profil-anniversaire-resume"></strong>?</p><div class="actions-confirmation"><button id="profil-anniversaire-annuler" type="button" class="gros-bouton bouton-secondaire">'+L("Vérifier","Check again")+'</button><button id="profil-anniversaire-confirmer" type="button" class="gros-bouton bouton-primaire">'+L("Oui, verrouiller","Yes, lock it")+'</button></div></div><button id="profil-enregistrer-personnalisation" type="button" class="gros-bouton bouton-secondaire">'+L("Enregistrer mon profil","Save my profile")+'</button></div><div class="profil-grille"><div class="stat-profil"><strong>'+parties+'</strong><span>'+L("Parties jouées","Games played")+'</span></div><div class="stat-profil"><strong>'+taux+' %</strong><span>'+L("Taux de victoire","Win rate")+'</span></div><div class="stat-profil"><strong>'+(stats.currentStreak||0)+'</strong><span>'+L("Série actuelle","Current streak")+'</span></div><div class="stat-profil"><strong>'+(stats.bestStreak||0)+'</strong><span>'+L("Meilleure série","Best streak")+'</span></div><div class="stat-profil"><strong>'+(stats.teamWins||0)+'/'+(stats.teamGames||0)+'</strong><span>'+L("Victoires 2v2","2v2 wins")+'</span></div><div class="stat-profil"><strong>'+echapper(nomPrefere)+'</strong><span>'+L("Dragon porte-bonheur","Lucky dragon")+'</span></div></div>'+blocXpProfil+'<div class="dragondex-entete"><h3>'+L("Dragondex","Dragondex")+'</h3><span class="dragondex-compteur">'+compteurDragondex(trouves)+'/'+total+'</span></div><p class="dragondex-regle">'+L("Joue une carte dragon en partie — solo, en ligne ou dans le tutoriel — pour l’ajouter à ton Dragondex.","Play a dragon card in a solo, online, or tutorial game to add it to your Dragondex.")+'</p>'+filtresDragondexHTML()+'<div class="dragondex"></div><div class="profil-reinitialisation"><button id="profil-reinitialiser" type="button" class="gros-bouton bouton-reset-progression">'+L("Réinitialiser ma progression","Reset my progress")+'</button></div>'+sectionMaintenance+'<button id="profil-fermer" class="gros-bouton bouton-primaire">'+L("Retour au jeu","Back to game")+'</button></div>');
   const conteneur=$('modal-contenu').querySelector('[data-profil-dragondex]'); conteneur._profilSource=profil; brancherFiltresDragondex(conteneur,trouves); activerPalettes(conteneur);
   brancherValidationPseudo($('profil-pseudo'));
   $('profil-enregistrer-pseudo').addEventListener('click',async()=>{const champ=$('profil-pseudo'),pseudo=lirePseudoValide(champ);if(!pseudo)return;const bouton=$('profil-enregistrer-pseudo');bouton.disabled=true;bouton.setAttribute('aria-busy','true');try{await Compte.enregistrerPseudoPublic(pseudo);profil.public=profil.public||{};profil.public.trainerName=pseudo;profil.public.displayName=pseudo;toast(G(profil,"Ton nom de Dresseur a bien été mis à jour !","Ton nom de Dresseuse a bien été mis à jour !","Ton nom de jeu a bien été mis à jour !","Your Trainer name has been updated!"));}catch(e){toast(e&&e.message==="pseudo-deja-pris"?L("Ce pseudo est déjà pris.","This username is already taken."):G(profil,"Ton nom de Dresseur n’a pas pu être modifié pour le moment.","Ton nom de Dresseuse n’a pas pu être modifié pour le moment.","Ton nom de jeu n’a pas pu être modifié pour le moment.","Your Trainer name could not be changed right now."),4200);bouton.disabled=false;bouton.removeAttribute('aria-busy');}});
@@ -10273,6 +10289,38 @@ function momentFortPartie(etat) {
   return L("La course jusqu’au dernier dragon.","The race to the final dragon.");
 }
 
+function niveauDepuisXp(xp) {
+  let niveau = 1, seuil = 0, cout = 40;
+  xp = Math.max(0, Number(xp) || 0);
+  while (xp >= seuil + cout) { seuil += cout; niveau += 1; cout += 20; }
+  return { niveau, dansNiveau: xp - seuil, cout };
+}
+const TITRES_NIVEAU = [
+  ["Petit œuf", "Petit œuf", "Petit œuf", "Little Egg"],
+  ["Dragonneau curieux", "Dragonneau curieux", "Dragonneau curieux", "Curious Hatchling"],
+  ["Dresseur en herbe", "Dresseuse en herbe", "Dresseur·se en herbe", "Budding Trainer"],
+  ["Dresseur confirmé", "Dresseuse confirmée", "Dresseur·se confirmé·e", "Seasoned Trainer"],
+  ["Ami des braises", "Amie des braises", "Ami·e des braises", "Friend of Embers"],
+  ["Voix des dragons", "Voix des dragons", "Voix des dragons", "Voice of Dragons"],
+  ["Dompteur de tempêtes", "Dompteuse de tempêtes", "Dompteur·se de tempêtes", "Storm Tamer"],
+  ["Gardien du repaire", "Gardienne du repaire", "Gardien·ne du repaire", "Lair Keeper"],
+  ["Légende vivante", "Légende vivante", "Légende vivante", "Living Legend"],
+  ["Souverain des dragons", "Souveraine des dragons", "Souverain·e des dragons", "Dragon Sovereign"],
+];
+function titreNiveau(n, profil) {
+  const t = TITRES_NIVEAU[Math.min(Math.max(Number(n) || 1, 1), TITRES_NIVEAU.length) - 1];
+  return G(profil, t[0], t[1], t[2], t[3]);
+}
+function htmlGainXp(info) {
+  const pct = info.cout > 0 ? Math.min(100, Math.round(info.dansNiveau / info.cout * 100)) : 100;
+  const detail = info.monte
+    ? L("Niveau supérieur atteint !", "Level up!")
+    : L("Plus que ", "Only ") + (info.cout - info.dansNiveau) + L(" XP avant le niveau ", " XP to level ") + (info.niveauApres + 1);
+  return '<div class="xp-fin-titre">+' + info.gain + ' XP — ' + L("Niveau ", "Level ") + info.niveauApres + '</div>' +
+    '<div class="xp-barre"><span style="width:' + pct + '%"></span></div>' +
+    '<div class="xp-fin-detail">' + detail + '</div>';
+}
+
 function afficherVictoire() {
   const etat = UI.etat;
   const gagnant = etat.joueurs[etat.gagnant];
@@ -10295,7 +10343,14 @@ function afficherVictoire() {
     .replace(/(?:[#*0-9]\uFE0F?\u20E3)|(?:\p{Regional_Indicator}{2})|[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\uFE0E\uFE0F\u200D]/gu, "")
     .replace(/\s{2,}/g, " ").trim();
   $("moment-fort").innerHTML='<strong>'+L("Moment fort de la partie","Game highlight")+'</strong><p>'+echapper(momentFortSansEmoji)+'</p>';
-  void Compte.enregistrerFinPartie(etat);
+  const blocXpFin = $("xp-fin");
+  if (blocXpFin) { blocXpFin.hidden = true; blocXpFin.innerHTML = ""; }
+  Compte.enregistrerFinPartie(etat).then((info) => {
+    const bloc = $("xp-fin");
+    if (!bloc || !info || !UI.etat || UI.etat.gameId !== etat.gameId) return;
+    bloc.innerHTML = htmlGainXp(info);
+    bloc.hidden = false;
+  });
   const classement = etat.joueurs.map((joueur, i) => ({
     joueur,
     i,
