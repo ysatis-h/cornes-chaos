@@ -6420,7 +6420,7 @@ function ligneClassementHTML(entree, rang) {
   const detail = stats.detailDisponible
     ? L("Solo ", "Solo ") + stats.solo + " · " + L("Multijoueur ", "Multiplayer ") + stats.multijoueur
     : L("Détail solo/multijoueur disponible après la prochaine partie.", "Solo/multiplayer details available after the next game.");
-  return '<div class="classement-ligne ' + (entree.moi ? "moi" : "") + '"' + (entree.moi ? ' aria-current="true"' : '') + '><span class="classement-rang">' + rang + '</span><span class="classement-identite"><strong>' + echapper(entree.nom) + (entree.moi ? " · " + L("toi", "you") : "") + '</strong><small>' + echapper(detail) + '</small></span><span class="classement-stats"><span class="classement-stat"><strong>' + stats.victoires + '</strong><span>' + L("victoires", "wins") + '</span></span><span class="classement-stat"><strong>' + stats.taux + ' %</strong><span>' + L("taux de victoire", "win rate") + '</span></span></span></div>';
+  return '<div class="classement-ligne ' + (entree.moi ? "moi" : "") + '"' + (entree.moi ? ' aria-current="true"' : '') + '><span class="classement-rang">' + rang + '</span><span class="classement-identite"><strong>' + echapper(entree.nom) + '</strong><small>' + echapper(detail) + '</small></span><span class="classement-stats"><span class="classement-stat"><strong>' + stats.victoires + '</strong><span>' + L("victoires", "wins") + '</span></span><span class="classement-stat"><strong>' + stats.taux + ' %</strong><span>' + L("taux de victoire", "win rate") + '</span></span></span></div>';
 }
 
 async function ouvrirClassement() {
