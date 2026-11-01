@@ -10301,9 +10301,11 @@ function momentFortPartie(etat) {
 }
 
 function niveauDepuisXp(xp) {
-  let niveau = 1, seuil = 0, cout = 40;
+  // Montée volontairement lente : niveau 2 après ~3 parties gagnées,
+  // niveau 3 après ~5 de plus, puis ~7, ~9... (coût 150, 250, 350... XP).
+  let niveau = 1, seuil = 0, cout = 150;
   xp = Math.max(0, Number(xp) || 0);
-  while (xp >= seuil + cout) { seuil += cout; niveau += 1; cout += 20; }
+  while (xp >= seuil + cout) { seuil += cout; niveau += 1; cout += 100; }
   return { niveau, dansNiveau: xp - seuil, cout };
 }
 const TITRES_NIVEAU = [
