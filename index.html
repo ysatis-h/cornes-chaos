@@ -4971,7 +4971,7 @@ const Compte = {
     const uid=this.uid(); if(!uid||!this.db||!etat||etat.phase!=="terminee"||UI._profilSauve.has(etat.gameId))return;
     let idx=etat.joueurs.findIndex((j)=>j.accountUid===uid); if(idx<0&&UI.mode==="local")idx=UI.monIdx; if(idx<0||etat.joueurs[idx].estBot)return;
     UI._profilSauve.add(etat.gameId);
-    let gainCapture = 0, xpAvantCapture = 0;
+    let gainCapture = 0, xpAvantCapture = 0, retroPart = 0;
     const gagne=etat.equipes2v2?etat.joueurs[idx].equipe===etat.equipeGagnante:idx===etat.gagnant;
     const dragonsMoi=etat.joueurs[idx].ecurie.filter((c)=>estLicorne(defCarte(c).type)).map((c)=>c.defId);
     const rencontres=new Set(dragonsMoi);
@@ -4992,9 +4992,9 @@ const Compte = {
         }
         profil.dailyChallenge=quotidien;
       }
-      if(!etat.tutoriel){ const gain=20+(gagne?30:0)+(defiNouveau?15:0); xpAvantCapture=Number(stats.xp)||0; stats.xp=xpAvantCapture+gain; gainCapture=gain; }
+      if(!etat.tutoriel){ const gain=20+(gagne?30:0)+(defiNouveau?15:0); let baseXp; if(!stats.xpRetro){ const jeuxAvant=Math.max(0,(Number(stats.games)||0)-1); const victoiresAvant=Math.max(0,(Number(stats.wins)||0)-(gagne?1:0)); const defisAvant=Math.max(0,(Number(profil.dailyChallenge&&profil.dailyChallenge.totalWins)||0)-(defiNouveau?1:0)); retroPart=20*jeuxAvant+30*victoiresAvant+15*defisAvant; stats.xp=retroPart; stats.xpRetro=true; baseXp=0; } else { baseXp=Number(stats.xp)||0; } xpAvantCapture=baseXp; stats.xp=(Number(stats.xp)||0)+gain; gainCapture=gain+retroPart; }
       profil.dragondex=profil.dragondex||{}; rencontres.forEach((id)=>{profil.dragondex[id]=true;}); profil.updatedAt=window.firebase.database.ServerValue.TIMESTAMP; return profil;
-    }); rencontres.forEach((id)=>{this.dragondexMemoire[id]=true;}); if(gainCapture>0){ const avant=niveauDepuisXp(xpAvantCapture), apres=niveauDepuisXp(xpAvantCapture+gainCapture); return { gain: gainCapture, niveauAvant: avant.niveau, niveauApres: apres.niveau, dansNiveau: apres.dansNiveau, cout: apres.cout, monte: apres.niveau > avant.niveau }; } return null; }catch(e){ UI._profilSauve.delete(etat.gameId); toast(L("La partie est terminée, mais la progression n’a pas encore pu être sauvegardée.","The game is over, but progress could not be saved yet."),4200); }
+    }); rencontres.forEach((id)=>{this.dragondexMemoire[id]=true;}); if(gainCapture>0){ const avant=niveauDepuisXp(xpAvantCapture), apres=niveauDepuisXp(xpAvantCapture+gainCapture); return { gain: gainCapture, retro: retroPart, niveauAvant: avant.niveau, niveauApres: apres.niveau, dansNiveau: apres.dansNiveau, cout: apres.cout, monte: apres.niveau > avant.niveau }; } return null; }catch(e){ UI._profilSauve.delete(etat.gameId); toast(L("La partie est terminée, mais la progression n’a pas encore pu être sauvegardée.","The game is over, but progress could not be saved yet."),4200); }
     return null;
   }
 };
@@ -10332,9 +10332,10 @@ function htmlGainXp(info) {
   const detail = info.monte
     ? L("Niveau supérieur atteint !", "Level up!")
     : L("Plus que ", "Only ") + (info.cout - info.dansNiveau) + L(" XP avant le niveau ", " XP to level ") + (info.niveauApres + 1);
+  const ligneRetro = info.retro > 0 ? '<div class="xp-fin-detail">' + L("dont +", "including +") + info.retro + L(" XP pour tes parties passées — elles comptent depuis le début !", " XP for your past games — they count from the very beginning!") + '</div>' : '';
   return '<div class="xp-fin-titre">+' + info.gain + ' XP — ' + L("Niveau ", "Level ") + info.niveauApres + '</div>' +
     '<div class="xp-barre"><span style="width:' + pct + '%"></span></div>' +
-    '<div class="xp-fin-detail">' + detail + '</div>';
+    '<div class="xp-fin-detail">' + detail + '</div>' + ligneRetro;
 }
 
 function afficherVictoire() {
