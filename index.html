@@ -809,6 +809,10 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 .journal-fin ul{max-height:210px}
 @keyframes bot-lueur{to{box-shadow:0 0 0 7px rgba(238,118,157,.28)}}
 @keyframes balle-match{to{filter:saturate(1.25);box-shadow:0 0 0 3px rgba(217,155,19,.18)}}
+@keyframes pulse-meneur{0%{box-shadow:0 0 0 0 rgba(244,200,92,.55)}100%{box-shadow:0 0 0 14px rgba(244,200,92,0)}}
+.carte-adversaire.repaire-meneur{border-color:var(--or);animation:pulse-meneur 1.6s ease-out infinite}
+#zone-moi.repaire-meneur{border-radius:16px;animation:pulse-meneur 1.6s ease-out infinite}
+@media(prefers-reduced-motion:reduce){.carte-adversaire.repaire-meneur,#zone-moi.repaire-meneur{animation:none}}
 @media (prefers-color-scheme:dark){.action-en-cours.bot-apercu{background:#311d32}.badge-balle-match{background:#5a4319;color:#ffe8a6;border-color:#ba8420}}
 @media (prefers-reduced-motion:reduce){.action-en-cours.bot-apercu,.badge-balle-match{animation:none}}
 
@@ -5159,9 +5163,20 @@ const Sons = {
   volumeEffets: 0.75,
   _timerMusique: null,
   _phraseMusique: 0,
+  tension: false,
 
   gainMusique() {
-    return 0.052 * this.volumeMusique;
+    return 0.052 * this.volumeMusique * (this.tension ? 1.5 : 1);
+  },
+
+  definirTension(actif) {
+    const cible = Boolean(actif);
+    if (this.tension === cible) return;
+    this.tension = cible;
+    if (this.contexte && this.musique && this.surJeu) {
+      this.musique.gain.cancelScheduledValues(this.contexte.currentTime);
+      this.musique.gain.setTargetAtTime(this.gainMusique(), this.contexte.currentTime, 0.4);
+    }
   },
 
   gainEffets() {
@@ -5246,7 +5261,9 @@ const Sons = {
     this._phraseMusique += 1;
     phrase.forEach((n) => this.noteMusique(n[0], n[1], n[2], 0.38));
     // Un bourdon grave discret donne le sentiment de progression.
-    this.noteMusique(this._phraseMusique % 2 ? 98 : 110, 0, 3.5, 0.12);
+    // En tension (un joueur à 6 dragons ou plus), il monte et un battement s'ajoute.
+    this.noteMusique((this._phraseMusique % 2 ? 98 : 110) * (this.tension ? 1.335 : 1), 0, 3.5, this.tension ? 0.17 : 0.12);
+    if (this.tension) { this.noteMusique(55, 0, 0.5, 0.20); this.noteMusique(55, 0.85, 0.4, 0.14); }
   },
 
   demarrerMusique() {
@@ -5542,7 +5559,25 @@ function synchroniserSons(etat) {
       else toast(traduireJournal(entree), entree.cle === "player_forfeit" ? 4800 : 2900);
     }, i * 3100));
   traiterReactionsBots(nouvellesEntrees, etat);
+  traiterMomentBalleMatch(nouvellesEntrees, etat);
+  Sons.definirTension(etat.phase !== "terminee" && etat.phase !== "des" && etat.joueurs.some((j, i) => valeurEcurie(etat, i) >= LICORNES_POUR_GAGNER - 2));
   UI._journalSons = courant.slice();
+}
+
+function traiterMomentBalleMatch(nouvellesEntrees, etat) {
+  if (!etat || etat.phase === "terminee" || etat.phase === "des") return;
+  if (UI._balleGameId !== etat.gameId) { UI._balleGameId = etat.gameId; UI._balleVues = {}; }
+  for (const entree of nouvellesEntrees) {
+    if (!entree || typeof entree !== "object") continue;
+    if (entree.cle !== "dragon_enters" && entree.cle !== "baby_enters") continue;
+    const idx = etat.joueurs.findIndex((j) => j.nom === (entree.params || {}).nom);
+    if (idx < 0 || valeurEcurie(etat, idx) !== LICORNES_POUR_GAGNER - 1) continue;
+    const pid = etat.joueurs[idx].pid;
+    if (UI._balleVues[pid]) continue;
+    UI._balleVues[pid] = true;
+    if (idx === UI.monIdx) toast(L("Plus qu'un dragon ! C'est ta balle de match !", "One more dragon! It's your match point!"), 4200);
+    else if (!etat.joueurs[idx].estBot) toast(L(etat.joueurs[idx].nom + " est à un dragon de la victoire !", etat.joueurs[idx].nom + " is one dragon away from winning!"), 4200);
+  }
 }
 
 function reinitialiserSonsJournal(etat) {
@@ -9366,7 +9401,7 @@ function carteJoueurPlateauHTML(etat,j,i,indicateurZoom) {
   const valeur = valeurEcurie(etat, i);
   const minis = j.ecurie.map((c) => carteHTML(c, { mini: true, interactive: true, indicateurZoom, classeMini: classeArriveeVolee(etat, i, c.uid), anniversaire: j.anniversaireAujourdhui && j.anniversaireDate===dateLocaleISO() })).join("");
   const bonus = j.ameliorations.map((c) => carteHTML(c, { mini: true, interactive: true, indicateurZoom, classeMini: "bonus" })).join("") + j.sabotages.map((c) => carteHTML(c, { mini: true, interactive: true, indicateurZoom, classeMini: "malus" })).join("") + rappelMeuteHTML(j);
-  return '<div class="carte-adversaire' + (j.ameliorations.some((c)=>c.defId==="arc-en-ciel-protecteur") ? ' repaire-egide' : '') + '" data-joueur-index="' + i + '">' +
+  return '<div class="carte-adversaire' + (j.ameliorations.some((c)=>c.defId==="arc-en-ciel-protecteur") ? ' repaire-egide' : '') + (valeur >= LICORNES_POUR_GAGNER - 2 ? ' repaire-meneur' : '') + '" data-joueur-index="' + i + '">' +
     '<div class="effet-repaire" data-effet-pour="' + i + '" aria-hidden="true"></div>' +
     '<div class="nom nom-avec-avatar">' + avatarHTML(j.couleurAvatar) + '<span>' + nomJoueurHTML(j) + '</span></div>' +
     '<span class="badge compte-main">' + j.main.length + " " + L(j.main.length === 1 ? "carte" : "cartes", j.main.length === 1 ? "card" : "cards") + '</span> ' +
@@ -9410,6 +9445,7 @@ function rendreMonEcurie() {
   const valeurMoi = valeurEcurie(etat, UI.monIdx);
   $("effet-repaire-moi").dataset.effetPour = String(UI.monIdx);
   $("zone-moi").classList.toggle("repaire-egide",moi.ameliorations.some((c)=>c.defId==="arc-en-ciel-protecteur"));
+  $("zone-moi").classList.toggle("repaire-meneur", valeurMoi >= LICORNES_POUR_GAGNER - 2);
   $("titre-ecurie").innerHTML = '<span class="nom-avec-avatar">' + avatarHTML(moi.couleurAvatar) + '<span class="nom">' + nomJoueurHTML(moi) + '</span></span> ' +
     '<span class="badge compte-main">' + moi.main.length + " " + L(moi.main.length === 1 ? "carte" : "cartes", moi.main.length === 1 ? "card" : "cards") + '</span> ' +
     '<span id="compte-licornes" class="badge">' + valeurMoi + '/' + LICORNES_POUR_GAGNER + ' ' + L("dragons", "dragons") + '</span>' +
