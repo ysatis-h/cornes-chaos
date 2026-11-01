@@ -355,6 +355,11 @@ html, body {
 /* Une Griffe Voleuse réussie doit se lire d’un coup d’œil, même pendant
    une partie rapide : la nouvelle carte rayonne brièvement dans le repaire. */
 .carte-mini.arrivee-volee{z-index:2;animation:arrivee-volee-halo 1.15s ease-out 2}
+@keyframes arrivee-carte{0%{transform:rotateY(80deg) scale(.85);opacity:0}60%{opacity:1}100%{transform:rotateY(0) scale(1);opacity:1}}
+.carte.arrivee{animation:arrivee-carte .45s ease-out}
+@keyframes arrivee-mythique{0%{transform:rotateY(80deg) scale(.85);opacity:0;box-shadow:0 0 0 0 rgba(244,200,92,0)}55%{opacity:1;box-shadow:0 0 22px 6px rgba(244,200,92,.85)}100%{transform:rotateY(0) scale(1);opacity:1;box-shadow:0 0 10px 2px rgba(244,200,92,.45)}}
+.carte.arrivee-mythique{animation:arrivee-mythique .8s ease-out}
+@media (prefers-reduced-motion:reduce){.carte.arrivee,.carte.arrivee-mythique{animation:none}}
 @keyframes arrivee-volee-halo{
   0%{transform:scale(.9);box-shadow:0 0 0 0 rgba(244,200,92,.82),var(--ombre)}
   38%{transform:scale(1.1);box-shadow:0 0 0 9px rgba(244,200,92,.38),0 0 24px 8px rgba(238,118,157,.34)}
@@ -6259,6 +6264,7 @@ function carteHTML(instance, options) {
   const gele = Number.isInteger(instance.toursGeles) && instance.toursGeles > 0;
   if (gele) classes.push("carte-gelee");
   if (options.compacte) classes.push("carte-main");
+  if (options.classe) classes.push(options.classe);
   if (options.zoom) classes.push("carte-zoom");
   const libelle = options.ariaLabel || (L("Jouer ", "Play ") + nomAffiche);
   const interactif = options.interactive ? ' role="button" tabindex="0" aria-label="' + libelle + '"' : "";
@@ -9482,11 +9488,16 @@ function rendreMain() {
     return;
   }
   const moi = etat.joueurs[UI.monIdx];
+  const cleMain = (etat.gameId || "") + ":" + UI.monIdx;
+  if (UI._mainConnueCle !== cleMain) { UI._mainConnueCle = cleMain; UI._mainConnue = new Set(moi.main.map((c) => c.uid)); }
+  const fraiches = new Set();
+  moi.main.forEach((inst) => { if (!UI._mainConnue.has(inst.uid)) fraiches.add(inst.uid); });
   const main = moi.main.map((inst) => {
     const def = defCarte(inst);
     const jouable = estMonTour() && etat.phase === "jeu" && peutJouer(etat, UI.monIdx, inst);
     return carteHTML(inst, {
       compacte: true,
+      classe: fraiches.has(inst.uid) ? (def.type === "magique" || def.id === "dragon-dore" ? "arrivee-mythique" : "arrivee") : "",
       selectionnee: UI.selectionUid === inst.uid,
       nonJouable: !jouable,
       tutorielDemande: carteDemandeeTutoriel(inst),
@@ -9495,6 +9506,7 @@ function rendreMain() {
     });
   }).join("");
   $("ma-main").innerHTML = main || "<p><em>" + L("Main vide !", "Empty hand!") + "</em></p>";
+  fraiches.forEach((uid) => UI._mainConnue.add(uid));
 
   $("ma-main").querySelectorAll(".carte").forEach((el) => {
     const ouvrir = () => ouvrirZoomCarte(el.dataset.uid);
