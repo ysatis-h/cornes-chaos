@@ -255,7 +255,7 @@ html, body {
 .bloc-journal ul { list-style: none; padding: 0; margin: 8px 0; max-height: 150px; overflow-y: auto; }
 .bloc-journal li { padding: 3px 0; border-bottom: 1px dotted #e9d5ff; }
 .badge-couleur-cible{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border:1px solid color-mix(in srgb,var(--couleur-cible) 46%,var(--ligne));border-radius:999px;background:color-mix(in srgb,var(--couleur-cible) 15%,var(--surface));color:var(--texte);font:800 .72rem/1.2 "Nunito Sans",sans-serif;white-space:nowrap}
-.badge-couleur-cible:before{content:"";width:9px;height:9px;flex:0 0 9px;border:1px solid color-mix(in srgb,var(--couleur-cible) 72%,#14253d);border-radius:50%;background:var(--couleur-cible);box-shadow:0 0 0 2px color-mix(in srgb,var(--couleur-cible) 16%,transparent)}
+.badge-couleur-cible:before{content:"";width:9px;height:9px;flex:0 0 9px;border:1px solid color-mix(in srgb,var(--couleur-cible) 72%,#3d3358);border-radius:50%;background:var(--couleur-cible);box-shadow:0 0 0 2px color-mix(in srgb,var(--couleur-cible) 16%,transparent)}
 
 /* -------------------------------- Cartes --------------------------- */
 .carte {
@@ -444,7 +444,7 @@ html, body {
 :root {
   color-scheme: light dark;
   --rose:#ee769d; --rose-fonce:#c63f70; --violet:#7560bf; --violet-fonce:#59439f;
-  --bleu:#79bed2; --fond:#eef7f6; --carte-fond:#ffffff; --texte:#14253d;
+  --bleu:#79bed2; --fond:#eef7f6; --carte-fond:#ffffff; --texte:#3d3358;
   --texte-doux:#587083; --ligne:#bfd9d8; --surface:#ffffff; --surface-2:#deefee;
   --nuit:#10284d; --or:#f4c85c; --ombre:0 12px 34px rgba(13,44,67,.14); --rayon:18px;
 }
@@ -493,7 +493,7 @@ body{min-width:0}
 #toast{background:var(--texte);color:var(--fond)}
 @media (prefers-color-scheme:dark){
   :root{--fond:#071326;--carte-fond:#f7fbfa;--texte:#eef9f8;--texte-doux:#a9c4ce;--ligne:#2b4b5d;--surface:#0f2138;--surface-2:#173049;--nuit:#061021;--rose:#f07ca3;--violet-fonce:#b6a2ed;--ombre:0 16px 38px rgba(0,0,0,.3)}
-  .carte{color:#14253d}.carte-texte{color:#536478}.carte-type{color:#59439f}.carte-mini{color:#14253d;background:#f7fbfa}
+  .carte{color:#3d3358}.carte-texte{color:#536478}.carte-type{color:#59439f}.carte-mini{color:#3d3358;background:#f7fbfa}
   .bouton-secondaire{color:var(--texte)}.badge{background:#243b55;color:#eaf7f6}.badge-protege{background:#183f36}
   .bloc-journal li{border-color:var(--ligne)}
 }
@@ -740,9 +740,9 @@ body{min-width:0}
 
 /* La palette du jeu est volontairement identique en mode clair et sombre. */
 @media (prefers-color-scheme:dark){
-  :root{--rose:#ee769d;--rose-fonce:#c63f70;--violet:#7560bf;--violet-fonce:#59439f;--bleu:#79bed2;--fond:#eef7f6;--carte-fond:#ffffff;--texte:#14253d;--texte-doux:#587083;--ligne:#bfd9d8;--surface:#ffffff;--surface-2:#deefee;--nuit:#10284d;--or:#f4c85c;--ombre:0 12px 34px rgba(13,44,67,.14)}
-  .carte,.carte-mini{color:#14253d}.carte-texte{color:#536478}.carte-type{color:#59439f}.bouton-secondaire{color:var(--violet-fonce)}
-  .badge{background:#f5e6ff;color:#14253d}.badge-protege{background:#dcfce7}.bloc-journal li{border-color:#e9d5ff}
+  :root{--rose:#ee769d;--rose-fonce:#c63f70;--violet:#7560bf;--violet-fonce:#59439f;--bleu:#79bed2;--fond:#eef7f6;--carte-fond:#ffffff;--texte:#3d3358;--texte-doux:#587083;--ligne:#bfd9d8;--surface:#ffffff;--surface-2:#deefee;--nuit:#10284d;--or:#f4c85c;--ombre:0 12px 34px rgba(13,44,67,.14)}
+  .carte,.carte-mini{color:#3d3358}.carte-texte{color:#536478}.carte-type{color:#59439f}.bouton-secondaire{color:var(--violet-fonce)}
+  .badge{background:#f5e6ff;color:#3d3358}.badge-protege{background:#dcfce7}.bloc-journal li{border-color:#e9d5ff}
   .accueil-contenu{--accueil-encre:#4a2b5a;--accueil-creme:#fffafd;background-color:#dceff3;background-image:linear-gradient(145deg,#effafb 0%,#dceff3 58%,#cae5ed 100%);box-shadow:0 24px 70px rgba(16,40,77,.16)}
   .accueil-signe{background:rgba(255,255,255,.7);border-color:rgba(147,51,234,.24)}
   .accueil-contenu h1 .cornes{text-shadow:5px 5px 0 #f9a8d4}.accueil-contenu h1 .chaos{text-shadow:5px 5px 0 var(--accueil-cyan)}.accueil-contenu h1 .esperluette{color:var(--violet-fonce)}
@@ -983,7 +983,7 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 /* Le décor reste pleinement visible : les groupes du plateau n'ont plus de
    panneaux blancs. Un léger halo typographique garde les libellés lisibles. */
 #ecran-jeu{
-  --plateau-encre:#14253d;
+  --plateau-encre:#3d3358;
   --plateau-encre-doux:#294c61;
   --plateau-halo:0 1px 0 rgba(255,255,255,.92),0 0 5px rgba(255,255,255,.74)
 }
@@ -1058,7 +1058,7 @@ input[aria-invalid="true"]{border-color:#c63f70!important;box-shadow:0 0 0 3px r
 /* Trophées et série quotidienne — réservés aux comptes connectés. */
 .succes-resume{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;padding:12px 14px;border:1px solid var(--ligne);border-radius:13px;background:var(--surface-2);text-align:left}.succes-resume strong{font:800 1.2rem/1 "Fredoka",sans-serif;color:var(--violet-fonce)}.succes-resume span{color:var(--texte-doux);font-size:.8rem;font-weight:800}.succes-grille{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 18px;text-align:left}.succes-carte{position:relative;min-width:0;padding:13px;border:1px solid var(--ligne);border-radius:13px;background:var(--surface-2)}.succes-carte.debloque{border-color:var(--or);background:#fff8df}.succes-carte h4{margin:0 0 4px;color:var(--violet-fonce);font:800 .95rem/1.2 "Fredoka",sans-serif}.succes-carte p{margin:0;color:var(--texte-doux);font-size:.76rem;line-height:1.35}.succes-icone{display:grid;place-items:center;width:34px;height:34px;margin-bottom:9px;border-radius:50%;background:var(--surface);border:1px solid var(--ligne);color:var(--violet-fonce);font:900 .88rem/1 "Fredoka",sans-serif}.succes-carte.debloque .succes-icone{background:var(--or);border-color:#d59b22;color:#513b18}.succes-progression{height:6px;margin-top:10px;border-radius:999px;background:color-mix(in srgb,var(--ligne) 75%,white);overflow:hidden}.succes-progression>span{display:block;height:100%;border-radius:inherit;background:var(--violet);width:var(--progression)}.succes-carte.debloque .succes-progression>span{background:#d59b22}.succes-valeur{display:block;margin-top:5px;color:var(--texte-doux);font-size:.68rem;font-weight:900}.defi-serie{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 14px}.defi-serie-item{padding:10px;border:1px solid var(--ligne);border-radius:11px;background:var(--surface-2);text-align:center}.defi-serie-item strong,.defi-serie-item span{display:block}.defi-serie-item strong{font:800 1.3rem/1 "Fredoka",sans-serif;color:var(--violet-fonce)}.defi-serie-item span{margin-top:5px;color:var(--texte-doux);font-size:.67rem;font-weight:900}.defi-complete{margin:9px 0;padding:9px 11px;border-radius:10px;background:#dcfce7;color:#22543d;font-size:.82rem;font-weight:900;text-align:center}.compte-reserve{margin:8px 0 0;color:#6f4f7f;font-size:.74rem;font-weight:800;line-height:1.35}
 @media(max-width:480px){.succes-grille{grid-template-columns:1fr}.defi-serie{grid-template-columns:1fr 1fr}.defi-serie-item:last-child{grid-column:1/-1}}
-@media(prefers-color-scheme:dark){.succes-carte.debloque{background:#fff8df;color:#14253d}.defi-complete{background:#dcfce7;color:#22543d}}
+@media(prefers-color-scheme:dark){.succes-carte.debloque{background:#fff8df;color:#3d3358}.defi-complete{background:#dcfce7;color:#22543d}}
 
 /* Signalement ciblé en multijoueur et pseudo public du compte. */
 .bouton-signalement-joueur{margin-top:12px;background:transparent;color:var(--violet-fonce);border:1px solid var(--ligne);box-shadow:none}
@@ -1121,7 +1121,7 @@ body.avec-bandeau{padding-top:38px}
    disparaît de l'en-tête, même lorsque les repaires se réorganisent. */
 .scores-partie{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:-5px 0 11px}
 .scores-partie[hidden]{display:none!important}
-.score-partie{display:inline-flex;align-items:center;gap:6px;min-width:0;padding:5px 9px;border:1px solid var(--ligne);border-radius:10px;background:rgba(255,255,255,.92);color:#14253d;font-size:.76rem;font-weight:800;line-height:1.2;box-shadow:0 3px 9px rgba(13,44,67,.09)}
+.score-partie{display:inline-flex;align-items:center;gap:6px;min-width:0;padding:5px 9px;border:1px solid var(--ligne);border-radius:10px;background:rgba(255,255,255,.92);color:#3d3358;font-size:.76rem;font-weight:800;line-height:1.2;box-shadow:0 3px 9px rgba(13,44,67,.09)}
 .score-partie.actif{border-color:var(--rose-fonce);box-shadow:0 0 0 2px rgba(198,63,112,.14)}
 .score-partie .avatar-dragon{width:22px;height:22px}.score-partie .avatar-dragon svg{width:18px;height:18px}
 .score-partie-nom{min-width:0;overflow-wrap:anywhere}.score-partie-valeur{flex:0 0 auto;padding:2px 6px;border-radius:7px;background:var(--surface-2);color:var(--violet-fonce);font-family:"Fredoka",sans-serif;font-variant-numeric:tabular-nums}
