@@ -3148,7 +3148,7 @@ function aUnHennissement(joueur) {
 /* Renvoie le Dresseur visé lorsqu'une carte constitue une attaque ciblée. */
 function cibleAttaque(def, cibles, idxJoueur) {
   if (!def || !cibles) return null;
-  const effetsHostiles = ["detruire", "voler", "echanger", "detruire-bonus"];
+  const effetsHostiles = ["detruire", "voler", "echanger", "detruire-bonus", "voler-bebe-main", "geler-repaire"];
   if (def.type !== "sabotage" && !effetsHostiles.includes(def.effet && def.effet.kind)) return null;
   const idxCible = cibles.adverse && Number.isInteger(cibles.adverse.joueur)
     ? cibles.adverse.joueur
@@ -4791,8 +4791,11 @@ const Compte = {
         toast(L("Ce pseudo est déjà pris.","This username is already taken."),4200);
         return;
       }
-      this.profilPublicMemoire={trainerName:nom,displayName:nom,searchName,genreDresseur};
+      this.profilPublicMemoire={trainerName:nom,displayName:nom,searchName,genreDresseur,couleurDragon:this.couleurDragon()};
       await ref.update({trainerName:nom,displayName:nom,searchName,updatedAt:window.firebase.database.ServerValue.TIMESTAMP});
+      // La couleur du dragon porte-bonheur est publiée pour que les amis
+      // voient TON dragon (et pas un dragon par défaut) sur le podium du classement.
+      try{await avecDelaiReseau(ref.update({couleurDragon:this.couleurDragon()}),12000);}catch(e){console.warn("Couleur du dragon non synchronisée :",e&&e.code||e);}
       await this.synchroniserIndexRecherche(searchName,existant.searchName);
       this.rendre();
       if(candidat&&erreurPseudo(candidat))toast(G(this.profilPublicMemoire,"Choisis un pseudo de Dresseur respectueux dans ton profil.","Choisis un pseudo de Dresseuse respectueux dans ton profil.","Choisis un nom de jeu respectueux dans ton profil.","Choose a respectful Trainer name in your profile."),4200);
@@ -4824,9 +4827,10 @@ const Compte = {
     const dateSauvee=String(transaction.snapshot&&transaction.snapshot.val()||"").trim();
     const maintenant=window.firebase.database.ServerValue.TIMESTAMP;
     await avecDelaiReseau(this.db.ref("users/"+this.uid()).update({"public/genreDresseur":genreDresseur,"profile/genreDresseur":genreDresseur,"profile/couleurDragon":couleur,"profile/updatedAt":maintenant,"updatedAt":maintenant}),12000);
-    this.profilPublicMemoire={...(this.profilPublicMemoire||{}),genreDresseur};
+    this.profilPublicMemoire={...(this.profilPublicMemoire||{}),genreDresseur,couleurDragon:couleur};
     this.dateAnniversaireMemoire=dateSauvee;
     this.couleurDragonMemoire=couleur;
+    try{await avecDelaiReseau(this.db.ref("users/"+this.uid()+"/public").update({couleurDragon:couleur}),12000);}catch(e){console.warn("Couleur du dragon non synchronisée :",e&&e.code||e);}
     const anniversaireAujourdhui=this.estAnniversaire(),anniversaireDate=this.anniversaireDate();
     if(typeof UI!=="undefined"&&UI.etat){UI.etat.joueurs.forEach((joueur)=>{if(joueur.accountUid===this.uid()){joueur.genreDresseur=genreDresseur;joueur.anniversaireAujourdhui=anniversaireAujourdhui;joueur.anniversaireDate=anniversaireDate;}});}
     if(typeof Net!=="undefined"&&Net.mode==="online"&&Net.code&&Net.pid){try{await avecDelaiReseau(Net.refSalle(Net.code).child("joueurs").child(Net.pid).update({genreDresseur,anniversaireAujourdhui,anniversaireDate}),12000);}catch(e){console.warn("Profil de la salle non synchronisé :",e&&e.code||e);}}
@@ -6442,11 +6446,12 @@ function medailleSVG(rang) {
   return '<span class="classement-medaille" aria-hidden="true">' + dessinMedailleSVG(genres[rang], String(rang)) + '</span>';
 }
 
-function podiumClassementHTML(rang) {
+function podiumClassementHTML(rang, couleurDragon) {
   if (rang > 3) return "";
   const def = definitionParId("bebe-licorne");
   if (!def) return "";
-  return '<span class="classement-podium" aria-hidden="true" style="' + styleIllustration({ defId: "bebe-licorne", uid: "podium-" + rang, couleurDragon: COULEURS_AVATAR[0] }) + '">'
+  const couleur = COULEURS_AVATAR.includes(couleurDragon) ? couleurDragon : COULEURS_AVATAR[0];
+  return '<span class="classement-podium" aria-hidden="true" style="' + styleIllustration({ defId: "bebe-licorne", uid: "podium-" + rang, couleurDragon: couleur }) + '">'
     + illustrationDragonHTML(def) + medailleSVG(rang) + '</span>';
 }
 
@@ -6455,7 +6460,7 @@ function ligneClassementHTML(entree, rang) {
   const detail = stats.detailDisponible
     ? L("Solo ", "Solo ") + stats.solo + " · " + L("Multijoueur ", "Multiplayer ") + stats.multijoueur
     : L("Détail solo/multijoueur disponible après la prochaine partie.", "Solo/multiplayer details available after the next game.");
-  return '<div class="classement-ligne ' + (entree.moi ? "moi" : "") + '"' + (entree.moi ? ' aria-current="true"' : '') + '><span class="classement-rang">' + rang + '</span><span class="classement-identite"><strong>' + echapper(entree.nom) + '</strong><small>' + echapper(detail) + '</small></span><span class="classement-stats"><span class="classement-stat"><strong>' + stats.victoires + '</strong><span>' + L("victoires", "wins") + '</span></span><span class="classement-stat"><strong>' + stats.taux + ' %</strong><span>' + L("taux de victoire", "win rate") + '</span></span></span>' + podiumClassementHTML(rang) + '</div>';
+  return '<div class="classement-ligne ' + (entree.moi ? "moi" : "") + '"' + (entree.moi ? ' aria-current="true"' : '') + '><span class="classement-rang">' + rang + '</span><span class="classement-identite"><strong>' + echapper(entree.nom) + '</strong><small>' + echapper(detail) + '</small></span><span class="classement-stats"><span class="classement-stat"><strong>' + stats.victoires + '</strong><span>' + L("victoires", "wins") + '</span></span><span class="classement-stat"><strong>' + stats.taux + ' %</strong><span>' + L("taux de victoire", "win rate") + '</span></span></span>' + podiumClassementHTML(rang, entree.couleurDragon) + '</div>';
 }
 
 async function ouvrirClassement() {
@@ -6474,7 +6479,7 @@ async function ouvrirClassement() {
       $("classement-fermer").addEventListener("click", fermerModal);
       return;
     }
-    const entrees = [{ uid: Compte.uid(), nom: profil.public && profil.public.displayName || Compte.profilPublic().displayName, stats: profil.stats || {}, moi: true }].concat(donnees.amis.map((ami) => ({ uid: ami.uid, nom: ami.profil.displayName || L("Dresseur", "Trainer"), stats: ami.stats || {}, moi: false })));
+    const entrees = [{ uid: Compte.uid(), nom: profil.public && profil.public.displayName || Compte.profilPublic().displayName, stats: profil.stats || {}, moi: true, couleurDragon: Compte.couleurDragon() }].concat(donnees.amis.map((ami) => ({ uid: ami.uid, nom: ami.profil.displayName || L("Dresseur", "Trainer"), stats: ami.stats || {}, moi: false, couleurDragon: ami.profil.couleurDragon })));
     entrees.sort((a, b) => {
       const sa = statistiquesClassement(a.stats), sb = statistiquesClassement(b.stats);
       return sb.victoires - sa.victoires || sb.taux - sa.taux || sb.parties - sa.parties || a.nom.localeCompare(b.nom, enAnglais() ? "en" : "fr");
