@@ -3217,15 +3217,20 @@ function jouerCarte(etat, idxJoueur, uidCarte, cibles) {
   const contestable = carteEstContestable(def, cibles, idxJoueur)||dragonBalleMatch;
   const cibleRiposte = cibleAttaque(def, cibles, idxJoueur);
   const protegeRugissement = etat.joueurs[idxJoueur] && etat.joueurs[idxJoueur].protectionRugissement;
+  // En 2v2, un coéquipier ne répond jamais à la carte de son partenaire :
+  // rugir annulerait sa carte, ce qui n'a aucun sens en équipe. Seuls les
+  // adversaires peuvent entrer dans la fenêtre de réponse.
+  const estCoequipier = (idx) => Boolean(etat.equipes2v2 && etat.joueurs[idx] && etat.joueurs[idxJoueur] && etat.joueurs[idx].equipe === etat.joueurs[idxJoueur].equipe);
   if (protegeRugissement) {
     repondants = [];
   } else if (contestable && cibleRiposte !== null) {
     // Riposte : les autres Dresseurs ne peuvent pas intervenir dans une attaque
     // qui ne les vise pas, même s'ils ont un Rugissement en main.
-    if (aUnHennissement(etat.joueurs[cibleRiposte])) repondants.push(cibleRiposte);
+    if (aUnHennissement(etat.joueurs[cibleRiposte]) && !estCoequipier(cibleRiposte)) repondants.push(cibleRiposte);
   } else if (contestable) {
     for (let k = 1; k < etat.joueurs.length; k++) {
       const idx = (idxJoueur + k) % etat.joueurs.length;
+      if (estCoequipier(idx)) continue;
       if (aUnHennissement(etat.joueurs[idx])) repondants.push(idx);
     }
   }
