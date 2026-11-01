@@ -1778,7 +1778,7 @@ function ajouterEffetVisuel(etat,type,parIdx,details){
   const file=enTableau(etat.effetsVisuels).filter((effet)=>Number(effet.jusquA)>maintenant-400);
   const dernier=file.length?file[file.length-1]:null;
   const debut=Math.max(maintenant,dernier&&Number(dernier.jusquA)||0);
-  const duree=2600;
+  const duree=1800;
   const cibleParDefaut=Math.max(0,Math.min(etat.joueurs.length-1,Number(parIdx)||0));
   const cibles=enTableau(details&&details.cibles).map((idx)=>Math.max(0,Math.min(etat.joueurs.length-1,Number(idx)||0))).filter((idx,pos,liste)=>liste.indexOf(idx)===pos);
   file.push({id:uidCourt()+"_"+maintenant,type,parIdx:cibleParDefaut,cibles:cibles.length?cibles:[cibleParDefaut],debut,jusquA:debut+duree,couleur:details&&IDS_COULEURS_DRAGON.includes(details.couleur)?details.couleur:null,niveau:details?Math.max(1,Math.min(3,Number(details.niveau)||1)):1});
@@ -1788,7 +1788,9 @@ function finFileEffetsVisuels(etat){
   return enTableau(etat&&etat.effetsVisuels).reduce((fin,effet)=>Math.max(fin,Number(effet&&effet.jusquA)||0),0);
 }
 function bloquerTransitionPourEffets(etat,action){
-  const jusquA=finFileEffetsVisuels(etat);
+  // Le jeu ne reste jamais figé longtemps : la transition repart après
+  // 0,8 s au plus, et la scène visuelle termine de jouer de son côté.
+  const jusquA=Math.min(finFileEffetsVisuels(etat),Date.now()+800);
   if(!etat||jusquA<=Date.now()+20)return false;
   mettreTimerEnPause(etat);
   etat.phase="effets";
@@ -2899,7 +2901,7 @@ function finTour(etat) {
 
 function terminerTransitionEffets(etat) {
   if(!etat||etat.phase!=="effets"||!etat.transitionEffets)return false;
-  if(finFileEffetsVisuels(etat)>Date.now()+20)return false;
+  if(etat.transitionEffets.jusquA>Date.now()+20)return false;
   const action=etat.transitionEffets.action;
   etat.effetsVisuels=enTableau(etat.effetsVisuels).filter((effet)=>Number(effet&&effet.jusquA)>Date.now());
   etat.transitionEffets=null;
@@ -8523,7 +8525,7 @@ function planifierFinFileEffets(){
   UI._fileEffetsTimer=window.setTimeout(async()=>{
     UI._fileEffetsTimer=null;
     if(!UI.etat||UI.etat!==etat||!UI.etat.transitionEffets||UI.etat.transitionEffets.id!==transition.id)return;
-    if(finFileEffetsVisuels(etat)>Date.now()+20){planifierFinFileEffets();return;}
+    if(transition.jusquA>Date.now()+20){planifierFinFileEffets();return;}
     if(terminerTransitionEffets(etat))await apresActionAutomatique();
   },Math.max(60,transition.jusquA-Date.now()+80));
 }
@@ -8557,7 +8559,7 @@ function planifierBot() {
 
   const delaiBot = UI.tutoriel
     ? (etatInitial.phase === "reponse" ? 1100 : etatInitial.phase === "des" ? 1400 : 2300)
-    : (etatInitial.phase === "reponse" ? 180 : etatInitial.phase === "des" ? 650 : 1200);
+    : (etatInitial.phase === "reponse" ? 180 : etatInitial.phase === "des" ? 650 : 750);
   UI._botPlanifieLe = Date.now();
   UI._botTimer = window.setTimeout(async () => {
     UI._botTimer = null;
