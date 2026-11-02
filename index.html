@@ -8846,7 +8846,7 @@ function planifierBot() {
           const defAnnoncee = defCarte(action.carte);
           const nouvelleDecouverte = Boolean(UI.tutoriel && defAnnoncee && !UI._cartesVuesTutoriel.has(defAnnoncee.id));
           if (nouvelleDecouverte) UI._cartesVuesTutoriel.add(defAnnoncee.id);
-          UI._botAnnonce = { idx: idxBot, pid: bot.pid, carteUid: action.carte.uid, cibleIdx: defAnnoncee.id === "licorne-farceuse" ? null : cibleAttaque(defAnnoncee, action.choix.cibles, idxBot), nouvelleDecouverte };
+          UI._botAnnonce = { idx: idxBot, pid: bot.pid, carteUid: action.carte.uid, choix: action.choix, cibleIdx: defAnnoncee.id === "licorne-farceuse" ? null : cibleAttaque(defAnnoncee, action.choix.cibles, idxBot), nouvelleDecouverte };
           rendreCarteJoueeCentre();
           rendreActions();
           UI._botPlanifieLe = Date.now();
@@ -8861,7 +8861,11 @@ function planifierBot() {
             const carteCourante = botCourant && botCourant.pid === annonce.pid ? botCourant.main.find((carte)=>carte.uid===annonce.carteUid) : null;
             if (!carteCourante || !peutJouer(courant, annonce.idx, carteCourante)) { planifierBot(); return; }
             const defCourante = defCarte(carteCourante);
-            const choixCourant = choixBotPour(defCourante, annonce.idx);
+            // Le choix du bot est FIGÉ dès l'annonce : la cible affichée au centre
+            // (« X vise Y ») doit être exactement celle que la carte frappe.
+            // Re-tirer le choix ici pouvait désigner un autre Dresseur — le
+            // sabotage annoncé contre l'un partait alors dans le camp d'un autre.
+            const choixCourant = annonce.choix && annonce.choix.valide ? annonce.choix : choixBotPour(defCourante, annonce.idx);
             if (!choixCourant.valide) { planifierBot(); return; }
             jouerCarte(courant, annonce.idx, carteCourante.uid, defCourante.id === "licorne-farceuse" ? null : choixCourant.cibles);
             await apresActionAutomatique();
