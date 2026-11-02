@@ -1304,6 +1304,8 @@ body.mode-2v2 #ecran-jeu .zone-adversaires{grid-template-columns:repeat(2,minmax
 .ami-identite strong{overflow-wrap:anywhere}
 .badge-couleur-cible{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .classement-identite,.classement-nom-ligne,.score-partie{min-width:0}
+.compte-tour{position:static;transform:none;flex:none;margin-left:8px}
+.bandeau-tour{padding-right:54px}
 </style>
   <!-- Configuration Firebase officielle du projet -->
   <script src="assets/firebase-config.js"></script>
@@ -9353,38 +9355,21 @@ function rendreArriveeVolee() {
 function rendreBandeau() {
   const etat = UI.etat;
   const joueurTour = etat.joueurs[etat.tour];
-  let texte;
-  let joueurAffiche = joueurTour;
-  if(etat.phase==="rugissement"&&etat.rugissementAnimation){
-    joueurAffiche=etat.joueurs[etat.rugissementAnimation.parIdx]||joueurTour;
-    texte=joueurAffiche.nom+L(" rugit : ROOARRR !"," roars: ROOARRR!");
-  } else if(etat.phase==="nuage-cendres"&&etat.nuageCendresAnimation){
-    joueurAffiche=etat.joueurs[etat.nuageCendresAnimation.parIdx]||joueurTour;
-    texte=L("Nuage de Cendres annule la magie de ","Ash Cloud cancels ")+joueurAffiche.nom+L(" !","’s magic!");
-  } else if(etat.phase==="effets"){
-    texte=L("Effet en cours…","Effect in progress…");
+  let idxAffiche = etat.tour;
+  if (etat.phase === "rugissement" && etat.rugissementAnimation) {
+    idxAffiche = etat.rugissementAnimation.parIdx;
+  } else if (etat.phase === "nuage-cendres" && etat.nuageCendresAnimation) {
+    idxAffiche = etat.nuageCendresAnimation.parIdx;
   } else if (etat.phase === "reponse") {
     const r = repondantActuel(etat);
-    joueurAffiche = r !== null && r !== undefined ? etat.joueurs[r] : joueurTour;
-    texte = r !== null && r !== undefined
-      ? etat.joueurs[r].nom + L(", veux-tu riposter ?", ", do you want to roar back?")
-      : L("Riposte en cours...", "Counter in progress...");
-  } else if (etat.phase === "choix") {
-    joueurAffiche = etat.joueurs[etat.choix.parIdx];
-    texte = etat.choix.type === "pouvoir-dragon-vole"
-      ? joueurAffiche.nom + L(" choisit une cible pour le pouvoir volé...", " is choosing a target for the stolen power...")
-      : etat.choix.type === "pouvoir-dragon-entree"
-        ? joueurAffiche.nom + L(" choisit les dragons à échanger...", " is choosing which dragons to trade...")
-        : etat.choix.type === "grand-souffle"
-          ? joueurAffiche.nom + L(" choisit ses cartes à défausser...", " is choosing cards to discard...")
-          : etat.choix.type === "pluie-defausse"
-            ? joueurAffiche.nom + L(" choisit une carte à laisser partir sous la pluie...", " is choosing a card to let go in the rain...")
-          : joueurAffiche.nom + L(" choisit une carte...", " is choosing a card...");
-  } else if (estMonTour()) {
-    texte = L("À toi de jouer, ", "Your turn, ") + joueurTour.nom + " !";
-  } else {
-    texte = L("Tour de ", "Turn: ") + joueurTour.nom + "...";
+    if (r !== null && r !== undefined) idxAffiche = r;
+  } else if (etat.phase === "choix" && etat.choix) {
+    idxAffiche = etat.choix.parIdx;
   }
+  const joueurAffiche = etat.joueurs[idxAffiche] || joueurTour;
+  const texte = idxAffiche === UI.monIdx
+    ? L("À toi de jouer, ", "Your turn, ") + joueurAffiche.nom + " !"
+    : L("Tour de ", "Turn: ") + joueurAffiche.nom + "...";
   $("bandeau-tour").innerHTML = avatarHTML(joueurAffiche.couleurAvatar) + "<span>" + echapper(texte) + "</span>" +
     (UI.tutoriel ? "" : '<span id="compte-tour" class="compte-tour" aria-live="off">' + (etat.modeEclair ? "0:30" : "2:00") + "</span>");
   ajusterTailleBandeau();
